@@ -12,6 +12,7 @@ A Python wrapper for the [GDAX Exchange API](https://docs.gdax.com/), formerly k
 
 ## Under Development
 - Authenticated Client **testing**
+- Websocket Client **developing**
 
 ## Usage
 This README is only to inform you on the intricacies of the python wrapper presented in this repository.  In order to use it to its potential, you must familiarize yourself with the official documentation.
