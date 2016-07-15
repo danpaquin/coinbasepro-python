@@ -64,7 +64,7 @@ publicClient.getProductTrades(product="ETH-USD")
 - [getProductHistoricRates](https://docs.gdax.com/#get-historic-rates)
 ```python
 publicClient.getProductHistoricRates()
-# To include other paramters, see official documentation:
+# To include other parameters, see official documentation:
 publicClient.getProductHistoricRates(granularity=3000)
 ```
 
