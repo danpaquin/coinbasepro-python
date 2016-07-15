@@ -15,16 +15,16 @@ A Python wrapper for the [GDAX Exchange API](https://docs.gdax.com/), formerly k
 - Websocket Client **developing**
 
 ## Usage
-This README is only to inform you on the intricacies of the python wrapper presented in this repository.  In order to use it to its potential, you must familiarize yourself with the official documentation.
+This README is only to inform you on the intricacies of the python wrapper presented in this repository.  In order to use it to its full potential, you must familiarize yourself with the official documentation.
 - https://docs.gdax.com/
 
-- Afterwards, download/clone this repository into your active directory and acquire the dependencies:
+- Afterwards, download/clone this repository into your active directory and acquire the following dependencies:
 ```python
 pip install requests
 ```
 
 ### Public Client
-Only some endpoints in the API available to everyone.  Those endpoints can be reached using *PublicClient*
+Only some endpoints in the API are available to everyone.  Those endpoints can be reached using ```PublicClient```
 
 ```python
 import CoinbaseExchange
