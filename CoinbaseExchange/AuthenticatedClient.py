@@ -7,31 +7,10 @@
 import hmac, hashlib, time, requests, base64
 from requests.auth import AuthBase
 
-class CoinbaseExchangeAuth(AuthBase):
-    # Provided by Coinbase: https://docs.gdax.com/#signing-a-message
-    def __init__(self, api_key, secret_key, passphrase):
-        self.api_key = api_key
-        self.secret_key = secret_key
-        self.passphrase = passphrase
-
-    def __call__(self, request):
-        timestamp = str(time.time())
-        message = timestamp + request.method + request.path_url + (request.body or '')
-        hmac_key = base64.b64decode(self.secret_key)
-        signature = hmac.new(hmac_key, message, hashlib.sha256)
-        signature_b64 = signature.digest().encode('base64').rstrip('\n')
-        request.headers.update({
-            'CB-ACCESS-SIGN': signature_b64,
-            'CB-ACCESS-TIMESTAMP': timestamp,
-            'CB-ACCESS-KEY': self.api_key,
-            'CB-ACCESS-PASSPHRASE': self.passphrase,
-        })
-        return request
-
 class AuthenticatedClient():
     def __init__(self, key, b64secret, passphrase, api_url="https://api.gdax.com", product_id="BTC-USD"):
         self.url = api_url
-        #self.productId = product_id #TODO: Allow a default product
+        self.productId = product_id
         self.auth = CoinbaseExchangeAuth(key, b64secret, passphrase)
 
     def getAccount(self, accountId):
@@ -42,6 +21,7 @@ class AuthenticatedClient():
         return self.getAccount('')
 
     def getAccountHistory(self, accountId):
+        # TODO: Anticipate pagination
         r = requests.get(self.url + '/accounts/%s/ledger' %accountId, auth=self.auth)
         return r.json()
 
@@ -52,6 +32,8 @@ class AuthenticatedClient():
 
     def buy(self, buyParams):
         buyParams["side"] = "buy"
+        if not buyParams["product_id"]:
+            buyParams["product_id"] = self.productId
         r = requests.post(self.url + '/orders', json=buyParams, auth=self.auth)
         return r.json()
 
@@ -69,12 +51,13 @@ class AuthenticatedClient():
         return r.json()
 
     def getOrders(self):
+        #TODO: Anticipate pagination
         return self.getOrder("")
 
     def getFills(self, orderId='', productId='', before='', after='', limit=''):
         url = self.url + '/fills?'
         if orderId: url += "order_id=%s&" %str(orderId)
-        if productId: url += "product_id=%s&" %str(productId)
+        if productId: url += "product_id=%s&" %(productId or self.productId)
 
         # TODO: Allow before, after, limit -- not working
         """if before: url += "before=%s&" %str(before)
@@ -101,3 +84,24 @@ class AuthenticatedClient():
         }
         r = requests.post(self.url + "/transfers", json=payload, auth=self.auth)
         return r.json()
+
+class CoinbaseExchangeAuth(AuthBase):
+    # Provided by Coinbase: https://docs.gdax.com/#signing-a-message
+    def __init__(self, api_key, secret_key, passphrase):
+        self.api_key = api_key
+        self.secret_key = secret_key
+        self.passphrase = passphrase
+
+    def __call__(self, request):
+        timestamp = str(time.time())
+        message = timestamp + request.method + request.path_url + (request.body or '')
+        hmac_key = base64.b64decode(self.secret_key)
+        signature = hmac.new(hmac_key, message, hashlib.sha256)
+        signature_b64 = signature.digest().encode('base64').rstrip('\n')
+        request.headers.update({
+            'CB-ACCESS-SIGN': signature_b64,
+            'CB-ACCESS-TIMESTAMP': timestamp,
+            'CB-ACCESS-KEY': self.api_key,
+            'CB-ACCESS-PASSPHRASE': self.passphrase,
+        })
+        return request

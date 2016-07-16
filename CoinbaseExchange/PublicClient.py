@@ -7,40 +7,39 @@
 import requests
 
 class PublicClient():
-
     def __init__(self, api_url="https://api.gdax.com", product_id="BTC-USD"):
         self.url = api_url
-        #self.product_id = product_id #TODO: Allow a default product
+        self.productId = product_id
 
     def getProducts(self):
         response = requests.get(self.url + '/products')
         return response.json()
 
-    def getProductOrderBook(self, level=2):
-        response = requests.get(self.url + '/products/BTC-USD/book?level=%s' %str(level))
+    def getProductOrderBook(self, level=2, product=''):
+        response = requests.get(self.url + '/products/%s/book?level=%s' % (product or self.productId, str(level)))
         return response.json()
 
-    def getProductTicker(self, product='BTC-USD'):
-        response = requests.get(self.url + '/products/%s/ticker' %product)
+    def getProductTicker(self, product=''):
+        response = requests.get(self.url + '/products/%s/ticker' % (product or self.productId))
         return response.json()
 
-    def getProductTrades(self, product='BTC-USD'):
-        response = requests.get(self.url + '/products/%s/trades' %product)
+    def getProductTrades(self, product=''):
+        response = requests.get(self.url + '/products/%s/trades' % (product or self.productId))
         return response.json()
 
-    def getProductHistoricRates(self, product='BTC-USD', start='', end='', granularity=''):
+    def getProductHistoricRates(self, product='', start='', end='', granularity=''):
         payload = {
             "start" : start,
             "end" : end,
             "granularity" : granularity
         }
-        response = requests.get(self.url + '/products/%s/candles' %product, params=payload)
+        response = requests.get(self.url + '/products/%s/candles' % (product or self.productId), params=payload)
         if 'message' in response.json():
-            print "\nERROR:", response.json()['message']
+            print '\nERROR:', response.json()["message"]
         return response.json()
 
-    def getProduct24HrStats(self):
-        response = requests.get(self.url + '/products/BTC-USD/stats')
+    def getProduct24HrStats(self, product=''):
+        response = requests.get(self.url + '/products/%s/stats' % (product or self.productId))
         return response.json()
 
     def getCurrencies(self):
