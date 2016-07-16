@@ -12,17 +12,13 @@ A Python wrapper for the [GDAX Exchange API](https://docs.gdax.com/), formerly k
 - Have an advantage in the market by getting under the hood of GDAX & Coinbase to learn what and who is *really* behind every tick.
 
 ## Under Development
-- Websocket Client **developing**
-- Pagination Support **coming soon**
+- Pagination Support **developing**
 
 ## Getting Started
 This README is only to inform you on the intricacies of the python wrapper presented in this repository.  In order to use it to its full potential, you must familiarize yourself with the official documentation.
 - https://docs.gdax.com/
 
-- Afterwards, download/clone this repository into your active directory and acquire the following dependencies:
-```python
-pip install requests
-```
+- Afterwards, download/clone this repository into your active directory and acquire the [dependencies]('requirements.txt'):
 
 ### Public Client
 Only some endpoints in the API are available to everyone.  Those endpoints can be reached using ```PublicClient```
@@ -90,6 +86,7 @@ publicClient.getTime()
 Not all API endpoints are available to everyone.  Those requiring user authentication can be reached using ```AuthenticatedClient```. You must setup API access within your [account settings](https://www.gdax.com/settings/api).
 
 ```python
+import CoinbaseExchange
 authClient = CoinbaseExchange.AuthenticatedClient(key, b64secret, passphrase)
 # Set a default product
 authClient = CoinbaseExchange.AuthenticatedClient(key, b64secret, passphrase, product_id="ETH-USD")
@@ -178,4 +175,36 @@ withdrawParams = {
         'coinbase_account_id': '536a541fa9393bb3c7000023'
 }
 authClient.withdraw(withdrawParams)
+```
+
+### WebsocketClient
+If you would like to receive real-time market updates, you must subscribe to the [websocket feed](https://docs.gdax.com/#websocket-feed).
+```python
+import CoinbaseExchange
+import time
+# Paramters are optional
+wsClient = CoinbaseExchange.WebsocketClient(ws_url="wss://ws-feed.gdax.com", product_id="BTC-USD")
+# Do other stuff...
+time.sleep(5)
+wsClient.close()
+```
+
+### WebsocketClient Methods
+The ```WebsocketClient``` subscribes in a separate thread upon initialization.  There are three methods which you could overwrite (before initialization) so it can react to the data streaming in.  The current client is a template used for illustration purposes only.
+
+- open - called once, *immediately before* the socket connection is made
+- message - called once for every message that arrives and accepts one argument that contains the message of dict type.
+- closed - called once after the websocket has been closed.
+- close - call this method to close the websocket connection (do not overwrite).
+```python
+class myWebsocketClient(CoinbaseExchange.WebsocketClient):
+        def open(self):
+            print "my own websocket :)"
+        def message(self, msg):
+            print "Message type: ", msg["type"]
+        def closed(self):
+            print "wow that was fast!"
+wsClient = myWebsocketClient()
+time.sleep(5)
+wsClient.close()
 ```
