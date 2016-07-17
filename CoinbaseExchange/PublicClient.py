@@ -34,8 +34,6 @@ class PublicClient():
             "granularity" : granularity
         }
         response = requests.get(self.url + '/products/%s/candles' % (product or self.productId), params=payload)
-        if 'message' in response.json():
-            print '\nERROR:', response.json()["message"]
         return response.json()
 
     def getProduct24HrStats(self, product=''):

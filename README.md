@@ -12,7 +12,8 @@ A Python wrapper for the [GDAX Exchange API](https://docs.gdax.com/), formerly k
 - Have an advantage in the market by getting under the hood of GDAX & Coinbase to learn what and who is *really* behind every tick.
 
 ## Under Development
-- Pagination Support **developing**
+- Pagination Support **testing**
+- Orderbook Data Structure **developing**
 
 ## Getting Started
 This README is only to inform you on the intricacies of the python wrapper presented in this repository.  In order to use it to its full potential, you must familiarize yourself with the official documentation.

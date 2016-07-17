@@ -21,14 +21,40 @@ class AuthenticatedClient():
         return self.getAccount('')
 
     def getAccountHistory(self, accountId):
-        # TODO: Anticipate pagination
+        list = []
         r = requests.get(self.url + '/accounts/%s/ledger' %accountId, auth=self.auth)
-        return r.json()
+        list.append(r.json())
+        if "cb-after" in r.headers:
+            self.historyPagination(accountId, list, r.headers["cb-after"])
+        else:
+            return list
+
+    def historyPagination(self, accountId, list, after):
+        r = requests.get(self.url + '/accounts/%s/ledger?after=%s' %(accountId, str(after)), auth=self.auth)
+        if r.json():
+            list.append(r.json())
+        if "cb-after" in r.headers:
+            self.historyPagination(accountId, list, r.headers["cb-after"])
+        else:
+            return list
 
     def getAccountHolds(self, accountId):
-        #TODO: Anticipate pagination
-        r = requests.get(self.url + '/accounts/%s/holds' % accountId, auth=self.auth)
-        return r.json()
+        list = []
+        r = requests.get(self.url + '/accounts/%s/holds' %accountId, auth=self.auth)
+        list.append(r.json())
+        if "cb-after" in r.headers:
+            self.holdsPagination(accountId, list, r.headers["cb-after"])
+        else:
+            return list
+
+    def holdsPagination(self, accountId, list, after):
+        r = requests.get(self.url + '/accounts/%s/holds?after=%s' %(accountId, str(after)), auth=self.auth)
+        if r.json():
+            list.append(r.json())
+        if "cb-after" in r.headers:
+            self.holdsPagination(accountId, list, r.headers["cb-after"])
+        else:
+            return list
 
     def buy(self, buyParams):
         buyParams["side"] = "buy"
@@ -51,21 +77,49 @@ class AuthenticatedClient():
         return r.json()
 
     def getOrders(self):
-        #TODO: Anticipate pagination
-        return self.getOrder("")
+        list = []
+        r = requests.get(self.url + '/orders/', auth=self.auth)
+        list.append(r.json())
+        if 'cb-after' in r.headers:
+            self.paginateOrders(list, r.headers['cb-after'])
+        else:
+            return list
+
+    def paginateOrders(self, list, after):
+        r = requests.get(self.url + '/orders?after=%s' %str(after))
+        if r.json():
+            list.append(r.json())
+        if 'cb-after' in r.headers:
+            self.paginateOrders(list, r.headers['cb-after'])
+        else:
+            return list
 
     def getFills(self, orderId='', productId='', before='', after='', limit=''):
+        list = []
         url = self.url + '/fills?'
         if orderId: url += "order_id=%s&" %str(orderId)
         if productId: url += "product_id=%s&" %(productId or self.productId)
-
-        # TODO: Allow before, after, limit -- not working
-        """if before: url += "before=%s&" %str(before)
+        if before: url += "before=%s&" %str(before)
         if after: url += "after=%s&" %str(after)
-        if limit: url += "limit=%s&" %str(limit)"""
-
+        if limit: url += "limit=%s&" %str(limit)
         r = requests.get(url, auth=self.auth)
-        return r.json()
+        list.append(r.json())
+        if 'cb-after' in r.headers and limit is not len(r.json()):
+            return self.paginateFills(list, r.headers['cb-after'], orderId=orderId, productId=productId)
+        else:
+            return list
+
+    def paginateFills(self, list, after, orderId='', productId=''):
+        url = self.url + '/fills?after=%s&' % str(after)
+        if orderId: url += "order_id=%s&" % str(orderId)
+        if productId: url += "product_id=%s&" % (productId or self.productId)
+        r = requests.get(url, auth=self.auth)
+        if r.json():
+            list.append(r.json())
+        if 'cb-after' in r.headers:
+            return self.paginateFills(list, r.headers['cb-after'], orderId=orderId, productId=productId)
+        else:
+            return list
 
     def deposit(self, amount="", accountId=""):
         payload = {
