@@ -19,7 +19,7 @@ A Python wrapper for the [GDAX Exchange API](https://docs.gdax.com/), formerly k
 This README is only to inform you on the intricacies of the python wrapper presented in this repository.  In order to use it to its full potential, you must familiarize yourself with the official documentation.
 - https://docs.gdax.com/
 
-- Afterwards, download/clone this repository into your active directory and acquire the [dependencies]('../requirements.txt'):
+- Afterwards, download/clone this repository into your active directory and acquire the [dependencies](requirements.txt):
 
 ### Public Client
 Only some endpoints in the API are available to everyone.  Those endpoints can be reached using ```PublicClient```
