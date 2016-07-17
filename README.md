@@ -12,14 +12,14 @@ A Python wrapper for the [GDAX Exchange API](https://docs.gdax.com/), formerly k
 - Have an advantage in the market by getting under the hood of GDAX & Coinbase to learn what and who is *really* behind every tick.
 
 ## Under Development
-- Pagination Support **testing**
-- Orderbook Data Structure **developing**
+- Order Book Data Structure **developing**
+- Real-time Order Book **upon request**
 
 ## Getting Started
 This README is only to inform you on the intricacies of the python wrapper presented in this repository.  In order to use it to its full potential, you must familiarize yourself with the official documentation.
 - https://docs.gdax.com/
 
-- Afterwards, download/clone this repository into your active directory and acquire the [dependencies]('requirements.txt'):
+- Afterwards, download/clone this repository into your active directory and acquire the [dependencies]('../requirements.txt'):
 
 ### Public Client
 Only some endpoints in the API are available to everyone.  Those endpoints can be reached using ```PublicClient```
@@ -95,6 +95,15 @@ authClient = CoinbaseExchange.AuthenticatedClient(key, b64secret, passphrase, pr
 authClient = CoinbaseExchange.AuthenticatedClient(key, b64secret, passphrase, api_url="https://api-public.sandbox.gdax.com")
 ```
 
+#### Pagination
+Some calls are [paginated](https://docs.gdax.com/#pagination), meaning multiple calls must be made to receive the full set of data.  Each page/request is a list of dict objects that are then appended to a master list, making it easy to navigate pages (e.g. ```request[0]``` would return the first page of data in the example below).
+```python
+request = authClient.getFills(limit=100)
+request[0] # Page 1 always present
+request[1] # Page 2+ present only if the data exists
+```
+It should be noted that limit does not behave exactly as the official documentation specifies.  If you request a limit and that limit is met, additional pages will not be returned.  This is to ensure speedy response times when less data is prefered.
+
 ### AuthenticatedClient Methods
 - [getAccounts](https://docs.gdax.com/#list-accounts)
 ```python
@@ -106,12 +115,12 @@ authClient.getAccounts()
 authClient.getAccount("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 ```
 
-- [getAccountHistory](https://docs.gdax.com/#get-account-history)
+- [getAccountHistory](https://docs.gdax.com/#get-account-history) (paginated)
 ```python
 authClient.getAccountHistory("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 ```
 
-- [getAccountHolds](https://docs.gdax.com/#get-holds)
+- [getAccountHolds](https://docs.gdax.com/#get-holds) (paginated)
 ```python
 authClient.getAccountHolds("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 ```
@@ -141,7 +150,7 @@ authClient.sell(sellParams)
 authClient.cancelOrder("d50ec984-77a8-460a-b958-66f114b0de9b")
 ```
 
-- [getOrders](https://docs.exchange.coinbase.com/#list-orders)
+- [getOrders](https://docs.exchange.coinbase.com/#list-orders) (paginated)
 ```python
 authClient.getOrders()
 ```
@@ -151,7 +160,7 @@ authClient.getOrders()
 authClient.getOrder("d50ec984-77a8-460a-b958-66f114b0de9b")
 ```
 
-- [getFills](https://docs.exchange.coinbase.com/#list-fills)
+- [getFills](https://docs.exchange.coinbase.com/#list-fills) (paginated)
 ```python
 authClient.getFills()
 # Get fills for a specific order
@@ -182,11 +191,9 @@ authClient.withdraw(withdrawParams)
 If you would like to receive real-time market updates, you must subscribe to the [websocket feed](https://docs.gdax.com/#websocket-feed).
 ```python
 import CoinbaseExchange
-import time
 # Paramters are optional
 wsClient = CoinbaseExchange.WebsocketClient(ws_url="wss://ws-feed.gdax.com", product_id="BTC-USD")
 # Do other stuff...
-time.sleep(5)
 wsClient.close()
 ```
 
@@ -198,6 +205,7 @@ The ```WebsocketClient``` subscribes in a separate thread upon initialization.  
 - closed - called once after the websocket has been closed.
 - close - call this method to close the websocket connection (do not overwrite).
 ```python
+import CoinbaseExchange, time
 class myWebsocketClient(CoinbaseExchange.WebsocketClient):
         def open(self):
             print "my own websocket :)"

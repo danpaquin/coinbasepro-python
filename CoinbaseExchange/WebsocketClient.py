@@ -2,10 +2,9 @@
 # CoinbaseExchange/WebsocketClient.py
 # Daniel Paquin
 #
-# Listen to the Coinbase Websocket Feed
-import thread
-import time
-import json
+# Template object to receive messages from the GDAX Websocket Feed
+
+import thread, time, json
 from websocket import create_connection
 
 class WebsocketClient():
