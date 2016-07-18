@@ -1,5 +1,5 @@
 # coinbase-gdax-python
-A Python wrapper for the [GDAX Exchange API](https://docs.gdax.com/), formerly known as the Coinbase Exchange API
+A Python client for the [GDAX API](https://docs.gdax.com/), formerly known as the Coinbase Exchange API
 
 ##### Provided under MIT License by Daniel Paquin.
 *Note: this library may be subtly broken or buggy. The code is released under the MIT License – please take the following message to heart:*
@@ -12,8 +12,8 @@ A Python wrapper for the [GDAX Exchange API](https://docs.gdax.com/), formerly k
 - Have an advantage in the market by getting under the hood of GDAX & Coinbase to learn what and who is *really* behind every tick.
 
 ## Under Development
-- Order Book Data Structure **developing**
-- Real-time Order Book **upon request**
+- FIX API Client **researching potential integration**
+- refactor CoinbaseExchange names to GDAX **next large update**
 
 ## Getting Started
 This README is only to inform you on the intricacies of the python wrapper presented in this repository.  In order to use it to its full potential, you must familiarize yourself with the official documentation.
@@ -95,7 +95,7 @@ authClient = CoinbaseExchange.AuthenticatedClient(key, b64secret, passphrase, pr
 authClient = CoinbaseExchange.AuthenticatedClient(key, b64secret, passphrase, api_url="https://api-public.sandbox.gdax.com")
 ```
 
-#### Pagination
+### Pagination
 Some calls are [paginated](https://docs.gdax.com/#pagination), meaning multiple calls must be made to receive the full set of data.  Each page/request is a list of dict objects that are then appended to a master list, making it easy to navigate pages (e.g. ```request[0]``` would return the first page of data in the example below).
 ```python
 request = authClient.getFills(limit=100)
@@ -217,3 +217,11 @@ wsClient = myWebsocketClient()
 time.sleep(5)
 wsClient.close()
 ```
+
+### Recommended Additions
+The following projects are suggested to improve the functionality of this project.  Please use them at your own risk as I will not take responsibility for the functionality of any of the following projects:
+
+- [**danielktaylor/PyLimitBook**](https://github.com/danielktaylor/PyLimitBook)
+   *Python implementation of fast limit-order book.*
+- [**PierreRochard/coinbase-exchange-order-book**](https://github.com/PierreRochard/coinbase-exchange-order-book)
+    *Real-time Coinbase Exchange order book + basic market maker bot (Python3)*
