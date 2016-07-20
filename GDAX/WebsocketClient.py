@@ -1,5 +1,5 @@
 #
-# CoinbaseExchange/WebsocketClient.py
+# GDAX/WebsocketClient.py
 # Daniel Paquin
 #
 # Template object to receive messages from the GDAX Websocket Feed

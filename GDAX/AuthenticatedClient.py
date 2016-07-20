@@ -1,17 +1,18 @@
 #
-# CoinbaseExchange/AuthenticatedClient.py
+# GDAX/AuthenticatedClient.py
 # Daniel Paquin
 #
 # For authenticated requests to the GDAX exchange
 
 import hmac, hashlib, time, requests, base64
 from requests.auth import AuthBase
+from PublicClient import PublicClient
 
-class AuthenticatedClient():
+class AuthenticatedClient(PublicClient):
     def __init__(self, key, b64secret, passphrase, api_url="https://api.gdax.com", product_id="BTC-USD"):
         self.url = api_url
         self.productId = product_id
-        self.auth = CoinbaseExchangeAuth(key, b64secret, passphrase)
+        self.auth = GdaxAuth(key, b64secret, passphrase)
 
     def getAccount(self, accountId):
         r = requests.get(self.url + '/accounts/' + accountId, auth=self.auth)
@@ -26,8 +27,7 @@ class AuthenticatedClient():
         list.append(r.json())
         if "cb-after" in r.headers:
             self.historyPagination(accountId, list, r.headers["cb-after"])
-        else:
-            return list
+        return list
 
     def historyPagination(self, accountId, list, after):
         r = requests.get(self.url + '/accounts/%s/ledger?after=%s' %(accountId, str(after)), auth=self.auth)
@@ -35,8 +35,7 @@ class AuthenticatedClient():
             list.append(r.json())
         if "cb-after" in r.headers:
             self.historyPagination(accountId, list, r.headers["cb-after"])
-        else:
-            return list
+        return list
 
     def getAccountHolds(self, accountId):
         list = []
@@ -44,8 +43,7 @@ class AuthenticatedClient():
         list.append(r.json())
         if "cb-after" in r.headers:
             self.holdsPagination(accountId, list, r.headers["cb-after"])
-        else:
-            return list
+        return list
 
     def holdsPagination(self, accountId, list, after):
         r = requests.get(self.url + '/accounts/%s/holds?after=%s' %(accountId, str(after)), auth=self.auth)
@@ -53,8 +51,7 @@ class AuthenticatedClient():
             list.append(r.json())
         if "cb-after" in r.headers:
             self.holdsPagination(accountId, list, r.headers["cb-after"])
-        else:
-            return list
+        return list
 
     def buy(self, buyParams):
         buyParams["side"] = "buy"
@@ -82,8 +79,7 @@ class AuthenticatedClient():
         list.append(r.json())
         if 'cb-after' in r.headers:
             self.paginateOrders(list, r.headers['cb-after'])
-        else:
-            return list
+        return list
 
     def paginateOrders(self, list, after):
         r = requests.get(self.url + '/orders?after=%s' %str(after))
@@ -91,8 +87,7 @@ class AuthenticatedClient():
             list.append(r.json())
         if 'cb-after' in r.headers:
             self.paginateOrders(list, r.headers['cb-after'])
-        else:
-            return list
+        return list
 
     def getFills(self, orderId='', productId='', before='', after='', limit=''):
         list = []
@@ -106,8 +101,7 @@ class AuthenticatedClient():
         list.append(r.json())
         if 'cb-after' in r.headers and limit is not len(r.json()):
             return self.paginateFills(list, r.headers['cb-after'], orderId=orderId, productId=productId)
-        else:
-            return list
+        return list
 
     def paginateFills(self, list, after, orderId='', productId=''):
         url = self.url + '/fills?after=%s&' % str(after)
@@ -118,8 +112,7 @@ class AuthenticatedClient():
             list.append(r.json())
         if 'cb-after' in r.headers:
             return self.paginateFills(list, r.headers['cb-after'], orderId=orderId, productId=productId)
-        else:
-            return list
+        return list
 
     def deposit(self, amount="", accountId=""):
         payload = {
@@ -139,7 +132,7 @@ class AuthenticatedClient():
         r = requests.post(self.url + "/transfers", json=payload, auth=self.auth)
         return r.json()
 
-class CoinbaseExchangeAuth(AuthBase):
+class GdaxAuth(AuthBase):
     # Provided by Coinbase: https://docs.gdax.com/#signing-a-message
     def __init__(self, api_key, secret_key, passphrase):
         self.api_key = api_key

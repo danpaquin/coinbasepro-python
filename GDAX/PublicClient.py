@@ -1,5 +1,5 @@
 #
-# CoinbaseExchange/PublicClient.py
+# GDAX/PublicClient.py
 # Daniel Paquin
 #
 # For public requests to the GDAX exchange

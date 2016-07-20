@@ -1,5 +1,5 @@
 # coinbase-gdax-python
-A Python client for the [GDAX API](https://docs.gdax.com/), formerly known as the Coinbase Exchange API
+A Python client for the [GDAX API](https://docs.gdax.com/) (formerly known as the Coinbase Exchange API)
 
 ##### Provided under MIT License by Daniel Paquin.
 *Note: this library may be subtly broken or buggy. The code is released under the MIT License – please take the following message to heart:*
@@ -9,26 +9,29 @@ A Python client for the [GDAX API](https://docs.gdax.com/), formerly known as th
 - A simple to use python wrapper for both public and authenticated endpoints.
 - In about 10 minutes, you could be programmatically trading on one of the largest Bitcoin exchanges in the *world*!
 - Do not worry about handling the nuances of the API with easy-to-use methods for every API endpoint.
-- Have an advantage in the market by getting under the hood of GDAX & Coinbase to learn what and who is *really* behind every tick.
+- Have an advantage in the market by getting under the hood of GDAX to learn what and who is *really* behind every tick.
 
 ## Under Development
-- FIX API Client **researching potential integration**
-- refactor CoinbaseExchange names to GDAX **next large update**
+- FIX API Client **researching**
 
 ## Getting Started
 This README is only to inform you on the intricacies of the python wrapper presented in this repository.  In order to use it to its full potential, you must familiarize yourself with the official documentation.
+
 - https://docs.gdax.com/
 
 - Afterwards, download/clone this repository into your active directory and acquire the [dependencies](requirements.txt):
+```python
+pip install -r requirements.txt 
+```
 
 ### Public Client
 Only some endpoints in the API are available to everyone.  Those endpoints can be reached using ```PublicClient```
 
 ```python
-import CoinbaseExchange
-publicClient = CoinbaseExchange.PublicClient()
+import GDAX
+publicClient = GDAX.PublicClient()
 # Set a default product
-publicClient = CoinbaseExchange.PublicClient(product_id="ETH-USD")
+publicClient = GDAX.PublicClient(product_id="ETH-USD")
 ```
 
 ### PublicClient Methods
@@ -84,19 +87,19 @@ publicClient.getTime()
 ```
 
 ### Authenticated Client
-Not all API endpoints are available to everyone.  Those requiring user authentication can be reached using ```AuthenticatedClient```. You must setup API access within your [account settings](https://www.gdax.com/settings/api).
+Not all API endpoints are available to everyone.  Those requiring user authentication can be reached using ```AuthenticatedClient```. You must setup API access within your [account settings](https://www.gdax.com/settings/api). The ```AuthenticatedClient``` inherits all methods from the ```PrivateClient``` class, so you will only need to initialize one if you are planning to integrate both into your script.
 
 ```python
-import CoinbaseExchange
-authClient = CoinbaseExchange.AuthenticatedClient(key, b64secret, passphrase)
+import GDAX
+authClient = GDAX.AuthenticatedClient(key, b64secret, passphrase)
 # Set a default product
-authClient = CoinbaseExchange.AuthenticatedClient(key, b64secret, passphrase, product_id="ETH-USD")
+authClient = GDAX.AuthenticatedClient(key, b64secret, passphrase, product_id="ETH-USD")
 # Use the sandbox API (requires a different set of API access crudentials)
-authClient = CoinbaseExchange.AuthenticatedClient(key, b64secret, passphrase, api_url="https://api-public.sandbox.gdax.com")
+authClient = GDAX.AuthenticatedClient(key, b64secret, passphrase, api_url="https://api-public.sandbox.gdax.com")
 ```
 
 ### Pagination
-Some calls are [paginated](https://docs.gdax.com/#pagination), meaning multiple calls must be made to receive the full set of data.  Each page/request is a list of dict objects that are then appended to a master list, making it easy to navigate pages (e.g. ```request[0]``` would return the first page of data in the example below).
+Some calls are [paginated](https://docs.gdax.com/#pagination), meaning multiple calls must be made to receive the full set of data.  Each page/request is a list of dict objects that are then appended to a master list, making it easy to navigate pages (e.g. ```request[0]``` would return the first page of data in the example below). *This feature is under consideration for redesign.  Please provide feedback if you have issues or suggestions*
 ```python
 request = authClient.getFills(limit=100)
 request[0] # Page 1 always present
@@ -190,9 +193,9 @@ authClient.withdraw(withdrawParams)
 ### WebsocketClient
 If you would like to receive real-time market updates, you must subscribe to the [websocket feed](https://docs.gdax.com/#websocket-feed).
 ```python
-import CoinbaseExchange
+import GDAX
 # Paramters are optional
-wsClient = CoinbaseExchange.WebsocketClient(ws_url="wss://ws-feed.gdax.com", product_id="BTC-USD")
+wsClient = GDAX.WebsocketClient(ws_url="wss://ws-feed.gdax.com", product_id="BTC-USD")
 # Do other stuff...
 wsClient.close()
 ```
@@ -205,8 +208,8 @@ The ```WebsocketClient``` subscribes in a separate thread upon initialization.  
 - closed - called once after the websocket has been closed.
 - close - call this method to close the websocket connection (do not overwrite).
 ```python
-import CoinbaseExchange, time
-class myWebsocketClient(CoinbaseExchange.WebsocketClient):
+import GDAX, time
+class myWebsocketClient(GDAX.WebsocketClient):
         def open(self):
             print "my own websocket :)"
         def message(self, msg):
