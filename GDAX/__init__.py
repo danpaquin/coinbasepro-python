@@ -1,3 +1,3 @@
-from AuthenticatedClient import AuthenticatedClient
-from PublicClient import PublicClient
-from WebsocketClient import WebsocketClient
+from GDAX.AuthenticatedClient import AuthenticatedClient
+from GDAX.PublicClient import PublicClient
+from GDAX.WebsocketClient import WebsocketClient
