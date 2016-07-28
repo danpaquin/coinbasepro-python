@@ -4,14 +4,18 @@
 #
 # Template object to receive messages from the GDAX Websocket Feed
 
-import thread, time, json
-from websocket import create_connection
+import json
+from   threading import Thread
+import time
+from   websocket import create_connection
 
 class WebsocketClient():
     def __init__(self, ws_url="wss://ws-feed.gdax.com", product_id="BTC-USD"):
+        self.stop = False
         self.url = ws_url
         self.product_id = product_id
-        thread.start_new_thread(self.setup, ())
+        self.thread = Thread(target=self.setup)
+        self.thread.start()
 
     def setup(self):
         self.open()
@@ -21,10 +25,10 @@ class WebsocketClient():
         self.listen()
 
     def open(self):
-        print "-- Subscribed! --"
+        print("-- Subscribed! --")
 
     def listen(self):
-        while True:
+        while not self.stop:
             try:
                 msg = json.loads(self.ws.recv())
             except Exception as e:
@@ -34,17 +38,21 @@ class WebsocketClient():
                 self.message(msg)
 
     def message(self, msg):
-        print msg
+        print(msg)
 
     def close(self):
         self.ws.close()
         self.closed()
 
     def closed(self):
-        print "Socket Closed"
+        print("Socket Closed")
 
 if __name__ == "__main__":
     newWS = WebsocketClient() # Runs in a separate thread
-    # Do other stuff...
-    time.sleep(5)
+    try:
+      while True:
+        time.sleep(0.1)
+    except KeyboardInterrupt:
+      newWS.stop = True
+      newWS.thread.join()
     newWS.close()

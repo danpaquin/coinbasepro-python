@@ -6,7 +6,7 @@
 
 import hmac, hashlib, time, requests, base64
 from requests.auth import AuthBase
-from PublicClient import PublicClient
+from GDAX.PublicClient import PublicClient
 
 class AuthenticatedClient(PublicClient):
     def __init__(self, key, b64secret, passphrase, api_url="https://api.gdax.com", product_id="BTC-USD"):
