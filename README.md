@@ -12,6 +12,7 @@ A Python client for the [GDAX API](https://docs.gdax.com/) (formerly known as th
 - Have an advantage in the market by getting under the hood of GDAX to learn what and who is *really* behind every tick.
 
 ## Under Development
+- Bug Fixing **please report**
 - FIX API Client **researching**
 
 ## Getting Started
@@ -19,9 +20,9 @@ This README is only to inform you on the intricacies of the python wrapper prese
 
 - https://docs.gdax.com/
 
-- Afterwards, download/clone this repository into your active directory and acquire the [dependencies](requirements.txt):
+- Afterwards, manually install the project or use ```pip```:
 ```python
-pip install -r requirements.txt 
+pip install GDAX
 ```
 
 ### Public Client
