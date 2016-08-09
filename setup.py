@@ -9,7 +9,7 @@ install_requires = [
 
 setup(
     name = 'GDAX',
-    version = '0.1.0b1',
+    version = '0.1.1b2',
     author = 'Daniel Paquin',
     author_email = 'dpaq34@gmail.com',
     license='MIT',
