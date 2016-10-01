@@ -20,7 +20,11 @@ class WebsocketClient():
     def setup(self):
         self.open()
         self.ws = create_connection(self.url)
-        subParams = json.dumps({"type": "subscribe", "product_id": self.product_id})
+        if type(self.product_id) is list:
+            #product_ids - plural for multiple products
+            subParams = json.dumps({"type": "subscribe", "product_ids": self.product_id})
+        else:
+            subParams = json.dumps({"type": "subscribe", "product_id": self.product_id})
         self.ws.send(subParams)
         self.listen()
 
