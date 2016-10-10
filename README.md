@@ -203,7 +203,7 @@ wsClient = GDAX.WebsocketClient(ws_url="wss://ws-feed.gdax.com", product_id="BTC
 wsClient.close()
 ```
 
-#### Subscribe to a multiple product
+#### Subscribe to multiple products
 ```python
 import GDAX
 # Paramters are optional
