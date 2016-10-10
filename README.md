@@ -193,10 +193,21 @@ authClient.withdraw(withdrawParams)
 
 ### WebsocketClient
 If you would like to receive real-time market updates, you must subscribe to the [websocket feed](https://docs.gdax.com/#websocket-feed).
+
+#### Subscribe to a single product
 ```python
 import GDAX
 # Paramters are optional
 wsClient = GDAX.WebsocketClient(ws_url="wss://ws-feed.gdax.com", product_id="BTC-USD")
+# Do other stuff...
+wsClient.close()
+```
+
+#### Subscribe to a multiple product
+```python
+import GDAX
+# Paramters are optional
+wsClient = GDAX.WebsocketClient(ws_url="wss://ws-feed.gdax.com", product_id=["BTC-USD", "ETH-USD"])
 # Do other stuff...
 wsClient.close()
 ```
