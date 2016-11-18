@@ -22,6 +22,7 @@ A Python client for the [GDAX API](https://docs.gdax.com/) (formerly known as th
 - Updated JSON handling for increased compatibility among some users
 - Added support for payment methods, reports, and coinbase user accounts
 - Other compatibility updates
+
 *0.1.1b2 **Current PyPI release***
 - Original PyPI Release
 
