@@ -11,12 +11,22 @@ A Python client for the [GDAX API](https://docs.gdax.com/) (formerly known as th
 - Do not worry about handling the nuances of the API with easy-to-use methods for every API endpoint.
 - Have an advantage in the market by getting under the hood of GDAX to learn what and who is *really* behind every tick.
 
+
 ## Under Development
-- Bug Fixing **please report**
+- Test Scripts **looking for help**
+- Additional Functionality for *AuthenticatedClient.py* (including support for all order types)
 - FIX API Client **researching**
 
+## Change Log
+*0.1.2*
+- Updated JSON handling for increased compatibility among some users
+- Added support for payment methods, reports, and coinbase user accounts
+- Other compatibility updates
+*0.1.1b2 **Current PyPI release***
+- Original PyPI Release
+
 ## Getting Started
-This README is only to inform you on the intricacies of the python wrapper presented in this repository.  In order to use it to its full potential, you must familiarize yourself with the official documentation.
+This README is only to inform you on the intricacies of the python wrapper presented in this repository.  **In order to use this wrapper to its full potential, you must familiarize yourself with the official documentation.**
 
 - https://docs.gdax.com/
 

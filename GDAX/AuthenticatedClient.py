@@ -4,13 +4,16 @@
 #
 # For authenticated requests to the GDAX exchange
 
-import hmac, hashlib, time, requests, base64
+import hmac, hashlib, time, requests, base64, json
 from requests.auth import AuthBase
 from GDAX.PublicClient import PublicClient
 
 class AuthenticatedClient(PublicClient):
     def __init__(self, key, b64secret, passphrase, api_url="https://api.gdax.com", product_id="BTC-USD"):
-        self.url = api_url
+        if api_url[-1] == "/":
+            self.url = api_url[:-1]
+        else:
+            self.url = api_url
         self.productId = product_id
         self.auth = GdaxAuth(key, b64secret, passphrase)
 
@@ -57,12 +60,12 @@ class AuthenticatedClient(PublicClient):
         buyParams["side"] = "buy"
         if not buyParams["product_id"]:
             buyParams["product_id"] = self.productId
-        r = requests.post(self.url + '/orders', json=buyParams, auth=self.auth)
+        r = requests.post(self.url + '/orders', data=json.dumps(buyParams), auth=self.auth)
         return r.json()
 
     def sell(self, sellParams):
         sellParams["side"] = "sell"
-        r = requests.post(self.url + '/orders', json=sellParams, auth=self.auth)
+        r = requests.post(self.url + '/orders', data=json.dumps(sellParams), auth=self.auth)
         return r.json()
 
     def cancelOrder(self, orderId):
@@ -120,7 +123,7 @@ class AuthenticatedClient(PublicClient):
             "amount": amount,
             "accountId": accountId
         }
-        r = requests.post(self.url + "/transfers", json=payload, auth=self.auth)
+        r = requests.post(self.url + "/transfers", data=json.dumps(payload), auth=self.auth)
         return r.json()
 
     def withdraw(self, amount="", accountId=""):
@@ -129,7 +132,36 @@ class AuthenticatedClient(PublicClient):
             "amount": amount,
             "accountId": accountId
         }
-        r = requests.post(self.url + "/transfers", json=payload, auth=self.auth)
+        r = requests.post(self.url + "/transfers", data=json.dumps(payload), auth=self.auth)
+        return r.json()
+
+    def getPaymentMethods(self):
+        r = requests.get(self.url + "/payment-methods", auth=self.auth)
+        return r.json()
+
+    def getCoinbaseAccounts(self):
+        r = requests.get(self.url + "/coinbase-accounts", auth=self.auth)
+        return r.json()
+
+    def createReport(self, type="", start_date="", end_date="", product_id="", account_id="", format="", email=""):
+        payload = {
+            "type": type,
+            "start_date": start_date,
+            "end_date": end_date,
+            "product_id": product_id,
+            "account_id": account_id,
+            "format": format,
+            "email": email
+        }
+        r = requests.post(self.url + "/reports", data=json.dumps(payload), auth=self.auth)
+        return r.json()
+
+    def getReport(self, reportId=""):
+        r = requests.get(self.url + "/reports/" + reportId, auth=self.auth)
+        return r.json()
+
+    def getTrailingVolume(self):
+        r = requests.get(self.url + "/users/self/trailing-volume", auth=self.auth)
         return r.json()
 
 class GdaxAuth(AuthBase):
@@ -147,9 +179,10 @@ class GdaxAuth(AuthBase):
         signature = hmac.new(hmac_key, message, hashlib.sha256)
         signature_b64 = base64.b64encode(signature.digest())
         request.headers.update({
+            'Content-Type': 'Application/JSON',
             'CB-ACCESS-SIGN': signature_b64,
             'CB-ACCESS-TIMESTAMP': timestamp,
             'CB-ACCESS-KEY': self.api_key,
-            'CB-ACCESS-PASSPHRASE': self.passphrase,
+            'CB-ACCESS-PASSPHRASE': self.passphrase
         })
         return request

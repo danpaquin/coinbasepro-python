@@ -4,15 +4,17 @@
 #
 # Template object to receive messages from the GDAX Websocket Feed
 
-import json
+import json, time
 from   threading import Thread
-import time
 from   websocket import create_connection
 
 class WebsocketClient():
-    def __init__(self, ws_url="wss://ws-feed.gdax.com", product_id="BTC-USD"):
+    def __init__(self, ws_url="wss://ws-feed-public.sandbox.gdax.com", product_id="BTC-USD"):
+        if ws_url[-1] == "/":
+            self.url = ws_url[:-1]
+        else:
+            self.url = ws_url
         self.stop = False
-        self.url = ws_url
         self.product_id = product_id
         self.thread = Thread(target=self.setup)
         self.thread.start()
