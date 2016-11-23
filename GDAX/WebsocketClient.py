@@ -8,19 +8,24 @@ import json, time
 from   threading import Thread
 from   websocket import create_connection
 
-class WebsocketClient():
+class WebsocketClient(object):
     def __init__(self, ws_url="wss://ws-feed-public.sandbox.gdax.com", product_id="BTC-USD"):
         if ws_url[-1] == "/":
             self.url = ws_url[:-1]
         else:
             self.url = ws_url
-        self.stop = False
         self.product_id = product_id
-        self.thread = Thread(target=self.setup)
+
+        def go():
+            self.connect()
+            self.listen()
+
+        self.thread = Thread(target=go)
         self.thread.start()
 
-    def setup(self):
+    def connect(self):
         self.open()
+        self.stop = False
         self.ws = create_connection(self.url)
         if type(self.product_id) is list:
             #product_ids - plural for multiple products
@@ -28,7 +33,6 @@ class WebsocketClient():
         else:
             subParams = json.dumps({"type": "subscribe", "product_id": self.product_id})
         self.ws.send(subParams)
-        self.listen()
 
     def open(self):
         print("-- Subscribed! --")
@@ -38,16 +42,21 @@ class WebsocketClient():
             try:
                 msg = json.loads(self.ws.recv())
             except Exception as e:
-                #print e
-                break
+                self.on_error(e)
             else:
                 self.message(msg)
+
+    def on_error(self, e):
+        self.close()
 
     def message(self, msg):
         print(msg)
 
     def close(self):
-        self.ws.close()
+        self.stop = True
+        if self.ws and self.ws.connected:
+            self.ws.close()
+        self.ws = None
         self.closed()
 
     def closed(self):
