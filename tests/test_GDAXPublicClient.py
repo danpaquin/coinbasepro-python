@@ -30,8 +30,8 @@ class TestGDAXPublicClient(unittest.TestCase):
         self.assertEquals(self.GDAX.productId, TEST_PRODUCT_ID)
 
     def test_PublicClientInitWrongProductID(self):
-        eurProductIdClient = PublicClient(product_id="BTC-EUR")
-        self.assertNotEquals(self.GDAX, eurProductIdClient)
+        eur_product_client = PublicClient(product_id="BTC-EUR")
+        self.assertNotEquals(self.GDAX, eur_product_client)
 
     @my_vcr.use_cassette()
     def test_getProducts(self):
@@ -183,6 +183,18 @@ class TestGDAXPublicClient(unittest.TestCase):
 
         self.assertEqual(results[0], correct_top_one)
         self.assertEqual(len(results), 13)
+
+    @my_vcr.use_cassette()
+    def test_getProduct24HrStats(self):
+        correct = { u"high":    u"911.14000000",
+                    u"last":    u"896.07000000",
+                    u"low":     u"802.07000000",
+                    u"open":    u"893.63000000",
+                    u"volume":  u"12133.46704037",
+                    u"volume_30day": u"220351.04630033"
+                   }
+        results = self.GDAX.getProduct24HrStats(product=TEST_PRODUCT_ID)
+        self.assertEqual(results, correct)
 
 if __name__ == '__main__':
     unittest.main()
