@@ -130,5 +130,12 @@ class TestGDAXPublicClient(unittest.TestCase):
         results = self.GDAX.getProductTicker(product=BAD_TEST_PRODUCT_ID)
         self.assertEqual(results['message'], "NotFound")
 
+    @my_vcr.use_cassette()
+    def test_getProductTrades(self):
+        correct_top_one = {u'trade_id': 12503748, u'size': u'0.00816557', u'side': u'sell', u'price': u'900.81000000', u'time': u'2017-01-07T18:46:40.988Z'}
+        results = self.GDAX.getProductTrades(product=TEST_PRODUCT_ID)
+        self.assertEqual(results[0], correct_top_one)
+
+
 if __name__ == '__main__':
     unittest.main()
