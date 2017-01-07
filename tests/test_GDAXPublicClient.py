@@ -201,5 +201,18 @@ class TestGDAXPublicClient(unittest.TestCase):
         results = self.GDAX.getProduct24HrStats(product=BAD_TEST_PRODUCT_ID)
         self.assertEqual(results['message'], "NotFound")
 
+    @my_vcr.use_cassette()
+    def test_getCurrencies(self):
+        correct = [
+                    {u'min_size': u'0.00000001', u'id': u'BTC', u'name': u'Bitcoin'},
+                    {u'min_size': u'0.00000100', u'id': u'ETH', u'name': u'Ether'},
+                    {u'min_size': u'0.01000000', u'id': u'EUR', u'name': u'Euro'},
+                    {u'min_size': u'0.00000001', u'id': u'LTC', u'name': u'Litecoin'},
+                    {u'min_size': u'0.01000000', u'id': u'GBP', u'name': u'British Pound'},
+                    {u'min_size': u'0.01000000', u'id': u'USD', u'name': u'United States Dollar'}
+                   ]
+        results = self.GDAX.getCurrencies()
+        self.assertEqual(results, correct)
+
 if __name__ == '__main__':
     unittest.main()
