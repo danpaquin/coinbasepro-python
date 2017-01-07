@@ -52,7 +52,7 @@ class TestGDAXPublicClient(unittest.TestCase):
         test_depth = 1
 
         #Results from run on Jan 7, 2017
-        correct_sequence = 1974627815
+        correct_sequence = 1974671651
         results = self.GDAX.getProductOrderBook(level=test_depth, product=TEST_PRODUCT_ID)
         self.assertEqual(results['sequence'], correct_sequence)
 
@@ -62,7 +62,7 @@ class TestGDAXPublicClient(unittest.TestCase):
         test_depth = 2
 
         #Results from direct browser run on Jan 7, 2017
-        correct_sequence = 1974769472
+        correct_sequence = 1974823003
         results = self.GDAX.getProductOrderBook(level=test_depth, product=TEST_PRODUCT_ID)
         self.assertEqual(results['sequence'], correct_sequence)
 
@@ -72,7 +72,7 @@ class TestGDAXPublicClient(unittest.TestCase):
         test_depth = 3
 
         #Results from direct browser run on Jan 7, 2017
-        correct_sequence = 1974771030
+        correct_sequence = 1974823009
         results = self.GDAX.getProductOrderBook(level=test_depth, product=TEST_PRODUCT_ID)
         self.assertEqual(results['sequence'], correct_sequence)
 
@@ -93,6 +93,19 @@ class TestGDAXPublicClient(unittest.TestCase):
 
         results = self.GDAX.getProductOrderBook(level=test_depth, product="BTC-USR")
         self.assertEqual(results['message'], "NotFound")
+
+    @my_vcr.use_cassette()
+    def test_getProductTicker(self):
+        correct = {u"ask":u"905.99",
+                   u"bid":u"905.98",
+                   u"price": u"905.99000000",
+                   u"size":u"0.70384000",
+                   u"time":u"2017-01-07T18:06:01.618000Z",
+                   u"trade_id":12502526,
+                   u"volume":u"12904.32111369"
+                   }
+        results = self.GDAX.getProductTicker(product=TEST_PRODUCT_ID)
+        self.assertEqual(results, correct)
 
 if __name__ == '__main__':
     unittest.main()
