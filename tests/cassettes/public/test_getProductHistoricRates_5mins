@@ -1,0 +1,39 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      User-Agent: [python-requests/2.5.1 CPython/2.7.12 Darwin/15.6.0]
+    method: GET
+    uri: https://api.gdax.com/products/BTC-USD/candles?start=&end=&granularity=300
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA1ySa44EIQiEL2QIb4qzbPb+19iI4/Ts+KNLDJ9Fgz8/4jBIKvNqdmIZifl6XxEQ
+        t5dA83e9mOhhmFonreNTvJcqWXE0W/Beqg+bzAsdFH4hdJPKjSyoqjVgg7I9qB10NSs9MvjypNas
+        yjyW8mD8qpZfCEY47wUiFOaSaOm9UG/WayxBehpi8URC8GUgE2RCv6t1H7Qo7DL/I3Gq0FJ36+P7
+        sDJsUuVkjyRBzhW6xIirzT31sG/UMOgUN8xnoLlUaP8VTPy74j2sBST5tnPifkSosAAyBhvUvqZq
+        OmjQboyRTHtk8K5VTdHeHIkZTbw5vS8Jvlr2Ns9k50QUtN9QsckYfoDJJ5v1QDWSeg+TKsxDBLe5
+        v38AAAD//wMAqh7pOvMCAAA=
+    headers:
+      access-control-allow-headers: ['Content-Type, Accept, cb-session']
+      access-control-allow-methods: ['GET,POST,DELETE,PUT']
+      access-control-allow-origin: ['*']
+      access-control-expose-headers: ['cb-before, cb-after']
+      access-control-max-age: ['7200']
+      cache-control: ['public, max-age=1']
+      cf-ray: [31d9b7dd3bf2587f-DFW]
+      connection: [keep-alive]
+      content-encoding: [gzip]
+      content-type: [application/json; charset=utf-8]
+      date: ['Sat, 07 Jan 2017 19:11:55 GMT']
+      etag: [W/"2f3-9JzIxYJe+TT0mnM6Vrdang"]
+      server: [cloudflare-nginx]
+      set-cookie: ['__cfduid=df0cb9e11ff8270149c832f507d2504f01483816314; expires=Sun,
+          07-Jan-18 19:11:54 GMT; path=/; domain=.gdax.com; HttpOnly']
+      strict-transport-security: [max-age=15552000; includeSubDomains; preload]
+      x-content-type-options: [nosniff]
+    status: {code: 200, message: OK}
+version: 1

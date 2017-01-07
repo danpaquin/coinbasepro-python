@@ -1,0 +1,52 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      User-Agent: [python-requests/2.5.1 CPython/2.7.12 Darwin/15.6.0]
+    method: GET
+    uri: https://api.gdax.com/products/BTC-USD/trades
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA7zay24sNRAG4HfpdY5V97L7OViBEAKSRaSDhM5lAYh3R9MgoJ3StD2xnWVLoy/l
+        y2+33d/9sX15/eVl2zcC9A+AH8C/wbyL7QKp5Pzt9rR9+fTj88sPr8/bjqTALvlp+/XT68+3nxWA
+        lBGOv+1p+/z6++0pJICMpurHs+fbs88vHz9ufz49BPoZ/Mc7g///J9pAxmRKIWj/gbmU5KUGKZGy
+        0wn86etvj3p6LhCaCnyHJ5UX9SAP9Ljy+K136tT3elR58rb/cn99kCDm8HpCcEGyIqVjfAImLxyC
+        cAViApGci8oQkMsZdA8GDHXPwDtglTE2HawyxqBlSrwHtDOoHIGUx4HaALqVcWCVMlSGxPYdsIoZ
+        0tmDhqYsTHdAbAjuoSBcrUy3n2ZXZBsCUjkvvUXeVkgwsELKZzDnoElvzwoOAr0CZXIfUr2bwcnT
+        gvQMms2uUFpA1XEgn0GdXiGdQZmdpYQVOH2Uwhmk2Ss+lgZwZIVYJQ3NHjToq0FbDepqUFaDvBqk
+        1SCuBmExCGU1uDppYHXSwOqkgSpp0Ca/roE0gCNf16BKmukvM1AlDegAUI9jofgcEU5Jk1OJNlFA
+        YE5lDAgVmAfsae6AVspqMK8GfTVoq0FdDcpqkFeDVIE4G8QGEEeCVdJ4mQzmshrMq0FfDVZJ49GK
+        L4RZzceAVdL47FGaq6TRN6AkJT7ObceAVdLI9D6skiY8885/H2qOAbEBLJnNQTpAsCQgIQjXICoh
+        U7EhoJdrUFkLqXaBmIzCJvV8DQr4cYHYDMrRh2gh6NdgUTmmZwdIOYFpCFrDoKFSbldEPSAnYwrB
+        KmkoBxeWnRfAh6fxrHBpKTAroEhHgahJc9yFfA2ydgaNHIMUPQSpZZAydoG8qyWkeBpeBg0lVj6i
+        bQzYEDTdN7L3QLsMGkyIBtYHMibNGIINQcNImPtA5OQczntrCBrS7ia9jVKIK2wKGj5OMZpB2rUk
+        KqGnDQX23h7SzpJcOQTlKtge2GDQsVbEXkvOCGUf5dF1fQoD68PF7QlrPa0zxiZ7VcSATPaqhIm+
+        9HrAI0nZwp2FVgkTfRFBxOJs3LqzuOtVCXM6Nvh3+2tKxt7hYUIKNxZaBUz0aSCzFO1rUKSEHq6C
+        yldgtFW7BMFSlrhCaqjwARCTh4ug4rWHDqVrmcddKRnEcwImFIi7SNLwYN2kPA5+/xcAAAD//wMA
+        ULThZhMsAAA=
+    headers:
+      access-control-allow-headers: ['Content-Type, Accept, cb-session']
+      access-control-allow-methods: ['GET,POST,DELETE,PUT']
+      access-control-allow-origin: ['*']
+      access-control-expose-headers: ['cb-before, cb-after']
+      access-control-max-age: ['7200']
+      cache-control: ['public, max-age=1']
+      cb-after: ['12503649']
+      cb-before: ['12503748']
+      cf-ray: [31d992ef4a9958d9-DFW]
+      connection: [keep-alive]
+      content-encoding: [gzip]
+      content-type: [application/json; charset=utf-8]
+      date: ['Sat, 07 Jan 2017 18:46:41 GMT']
+      etag: [W/"2c13-ki5YCTBH11gvzD3v2t/YaQ"]
+      server: [cloudflare-nginx]
+      set-cookie: ['__cfduid=db71425c6354d5e09a4800243ef5138b21483814801; expires=Sun,
+          07-Jan-18 18:46:41 GMT; path=/; domain=.gdax.com; HttpOnly']
+      strict-transport-security: [max-age=15552000; includeSubDomains; preload]
+      x-content-type-options: [nosniff]
+    status: {code: 200, message: OK}
+version: 1
