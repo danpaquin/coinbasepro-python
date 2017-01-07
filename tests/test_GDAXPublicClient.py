@@ -51,10 +51,29 @@ class TestGDAXPublicClient(unittest.TestCase):
         #test for first level depth
         test_depth = 1
 
-        #Results from direct browser run on Jan 7, 2017
+        #Results from run on Jan 7, 2017
         correct_sequence = 1974627815
-        results = self.GDAX.getProductOrderBook(level=test_depth,\
-                                                       product=TEST_PRODUCT_ID)
+        results = self.GDAX.getProductOrderBook(level=test_depth, product=TEST_PRODUCT_ID)
+        self.assertEqual(results['sequence'], correct_sequence)
+
+    @my_vcr.use_cassette()
+    def test_getProductOrderBook_level_2(self):
+        #test for second level depth
+        test_depth = 2
+
+        #Results from direct browser run on Jan 7, 2017
+        correct_sequence = 1974769472
+        results = self.GDAX.getProductOrderBook(level=test_depth, product=TEST_PRODUCT_ID)
+        self.assertEqual(results['sequence'], correct_sequence)
+
+    @my_vcr.use_cassette()
+    def test_getProductOrderBook_level_3(self):
+        #test for second level depth
+        test_depth = 3
+
+        #Results from direct browser run on Jan 7, 2017
+        correct_sequence = 1974771030
+        results = self.GDAX.getProductOrderBook(level=test_depth, product=TEST_PRODUCT_ID)
         self.assertEqual(results['sequence'], correct_sequence)
 
 if __name__ == '__main__':
