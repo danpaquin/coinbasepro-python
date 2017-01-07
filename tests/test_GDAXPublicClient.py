@@ -136,6 +136,13 @@ class TestGDAXPublicClient(unittest.TestCase):
         results = self.GDAX.getProductTrades(product=TEST_PRODUCT_ID)
         self.assertEqual(results[0], correct_top_one)
 
+        # TODO: Add additional tests for pagination
+        self.assertEqual(len(results), 100)
+
+    @my_vcr.use_cassette()
+    def test_getProductTrades_product_bad(self):
+        results = self.GDAX.getProductTrades(product=BAD_TEST_PRODUCT_ID)
+        self.assertEqual(results['message'], "NotFound")
 
 if __name__ == '__main__':
     unittest.main()
