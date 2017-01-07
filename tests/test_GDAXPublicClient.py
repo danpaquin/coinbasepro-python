@@ -68,13 +68,31 @@ class TestGDAXPublicClient(unittest.TestCase):
 
     @my_vcr.use_cassette()
     def test_getProductOrderBook_level_3(self):
-        #test for second level depth
+        #test for third level depth
         test_depth = 3
 
         #Results from direct browser run on Jan 7, 2017
         correct_sequence = 1974771030
         results = self.GDAX.getProductOrderBook(level=test_depth, product=TEST_PRODUCT_ID)
         self.assertEqual(results['sequence'], correct_sequence)
+
+    # TODO: it may be better functionality for library to throw exception for invalid level
+    @my_vcr.use_cassette()
+    def test_getProductOrderBook_level_bad(self):
+        #test for non-existent level depth
+        test_depth = 4
+
+        results = self.GDAX.getProductOrderBook(level=test_depth, product=TEST_PRODUCT_ID)
+        self.assertEqual(results['message'], "Invalid level")
+
+    # TODO: it may be better functionality for library to throw exception for invalid product
+    @my_vcr.use_cassette()
+    def test_getProductOrderBook_product_bad(self):
+        #test for non-existent level depth
+        test_depth = 1
+
+        results = self.GDAX.getProductOrderBook(level=test_depth, product="BTC-USR")
+        self.assertEqual(results['message'], "NotFound")
 
 if __name__ == '__main__':
     unittest.main()
