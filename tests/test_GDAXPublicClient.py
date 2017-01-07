@@ -214,5 +214,12 @@ class TestGDAXPublicClient(unittest.TestCase):
         results = self.GDAX.getCurrencies()
         self.assertEqual(results, correct)
 
+    @my_vcr.use_cassette()
+    def test_getTime(self):
+        correct = {u'epoch': 1483820191.976, u'iso': u'2017-01-07T20:16:31.976Z'}
+        results = self.GDAX.getTime()
+        self.assertEqual(results, correct)
+
+
 if __name__ == '__main__':
     unittest.main()
