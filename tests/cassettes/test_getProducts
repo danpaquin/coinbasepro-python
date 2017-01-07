@@ -1,0 +1,38 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      User-Agent: [python-requests/2.5.1 CPython/2.7.12 Darwin/15.6.0]
+    method: GET
+    uri: https://api.gdax.com/products
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA7STTwuCMBiHv8t71lxXj7ORBw9R8xQhpjsMcpV/IIu+eyxpbbCBUl7f/bbfw/Oy
+        /QN4CSFgGvlrvAEPjnnDsqKrayaKfjgBD67duTXGWrjiImv4nUEIaIGWapzfPuMlQgipV7goalYx
+        0X4vlLy5nPI+E3nFhs5AFjw9DY+k2/F4WngePFmg8AiN/XS3suARGtvwtPBIvEmAhMaBrDAAB1Mj
+        AbXwz4AIuRhli2JMaOSQmNh3PLPEhEamRAlol+gAnF+iZDQkYqdE/C+JEz/KW+HhBQAA//8DAMTR
+        GkZoBAAA
+    headers:
+      access-control-allow-headers: ['Content-Type, Accept, cb-session']
+      access-control-allow-methods: ['GET,POST,DELETE,PUT']
+      access-control-allow-origin: ['*']
+      access-control-expose-headers: ['cb-before, cb-after']
+      access-control-max-age: ['7200']
+      cache-control: ['public, max-age=1']
+      cf-ray: [31d7a8ddc8973852-ATL]
+      connection: [keep-alive]
+      content-encoding: [gzip]
+      content-type: [application/json; charset=utf-8]
+      date: ['Sat, 07 Jan 2017 13:12:08 GMT']
+      etag: [W/"468-plj3qTuGFbXRJk5e/mRc7g"]
+      server: [cloudflare-nginx]
+      set-cookie: ['__cfduid=d8d22025090fa296a284d0db5738537151483794728; expires=Sun,
+          07-Jan-18 13:12:08 GMT; path=/; domain=.gdax.com; HttpOnly']
+      strict-transport-security: [max-age=15552000; includeSubDomains; preload]
+      x-content-type-options: [nosniff]
+    status: {code: 200, message: OK}
+version: 1
