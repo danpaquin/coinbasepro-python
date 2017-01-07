@@ -1,6 +1,9 @@
 import unittest
 from GDAX import PublicClient
 
+import pytz
+from datetime import datetime
+
 import vcr
 
 # SET UP VCR TO SAVE YAML CASSETTETTES TO PUBLIC FOLDER
@@ -149,20 +152,36 @@ class TestGDAXPublicClient(unittest.TestCase):
         # Test for default one minute BTC-USD candle poll - without start/end pull last hour
         correct_top_one = [1483815960, 900.92, 904.94, 904.94, 904.33, 10.113950419999998]
         results = self.GDAX.getProductHistoricRates(product=TEST_PRODUCT_ID)
-        self.assertEqual(results[0], correct_top_one)
 
-        # TODO: Add additional tests for pagination
+        self.assertEqual(results[0], correct_top_one)
         self.assertEqual(len(results), 61)
+
+    # TODO: Consider making API give Unix seconds to format to ISO 8601 for users
+    @my_vcr.use_cassette()
+    def test_getProductHistoricRates_start_end_good(self):
+        tz = pytz.timezone('America/Chicago')
+
+        start_time = datetime.fromtimestamp(1483813680, tz).isoformat()
+        end_time = datetime.fromtimestamp(1483817160, tz).isoformat()
+
+        # Test for default one minute BTC-USD candle poll - without start/end pull last hour
+        correct_top_one = [1483817100, 904.9, 904.9, 904.9, 904.9, 0.02472]
+        results = self.GDAX.getProductHistoricRates(product=TEST_PRODUCT_ID,start=start_time,end=end_time)
+
+        self.assertEqual(results[0], correct_top_one)
+        self.assertEqual(len(results), 58)
+
+    # TODO: Add tests for valid start, end, granularity to avoid bad requests to upstream
 
     @my_vcr.use_cassette()
     def test_getProductHistoricRates_5mins(self):
         test_5min_granularity = 5 * 60
+
         # Test for default five minute BTC-USD candle poll - without start/end pull last hour
         correct_top_one = [1483816200, 904.01, 904.5, 904.49, 904.49, 18.09471826]
         results = self.GDAX.getProductHistoricRates(product=TEST_PRODUCT_ID,granularity=test_5min_granularity)
-        self.assertEqual(results[0], correct_top_one)
 
-        # TODO: Add additional tests for pagination
+        self.assertEqual(results[0], correct_top_one)
         self.assertEqual(len(results), 13)
 
 if __name__ == '__main__':
