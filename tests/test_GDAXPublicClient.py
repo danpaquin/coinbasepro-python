@@ -144,5 +144,7 @@ class TestGDAXPublicClient(unittest.TestCase):
         results = self.GDAX.getProductTrades(product=BAD_TEST_PRODUCT_ID)
         self.assertEqual(results['message'], "NotFound")
 
+
+
 if __name__ == '__main__':
     unittest.main()
