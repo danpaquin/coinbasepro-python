@@ -23,15 +23,15 @@ interactions:
       access-control-expose-headers: ['cb-before, cb-after']
       access-control-max-age: ['7200']
       cache-control: ['public, max-age=1']
-      cf-ray: [31d7a8ddc8973852-ATL]
+      cf-ray: [31d813936ee4389a-ATL]
       connection: [keep-alive]
       content-encoding: [gzip]
       content-type: [application/json; charset=utf-8]
-      date: ['Sat, 07 Jan 2017 13:12:08 GMT']
+      date: ['Sat, 07 Jan 2017 14:24:59 GMT']
       etag: [W/"468-plj3qTuGFbXRJk5e/mRc7g"]
       server: [cloudflare-nginx]
-      set-cookie: ['__cfduid=d8d22025090fa296a284d0db5738537151483794728; expires=Sun,
-          07-Jan-18 13:12:08 GMT; path=/; domain=.gdax.com; HttpOnly']
+      set-cookie: ['__cfduid=d16fd765d4d4747aa1441dba01c6deb721483799099; expires=Sun,
+          07-Jan-18 14:24:59 GMT; path=/; domain=.gdax.com; HttpOnly']
       strict-transport-security: [max-age=15552000; includeSubDomains; preload]
       x-content-type-options: [nosniff]
     status: {code: 200, message: OK}
