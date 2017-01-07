@@ -196,5 +196,10 @@ class TestGDAXPublicClient(unittest.TestCase):
         results = self.GDAX.getProduct24HrStats(product=TEST_PRODUCT_ID)
         self.assertEqual(results, correct)
 
+    @my_vcr.use_cassette()
+    def test_getProduct24HrStats_product_bad(self):
+        results = self.GDAX.getProduct24HrStats(product=BAD_TEST_PRODUCT_ID)
+        self.assertEqual(results['message'], "NotFound")
+
 if __name__ == '__main__':
     unittest.main()
