@@ -154,5 +154,16 @@ class TestGDAXPublicClient(unittest.TestCase):
         # TODO: Add additional tests for pagination
         self.assertEqual(len(results), 61)
 
+    @my_vcr.use_cassette()
+    def test_getProductHistoricRates_5mins(self):
+        test_5min_granularity = 5 * 60
+        # Test for default five minute BTC-USD candle poll - without start/end pull last hour
+        correct_top_one = [1483816200, 904.01, 904.5, 904.49, 904.49, 18.09471826]
+        results = self.GDAX.getProductHistoricRates(product=TEST_PRODUCT_ID,granularity=test_5min_granularity)
+        self.assertEqual(results[0], correct_top_one)
+
+        # TODO: Add additional tests for pagination
+        self.assertEqual(len(results), 13)
+
 if __name__ == '__main__':
     unittest.main()
