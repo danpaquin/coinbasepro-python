@@ -1,0 +1,32 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      User-Agent: [python-requests/2.5.1 CPython/2.7.12 Darwin/15.6.0]
+    method: GET
+    uri: https://api.gdax.com/products/BTC-USR/book?level=1
+  response:
+    body: {string: !!python/unicode '{"message":"NotFound"}'}
+    headers:
+      access-control-allow-headers: ['Content-Type, Accept, cb-session']
+      access-control-allow-methods: ['GET,POST,DELETE,PUT']
+      access-control-allow-origin: ['*']
+      access-control-expose-headers: ['cb-before, cb-after']
+      access-control-max-age: ['7200']
+      cache-control: ['public, max-age=1']
+      cf-ray: [31d9445daa055801-DFW]
+      connection: [keep-alive]
+      content-length: ['22']
+      content-type: [application/json; charset=utf-8]
+      date: ['Sat, 07 Jan 2017 17:53:03 GMT']
+      etag: [W/"16-zqcshJDirwfGUF9rSKQKCg"]
+      server: [cloudflare-nginx]
+      set-cookie: ['__cfduid=d873890b85dd80065915c27236b3713fc1483811583; expires=Sun,
+          07-Jan-18 17:53:03 GMT; path=/; domain=.gdax.com; HttpOnly']
+      strict-transport-security: [max-age=15552000; includeSubDomains; preload]
+      x-content-type-options: [nosniff]
+    status: {code: 404, message: Not Found}
+version: 1

@@ -1,0 +1,42 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      User-Agent: [python-requests/2.5.1 CPython/2.7.12 Darwin/15.6.0]
+    method: GET
+    uri: https://api.gdax.com/products/BTC-USD/book?level=2
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA2yVSYodMQyG7+J1ISzLGtxXad4iw1uEQCA8sgq5e6gqt0td0vbzL1nW5L/l9fz9
+        5/nr27O84dBujWqlrXz98f1V3t7fy6gMrWylQu2M1movGz628wDnSStbWwxPhpfuDjoonazaYHNc
+        NGpF1iUX64lu+uwrmA4SZTyiO9aEZbYtXsGY6CLqI2G7KYIg97LRojEWShy2JFUtSVXjhCV3NEr8
+        Je/F5A7XB4tVi/5q1B2g2ZUAgnGmag8cF9u9EdSO/AnT3SHBaPeLCcyizjRhmW2U6SzmKBsvZtFU
+        MTJJdLMn0cSlgfs9+ZQ0G0GfDsnp+kfRG/q46XweqjgtoRvix1a+vH5eoz8HjajVTm6kQftREKq0
+        z+yF9+4QIMXeyfzBnm0DZGRHQ24ZTBI2Iht27xI+OwcRqGk37W2VR45g8UqRQA0rRJKeFcB7diVZ
+        cZKsQvGjslgii5Mna12oY4zRljXa6iy+eDazZc52PpY9CokWGB9zwh6exuTRbtvqIqcZtn3Xz6bW
+        I9DP8SpkyCKjGZs51hPbIyUKSp2bxzZnzDEZ0dw0sl02gJU9C6sixGzxabZ2qlTTui8zWicjqine
+        knwlFn8cW5+VZ8f/itDFqu6PXwc6N8NR0Me//wAAAP//AwDyfRSdFwgAAA==
+    headers:
+      access-control-allow-headers: ['Content-Type, Accept, cb-session']
+      access-control-allow-methods: ['GET,POST,DELETE,PUT']
+      access-control-allow-origin: ['*']
+      access-control-expose-headers: ['cb-before, cb-after']
+      access-control-max-age: ['7200']
+      cache-control: ['public, max-age=1']
+      cf-ray: [31d944578bbd1189-DFW]
+      connection: [keep-alive]
+      content-encoding: [gzip]
+      content-type: [application/json; charset=utf-8]
+      date: ['Sat, 07 Jan 2017 17:53:02 GMT']
+      etag: [W/"817-Q2a9BiuuFef0GvQYeN2a/Q"]
+      server: [cloudflare-nginx]
+      set-cookie: ['__cfduid=d8e7c407028e5754905359bec944ba5b81483811582; expires=Sun,
+          07-Jan-18 17:53:02 GMT; path=/; domain=.gdax.com; HttpOnly']
+      strict-transport-security: [max-age=15552000; includeSubDomains; preload]
+      x-content-type-options: [nosniff]
+    status: {code: 200, message: OK}
+version: 1
