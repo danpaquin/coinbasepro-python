@@ -5,7 +5,7 @@ import vcr
 
 my_vcr = vcr.VCR(
     serializer='yaml',
-    cassette_library_dir='tests/cassettes',
+    cassette_library_dir='tests/cassettes/public',
     record_mode='once',
     match_on=['uri', 'method'],
 )
