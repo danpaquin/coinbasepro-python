@@ -13,6 +13,9 @@ my_vcr = vcr.VCR(
 #NOTE THAT THESE TESTS ARE FOCUSED ON BTC-USD
 TEST_PRODUCT_ID = 'BTC-USD'
 
+#NON-EXISTENT PRODUCT ID AS OF Jan 7, 2017
+BAD_TEST_PRODUCT_ID = 'BTC-USR'
+
 class TestGDAXPublicClient(unittest.TestCase):
     def setUp(self):
         #Only testing for BTC-USD
@@ -91,7 +94,7 @@ class TestGDAXPublicClient(unittest.TestCase):
         #test for non-existent level depth
         test_depth = 1
 
-        results = self.GDAX.getProductOrderBook(level=test_depth, product="BTC-USR")
+        results = self.GDAX.getProductOrderBook(level=test_depth, product=BAD_TEST_PRODUCT_ID)
         self.assertEqual(results['message'], "NotFound")
 
     @my_vcr.use_cassette()
@@ -106,6 +109,24 @@ class TestGDAXPublicClient(unittest.TestCase):
                    }
         results = self.GDAX.getProductTicker(product=TEST_PRODUCT_ID)
         self.assertEqual(results, correct)
+
+    @my_vcr.use_cassette('test_getProductTicker')
+    def test_getProductTicker_product_none(self):
+        correct = {u"ask": u"905.99",
+                   u"bid": u"905.98",
+                   u"price": u"905.99000000",
+                   u"size": u"0.70384000",
+                   u"time": u"2017-01-07T18:06:01.618000Z",
+                   u"trade_id": 12502526,
+                   u"volume": u"12904.32111369"
+                   }
+        results = self.GDAX.getProductTicker()
+        self.assertEqual(results, correct)
+
+    @my_vcr.use_cassette()
+    def test_getProductTicker_product_bad(self):
+        results = self.GDAX.getProductTicker(product=BAD_TEST_PRODUCT_ID)
+        self.assertEqual(results['message'], "NotFound")
 
 if __name__ == '__main__':
     unittest.main()
