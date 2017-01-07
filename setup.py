@@ -5,6 +5,7 @@ from setuptools import setup, find_packages
 install_requires = [
     'requests>=2.5',
     'websocket-client>=0.37.0',
+    'vcrpy>=1.10.4'
 ]
 
 setup(
@@ -16,6 +17,7 @@ setup(
     url = 'https://github.com/danpaquin/coinbase-gdax-python',
     packages = find_packages(),
     install_requires = install_requires,
+    test_suite="tests",
     description = 'A Python client for the GDAX API',
     download_url = 'https://github.com/danpaquin/coinbase-gdax-python/archive/master.zip',
     keywords = ['coinbase', 'gdax', 'bitcoin', 'ethereum', 'client', 'api', 'exchange', 'crypto', 'currency'],
