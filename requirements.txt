@@ -1,2 +1,4 @@
 requests>=2.5
 websocket-client>=0.37.0
+vcrpy>=1.10.4
+pytz>=2016.10

@@ -1,0 +1,32 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      User-Agent: [python-requests/2.5.1 CPython/2.7.12 Darwin/15.6.0]
+    method: GET
+    uri: https://api.gdax.com/products/BTC-USR/stats
+  response:
+    body: {string: !!python/unicode '{"message":"NotFound"}'}
+    headers:
+      access-control-allow-headers: ['Content-Type, Accept, cb-session']
+      access-control-allow-methods: ['GET,POST,DELETE,PUT']
+      access-control-allow-origin: ['*']
+      access-control-expose-headers: ['cb-before, cb-after']
+      access-control-max-age: ['7200']
+      cache-control: ['public, max-age=1']
+      cf-ray: [31da0d34588d57d1-DFW]
+      connection: [keep-alive]
+      content-length: ['22']
+      content-type: [application/json; charset=utf-8]
+      date: ['Sat, 07 Jan 2017 20:10:10 GMT']
+      etag: [W/"16-zqcshJDirwfGUF9rSKQKCg"]
+      server: [cloudflare-nginx]
+      set-cookie: ['__cfduid=d1b8103a423e4843e5e80894cc5a7688c1483819809; expires=Sun,
+          07-Jan-18 20:10:09 GMT; path=/; domain=.gdax.com; HttpOnly']
+      strict-transport-security: [max-age=15552000; includeSubDomains; preload]
+      x-content-type-options: [nosniff]
+    status: {code: 404, message: Not Found}
+version: 1

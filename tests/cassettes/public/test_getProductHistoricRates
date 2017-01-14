@@ -1,0 +1,51 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      User-Agent: [python-requests/2.5.1 CPython/2.7.12 Darwin/15.6.0]
+    method: GET
+    uri: https://api.gdax.com/products/BTC-USD/candles?start=&end=&granularity=
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAA4RWC47kOgi8UIT4G86y2vtf4wnjxO50a1+kDI2Hiu3i++cPaUiQpeOViJB8JSqk
+        nkLkIgQiSUOlnE/8vR4sYlvbb8FgHEw8vKE5Njb0/7CcRLYBIwrAIDRNIl8aMRiZiRL2ZnpgGa/I
+        hGwQx6khXQQ5KDFiYD/Hvu6FNbCihNaLFymQJxPhupwfEOztpjWITYVbw7wUQkhNWZvQPHYzvaET
+        8/GXgIRVyHnba5S9F2O36aEQgbNb2R2QSYb12XQ6X7NxWtcyRXUzaY8dZ5MVKoOat9yCLhrgSRQj
+        rSmUAzjjhKf53PgWRbw40TblGRYEvUX6qdiFoEHJuZ8joij6eGgn1uleJFBVVtZYTj5oJF7bLuzY
+        Yi4iRNbZnuc4MnoHJnqD4kMblwJ7eA6JbyguqLYYJxT10joyWqK/oZqLqHgy9RFzMQAzjjjWWPkz
+        z6cVlacml0MMCkzRA8NNadA2PrUBEZZqvIuCDu8Inm6Yxp9agjgNNLR3PdEx8yaAc4rMl+ZASGRh
+        9E45dV3QODFbMAx3dlXJL6wF/gYtoYBhMQ7AzKBzp/unAEeMseNzg3TyMiDGAjw/GdTUTlNsU5M2
+        o5fGUCVth6+KNgDbZNgU5I3jIk4Mjx14lY0KlNeV5yKDRiLuexyBxPxvughkEB1uJV+b0TQZ/tIY
+        FLN8yO+cVsKGnphHjLgQfCgfh0NtAFtbngr7RcDimG6rSB1VSnJyopV3D+jUCEHMMX5wIjk50UbE
+        h6gsRqGInVcSvs1V2s5vrUJVQ9jiq8ZVCbkiO8FTO0MeDSsyhgXFrlPH/UZREwHSoBEvjQiGIoXp
+        lx/Ei5sYlcYF0lb6CxiXBiBJZTS/wl68mAkH9SsiZ0xG1lHrC1UNkIzUcrzTsrieRqO8vd7IK4Bp
+        dc63F6zZaTJyC6q7CQ9Sjyb1yGZRbU6zPZDjrYGTignjFy0yQwartxdGo8W4FwUq1Wx3q+OwMokx
+        yN2yl5BqBEqQVHbE7ciDGe5SMisq0S1qhcqhGW5k7yFIGLuYF0DWbLLAV1UJRVJaMWfHQUlXE6hO
+        YzByi7lIBknETP5NEM6mY905vEJlCr0XhUEchV3jAPEGEfaLfmkVzIpObkb2NtxDbC7T7jaEc3a1
+        ml7zq+hzz67eg0iWzz41ZnBkeVq+HNv17OowRxrvMcFh3GsClMR+D71Hh+MeYr2nkh+CgNLHCeAF
+        4N+i+KuBjXbKsfu6WvwWCEZxFGj2xQV7m2QLuQHEUOG6Y4ltMeB+fntr2CFhY9efmrvmv/uyFodC
+        PHuaER8eUv6InRhbzEUHHeLHBj2f2nP+fGnE4BrJMfR2zN//AAAA//8DAAgZ/JwIDQAA
+    headers:
+      access-control-allow-headers: ['Content-Type, Accept, cb-session']
+      access-control-allow-methods: ['GET,POST,DELETE,PUT']
+      access-control-allow-origin: ['*']
+      access-control-expose-headers: ['cb-before, cb-after']
+      access-control-max-age: ['7200']
+      cache-control: ['public, max-age=1']
+      cf-ray: [31d9afdb0dba58df-DFW]
+      connection: [keep-alive]
+      content-encoding: [gzip]
+      content-type: [application/json; charset=utf-8]
+      date: ['Sat, 07 Jan 2017 19:06:26 GMT']
+      etag: [W/"d08-kMLpPKe0c1nMgB24jBJTDA"]
+      server: [cloudflare-nginx]
+      set-cookie: ['__cfduid=dd355c0d4a12a11ff26ee3813e63e555a1483815986; expires=Sun,
+          07-Jan-18 19:06:26 GMT; path=/; domain=.gdax.com; HttpOnly']
+      strict-transport-security: [max-age=15552000; includeSubDomains; preload]
+      x-content-type-options: [nosniff]
+    status: {code: 200, message: OK}
+version: 1

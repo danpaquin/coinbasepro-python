@@ -1,0 +1,36 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      User-Agent: [python-requests/2.5.1 CPython/2.7.12 Darwin/15.6.0]
+    method: GET
+    uri: https://api.gdax.com/products/BTC-USD/ticker
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAzSMOw7CMBQE77K1Y+178f8cVDQokBQWIFA+FCDujhyJLUc788E6D+N0qiOKqGcv
+        PQ2ec71MKEjZW1Hug8FS343Suhi8JhdgcG4mUnYwGJbrX4LB63Hb7u0vmnOwjE4dpXXWunOlxI7S
+        MR4kFdUizqboSR7x/QEAAP//AwCnGx8omQAAAA==
+    headers:
+      access-control-allow-headers: ['Content-Type, Accept, cb-session']
+      access-control-allow-methods: ['GET,POST,DELETE,PUT']
+      access-control-allow-origin: ['*']
+      access-control-expose-headers: ['cb-before, cb-after']
+      access-control-max-age: ['7200']
+      cache-control: ['public, max-age=1']
+      cf-ray: [31d96f23ca861fbe-DFW]
+      connection: [keep-alive]
+      content-encoding: [gzip]
+      content-type: [application/json; charset=utf-8]
+      date: ['Sat, 07 Jan 2017 18:22:15 GMT']
+      etag: [W/"99-cL8voCB1YGbN1WnZbBkieA"]
+      server: [cloudflare-nginx]
+      set-cookie: ['__cfduid=dc0029467887bd2091e364098e9a04f791483813335; expires=Sun,
+          07-Jan-18 18:22:15 GMT; path=/; domain=.gdax.com; HttpOnly']
+      strict-transport-security: [max-age=15552000; includeSubDomains; preload]
+      x-content-type-options: [nosniff]
+    status: {code: 200, message: OK}
+version: 1
