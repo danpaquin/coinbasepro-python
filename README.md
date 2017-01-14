@@ -235,7 +235,7 @@ wsClient.close()
 ```
 
 ## Change Log
-*0.2.0*
+*0.2.0* **Current PyPI release**
 - Renamed project to GDAX-Python
 - Merged Websocket updates to handle errors and reconnect
 - Branch created for test development
@@ -245,7 +245,7 @@ wsClient.close()
 - Added support for payment methods, reports, and coinbase user accounts
 - Other compatibility updates
 
-*0.1.1b2* **Current PyPI release**
+*0.1.1b2*
 - Original PyPI Release
 
 ### Recommended Additions
