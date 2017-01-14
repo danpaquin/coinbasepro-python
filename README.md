@@ -1,5 +1,5 @@
-# coinbase-gdax-python
-A Python client for the [GDAX API](https://docs.gdax.com/) (formerly known as the Coinbase Exchange API)
+# GDAX-Python
+The Python client for the [GDAX API](https://docs.gdax.com/) (formerly known as the Coinbase Exchange API)
 
 ##### Provided under MIT License by Daniel Paquin.
 *Note: this library may be subtly broken or buggy. The code is released under the MIT License – please take the following message to heart:*
@@ -9,35 +9,25 @@ A Python client for the [GDAX API](https://docs.gdax.com/) (formerly known as th
 - A simple to use python wrapper for both public and authenticated endpoints.
 - In about 10 minutes, you could be programmatically trading on one of the largest Bitcoin exchanges in the *world*!
 - Do not worry about handling the nuances of the API with easy-to-use methods for every API endpoint.
-- Have an advantage in the market by getting under the hood of GDAX to learn what and who is *really* behind every tick.
-
+- Gain an advantage in the market by getting under the hood of GDAX to learn what and who is *really* behind every tick.
 
 ## Under Development
-- Test Scripts **looking for help**
+- Test Scripts **In Development**
 - Additional Functionality for *AuthenticatedClient.py* (including support for all order types)
-- FIX API Client **researching**
-
-## Change Log
-*0.1.2*
-- Updated JSON handling for increased compatibility among some users
-- Added support for payment methods, reports, and coinbase user accounts
-- Other compatibility updates
-
-*0.1.1b2* **Current PyPI release**
-- Original PyPI Release
+- FIX API Client **Looking for help**
 
 ## Getting Started
-This README is only to inform you on the intricacies of the python wrapper presented in this repository.  **In order to use this wrapper to its full potential, you must familiarize yourself with the official documentation.**
+This README is documentation on the syntax of the python client presented in this repository.  **In order to use this wrapper to its full potential, you must familiarize yourself with the official GDAX documentation.**
 
 - https://docs.gdax.com/
 
-- Afterwards, manually install the project or use ```pip```:
+- You may manually install the project or use ```pip```:
 ```python
 pip install GDAX
 ```
 
 ### Public Client
-Only some endpoints in the API are available to everyone.  Those endpoints can be reached using ```PublicClient```
+Only some endpoints in the API are available to everyone.  The public endpoints can be reached using ```PublicClient```
 
 ```python
 import GDAX
@@ -243,6 +233,20 @@ wsClient = myWebsocketClient()
 time.sleep(5)
 wsClient.close()
 ```
+
+## Change Log
+*0.2.0*
+- Renamed project to GDAX-Python
+- Merged Websocket updates to handle errors and reconnect
+- Branch created for test development
+
+*0.1.2*
+- Updated JSON handling for increased compatibility among some users
+- Added support for payment methods, reports, and coinbase user accounts
+- Other compatibility updates
+
+*0.1.1b2* **Current PyPI release**
+- Original PyPI Release
 
 ### Recommended Additions
 The following projects are suggested to improve the functionality of this project.  Please use them at your own risk as I will not take responsibility for the functionality of any of the following projects:
