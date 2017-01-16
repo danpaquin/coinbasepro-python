@@ -224,22 +224,21 @@ The ```WebsocketClient``` subscribes in a separate thread upon initialization.  
 import GDAX, time
 class myWebsocketClient(GDAX.WebsocketClient):
     def onOpen(self):
-        print "my own websocket :)"
-
+        self.MessageCount = 0
+        print "Lets count the messages!"
     def onMessage(self, msg):
-        print "Message type:", msg["type"], "\t@ %.3f" %float(msg["price"])
-
+        print "Message type:", msg["type"], "\t@ %.3f" % float(msg["price"])
+        self.MessageCount += 1
     def onClose(self):
-        print "wow that was fast!"
+        print "-- Goodbye! --"
 
 wsClient = myWebsocketClient()
 wsClient.start()
-while True:
-    try:
-        print "\nProcessing in background...\n"
-        time.sleep(1)
-    except KeyboardInterrupt:
-        wsClient.close()
+# Do some logic with the data
+while (wsClient.MessageCount < 500):
+    print "\nMessageCount =", "%i \n" % wsClient.MessageCount
+    time.sleep(1)
+wsClient.close()
 ```
 
 ## Change Log
