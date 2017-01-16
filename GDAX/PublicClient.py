@@ -8,10 +8,9 @@ import requests
 
 class PublicClient():
     def __init__(self, api_url="https://api.gdax.com", product_id="BTC-USD"):
+        self.url = api_url
         if api_url[-1] == "/":
             self.url = api_url[:-1]
-        else:
-            self.url = api_url
         self.productId = product_id
 
     def getProducts(self):
