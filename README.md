@@ -216,9 +216,9 @@ wsClient.close()
 ### WebsocketClient Methods
 The ```WebsocketClient``` subscribes in a separate thread upon initialization.  There are three methods which you could overwrite (before initialization) so it can react to the data streaming in.  The current client is a template used for illustration purposes only.
 
-- open - called once, *immediately before* the socket connection is made
-- message - called once for every message that arrives and accepts one argument that contains the message of dict type.
-- closed - called once after the websocket has been closed.
+- onOpen - called once, *immediately before* the socket connection is made
+- onMessage - called once for every message that arrives and accepts one argument that contains the message of dict type.
+- onClose - called once after the websocket has been closed.
 - close - call this method to close the websocket connection (do not overwrite).
 ```python
 import GDAX, time
