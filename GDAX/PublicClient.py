@@ -19,20 +19,20 @@ class PublicClient():
 
     def getProductOrderBook(self, json=None, level=2, product=''):
         if type(json) is dict:
-            product = json['product'] or self.productId
-            level = json['level'] or '1'
+            if "product" in json: product = json["product"]
+            if "level" in json: level = json['level']
         response = requests.get(self.url + '/products/%s/book?level=%s' % (product or self.productId, str(level)))
         return response.json()
 
     def getProductTicker(self, json=None, product=''):
         if type(json) is dict:
-            product = json['product'] or self.productId
+            if "product" in json: product = json["product"]
         response = requests.get(self.url + '/products/%s/ticker' % (product or self.productId))
         return response.json()
 
     def getProductTrades(self, json=None, product=''):
         if type(json) is dict:
-            product = json['product'] or self.productId
+            if "product" in json: product = json["product"]
         response = requests.get(self.url + '/products/%s/trades' % (product or self.productId))
         return response.json()
 
@@ -50,7 +50,7 @@ class PublicClient():
 
     def getProduct24HrStats(self, json=None, product=''):
         if type(json) is dict:
-            product = json['product'] or self.productId
+            if "product" in json: product = json["product"]
         response = requests.get(self.url + '/products/%s/stats' % (product or self.productId))
         return response.json()
 
