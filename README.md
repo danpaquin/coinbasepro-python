@@ -12,9 +12,9 @@ The Python client for the [GDAX API](https://docs.gdax.com/) (formerly known as 
 - Gain an advantage in the market by getting under the hood of GDAX to learn what and who is *really* behind every tick.
 
 ## Under Development
-- Test Scripts **In Development**
-- Additional Functionality for *AuthenticatedClient.py* (including support for all order types)
-- FIX API Client **Looking for help**
+- Test Scripts **on dev branch**
+- Additional Functionality for *WebsocketClient* (including a real-time order book)
+- FIX API Client **Looking for support**
 
 ## Getting Started
 This README is documentation on the syntax of the python client presented in this repository.  **In order to use this wrapper to its full potential, you must familiarize yourself with the official GDAX documentation.**
@@ -87,6 +87,27 @@ publicClient.getCurrencies()
 ```python
 publicClient.getTime()
 ```
+
+#### *In Development* JSON Parsing
+Only available for the `PublicClient`, you may pass any function above raw JSON data.  This may be useful for some applications of the project and should not hinder performance, but we are looking into this.  *Do you love or hate this?  Please share your thoughts within the issue tab!*
+
+- Both of these calls send the same request:
+```python
+import GDAX
+publicClient = GDAX.PublicClient()
+
+method1 = public.getProductHistoricRates(granularity='3000')
+
+params = {
+'granularity': '3000'
+}
+method2 = public.getProductHistoricRates(params)
+
+# Both methods will send the same request, but not always return the same data if run in series.
+print (method1, method2)
+```
+
+
 
 ### Authenticated Client
 Not all API endpoints are available to everyone.  Those requiring user authentication can be reached using ```AuthenticatedClient```. You must setup API access within your [account settings](https://www.gdax.com/settings/api). The ```AuthenticatedClient``` inherits all methods from the ```PrivateClient``` class, so you will only need to initialize one if you are planning to integrate both into your script.
@@ -242,10 +263,12 @@ wsClient.close()
 ```
 
 ## Change Log
+*0.2.1*
+- Allowed ```WebsocketClient``` to operate intuitively and restructured example workflow.
+
 *0.2.0* **Current PyPI release**
 - Renamed project to GDAX-Python
 - Merged Websocket updates to handle errors and reconnect
-- Branch created for test development
 
 *0.1.2*
 - Updated JSON handling for increased compatibility among some users

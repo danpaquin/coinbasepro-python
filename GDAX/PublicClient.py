@@ -17,28 +17,40 @@ class PublicClient():
         response = requests.get(self.url + '/products')
         return response.json()
 
-    def getProductOrderBook(self, level=2, product=''):
+    def getProductOrderBook(self, json=None, level=2, product=''):
+        if type(json) is dict:
+            product = json['product'] or self.productId
+            level = json['level'] or '1'
         response = requests.get(self.url + '/products/%s/book?level=%s' % (product or self.productId, str(level)))
         return response.json()
 
-    def getProductTicker(self, product=''):
+    def getProductTicker(self, json=None, product=''):
+        if type(json) is dict:
+            product = json['product'] or self.productId
         response = requests.get(self.url + '/products/%s/ticker' % (product or self.productId))
         return response.json()
 
-    def getProductTrades(self, product=''):
+    def getProductTrades(self, json=None, product=''):
+        if type(json) is dict:
+            product = json['product'] or self.productId
         response = requests.get(self.url + '/products/%s/trades' % (product or self.productId))
         return response.json()
 
-    def getProductHistoricRates(self, product='', start='', end='', granularity=''):
-        payload = {
-            "start" : start,
-            "end" : end,
-            "granularity" : granularity
-        }
+    def getProductHistoricRates(self, json=None, product='', start='', end='', granularity=''):
+        payload = {}
+        if type(json) is dict:
+            if "product" in json: product = json["product"]
+            payload = json
+        else:
+            payload["start"] = start
+            payload["end"] = end
+            payload["granularity"] = granularity
         response = requests.get(self.url + '/products/%s/candles' % (product or self.productId), params=payload)
         return response.json()
 
-    def getProduct24HrStats(self, product=''):
+    def getProduct24HrStats(self, json=None, product=''):
+        if type(json) is dict:
+            product = json['product'] or self.productId
         response = requests.get(self.url + '/products/%s/stats' % (product or self.productId))
         return response.json()
 

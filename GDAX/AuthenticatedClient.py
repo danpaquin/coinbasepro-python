@@ -164,7 +164,7 @@ class AuthenticatedClient(PublicClient):
         return r.json()
 
 class GdaxAuth(AuthBase):
-    # Provided by Coinbase: https://docs.gdax.com/#signing-a-message
+    # Provided by GDAX: https://docs.gdax.com/#signing-a-message
     def __init__(self, api_key, secret_key, passphrase):
         self.api_key = api_key
         self.secret_key = secret_key
