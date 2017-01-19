@@ -21,6 +21,7 @@ class WebsocketClient(object):
             self.listen()
 
         self.thread = Thread(target=go)
+        self.thread.daemon = True
         self.thread.start()
 
     def connect(self):
