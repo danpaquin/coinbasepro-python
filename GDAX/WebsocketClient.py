@@ -1,15 +1,19 @@
-#
-# GDAX/WebsocketClient.py
-# Daniel Paquin
-#
-# Template object to receive messages from the GDAX Websocket Feed
+"""
+GDAX/WebsocketClient.py
+Daniel Paquin
 
-import json, time
-from   threading import Thread
-from   websocket import create_connection
+Template object to receive messages from the GDAX Websocket Feed
+"""
+
+from __future__ import print_function
+import json
+import time
+from threading import Thread
+from websocket import create_connection
+
 
 class WebsocketClient(object):
-    def __init__(self, url="wss://ws-feed.gdax.com", products=[ "BTC-USD" ]):
+    def __init__(self, url="wss://ws-feed.gdax.com", products=["BTC-USD"]):
         self.url = url
         if self.url[-1] == "/":
             self.url = self.url[:-1]
@@ -24,7 +28,6 @@ class WebsocketClient(object):
         self.ws = create_connection(self.url)
         self.thread = Thread(target=_go)
         self.thread.start()
-
 
     def _connect(self):
         self.stop = False
@@ -58,22 +61,28 @@ class WebsocketClient(object):
     def onError(self, e):
         SystemError(e)
 
+
 if __name__ == "__main__":
     import GDAX
+
+
     class myWebsocketClient(GDAX.WebsocketClient):
         def onOpen(self):
             self.MessageCount = 0
-            print "Lets count the messages!"
+            print("Lets count the messages!")
+
         def onMessage(self, msg):
-            print "Message type:", msg["type"], "\t@ %.3f" % float(msg["price"])
+            print("Message type:", msg["type"], "\t@ %.3f" % float(msg["price"]))
             self.MessageCount += 1
+
         def onClose(self):
-            print "-- Goodbye! --"
+            print("-- Goodbye! --")
+
 
     wsClient = myWebsocketClient()
     wsClient.start()
     # Do some logic with the data
     while (wsClient.MessageCount < 500):
-        print "\nMessageCount =", "%i \n" % wsClient.MessageCount
+        print("\nMessageCount =", "%i \n" % wsClient.MessageCount)
         time.sleep(1)
     wsClient.close()
