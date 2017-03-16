@@ -121,7 +121,7 @@ class AuthenticatedClient(PublicClient):
             #"type": "deposit",
             "amount": amount,
             "currency": currency,
-            "coinbase_account_id": accountId
+            "coinbase_account_id": coinbase_account_id
         }
         r = requests.post(self.url + "/deposits/coinbase-account", data=json.dumps(payload), auth=self.auth)
         return r.json()
