@@ -116,13 +116,14 @@ class AuthenticatedClient(PublicClient):
             return self.paginateFills(list, r.headers['cb-after'], orderId=orderId, productId=productId)
         return list
 
-    def deposit(self, amount="", accountId=""):
+    def deposit_coinbase(self, amount="", currency="", accountId=""):
         payload = {
-            "type": "deposit",
+            #"type": "deposit",
             "amount": amount,
+            "currency": currency,
             "accountId": accountId
         }
-        r = requests.post(self.url + "/transfers", data=json.dumps(payload), auth=self.auth)
+        r = requests.post(self.url + "/deposits/coinbase-account", data=json.dumps(payload), auth=self.auth)
         return r.json()
 
     def withdraw(self, amount="", accountId=""):
