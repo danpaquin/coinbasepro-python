@@ -115,6 +115,15 @@ class AuthenticatedClient(PublicClient):
         if 'cb-after' in r.headers:
             return self.paginateFills(list, r.headers['cb-after'], orderId=orderId, productId=productId)
         return list
+        
+    def deposit(self, amount="", accountId=""):
+        payload = {
+            "type": "deposit",
+            "amount": amount,
+            "accountId": accountId
+        }
+        r = requests.post(self.url + "/transfers", data=json.dumps(payload), auth=self.auth)
+        return r.json()
 
     def deposit_coinbase(self, amount="", currency="", coinbase_account_id=""):
         payload = {
@@ -133,6 +142,16 @@ class AuthenticatedClient(PublicClient):
             "accountId": accountId
         }
         r = requests.post(self.url + "/transfers", data=json.dumps(payload), auth=self.auth)
+        return r.json()
+        
+    def withdraw_coinbase(self, amount="", currency="", coinbase_account_id=""):
+        payload = {
+            #"type": "deposit",
+            "amount": amount,
+            "currency": currency,
+            "coinbase_account_id": coinbase_account_id
+        }
+        r = requests.post(self.url + "/withdrawals/coinbase", data=json.dumps(payload), auth=self.auth)
         return r.json()
 
     def getPaymentMethods(self):
