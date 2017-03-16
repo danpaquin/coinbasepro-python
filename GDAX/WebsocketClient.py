@@ -68,7 +68,7 @@ if __name__ == "__main__":
             print ("Message type:", msg["type"], "\t@ %.3f" % float(msg["price"]))
             self.MessageCount += 1
         def onClose(self):
-            print "-- Goodbye! --"
+            print ("-- Goodbye! --")
 
     wsClient = myWebsocketClient()
     wsClient.start()
