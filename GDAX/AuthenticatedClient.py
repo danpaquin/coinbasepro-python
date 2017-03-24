@@ -153,6 +153,16 @@ class AuthenticatedClient(PublicClient):
         }
         r = requests.post(self.url + "/withdrawals/coinbase-account", data=json.dumps(payload), auth=self.auth)
         return r.json()
+        
+    def withdraw_crypto(self, amount="", currency="", crypto_address=""):
+        payload = {
+            #"type": "deposit",
+            "amount": amount,
+            "currency": currency,
+            "crypto_address": crypto_address
+        }
+        r = requests.post(self.url + "/withdrawals/crypto", data=json.dumps(payload), auth=self.auth)
+        return r.json()
 
     def getPaymentMethods(self):
         r = requests.get(self.url + "/payment-methods", auth=self.auth)
