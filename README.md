@@ -151,7 +151,7 @@ authClient.getAccountHistory("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 authClient.getAccountHolds("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 ```
 
-- [buy & sell](https://docs.exchange.coinbase.com/#place-a-new-order)
+- [buy & sell](https://docs.gdax.com/#place-a-new-order)
 ```python
 # Buy 0.01 BTC @ 100 USD
 buyParams = {
@@ -171,22 +171,26 @@ sellParams = {
 authClient.sell(sellParams)
 ```
 
-- [cancelOrder](https://docs.exchange.coinbase.com/#cancel-an-order)
+- [cancelOrder](https://docs.gdax.com/#cancel-an-order)
 ```python
 authClient.cancelOrder("d50ec984-77a8-460a-b958-66f114b0de9b")
 ```
+- [cancelAll](https://docs.gdax.com/#cancel-an-order)
+```python
+authClient.cancelOrder(productId='BTC-USD')
+```
 
-- [getOrders](https://docs.exchange.coinbase.com/#list-orders) (paginated)
+- [getOrders](https://docs.gdax.com/#list-orders) (paginated)
 ```python
 authClient.getOrders()
 ```
 
-- [getOrder](https://docs.exchange.coinbase.com/#get-an-order)
+- [getOrder](https://docs.gdax.com/#get-an-order)
 ```python
 authClient.getOrder("d50ec984-77a8-460a-b958-66f114b0de9b")
 ```
 
-- [getFills](https://docs.exchange.coinbase.com/#list-fills) (paginated)
+- [getFills](https://docs.gdax.com/#list-fills) (paginated)
 ```python
 authClient.getFills()
 # Get fills for a specific order
