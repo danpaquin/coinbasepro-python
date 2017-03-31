@@ -13,7 +13,7 @@ The Python client for the [GDAX API](https://docs.gdax.com/) (formerly known as 
 
 ## Under Development
 - Test Scripts **on dev branch**
-- Additional Functionality for *WebsocketClient* (including a real-time order book)
+- Additional Functionality for *WebsocketClient*, including a real-time order book
 - FIX API Client **Looking for support**
 
 ## Getting Started
@@ -267,10 +267,13 @@ wsClient.close()
 ```
 
 ## Change Log
+*0.2.2* **Current PyPI release**
+- Added additional API functionality such as cancelAll() and ETH withdrawal.
+
 *0.2.1*
 - Allowed ```WebsocketClient``` to operate intuitively and restructured example workflow.
 
-*0.2.0* **Current PyPI release**
+*0.2.0*
 - Renamed project to GDAX-Python
 - Merged Websocket updates to handle errors and reconnect
 

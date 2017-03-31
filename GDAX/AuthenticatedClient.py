@@ -71,10 +71,10 @@ class AuthenticatedClient(PublicClient):
         r = requests.delete(self.url + '/orders/' + orderId, auth=self.auth)
         return r.json()
 
-    def cancelAll(self, cancelParams):
-        if not cancelParams["product_id"]:
-            buyParams["product_id"] = self.productId
-        r = requests.delete(self.url + '/orders/', data=json.dumps(cancelParams), auth=self.auth)
+    def cancelAll(self, data=None, product=''):
+        if type(data) is dict:
+            if "product" in data: product = data["product"]
+        r = requests.delete(self.url + '/orders/', data=json.dumps({'product_id':product or self.productId}), auth=self.auth)
         return r.json()
 
     def getOrder(self, orderId):
