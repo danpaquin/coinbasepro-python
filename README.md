@@ -224,7 +224,7 @@ If you would like to receive real-time market updates, you must subscribe to the
 ```python
 import GDAX
 # Paramters are optional
-wsClient = GDAX.WebsocketClient(ws_url="wss://ws-feed.gdax.com", product_id="BTC-USD")
+wsClient = GDAX.WebsocketClient(url="wss://ws-feed.gdax.com", products="BTC-USD")
 # Do other stuff...
 wsClient.close()
 ```
@@ -233,7 +233,7 @@ wsClient.close()
 ```python
 import GDAX
 # Paramters are optional
-wsClient = GDAX.WebsocketClient(ws_url="wss://ws-feed.gdax.com", product_id=["BTC-USD", "ETH-USD"])
+wsClient = GDAX.WebsocketClient(url="wss://ws-feed.gdax.com", products=["BTC-USD", "ETH-USD"])
 # Do other stuff...
 wsClient.close()
 ```
