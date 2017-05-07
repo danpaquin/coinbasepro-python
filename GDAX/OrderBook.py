@@ -1,9 +1,9 @@
-"""
-GDAX/WebsocketClient.py
-David Caseria
+#
+# GDAX/OrderBook.py
+# David Caseria
+#
+# Live order book updated from the GDAX Websocket Feed
 
-Live order book updated from the GDAX Websocket Feed
-"""
 from operator import itemgetter
 from bintrees import RBTree
 

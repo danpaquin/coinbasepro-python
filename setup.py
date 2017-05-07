@@ -3,22 +3,24 @@
 from setuptools import setup, find_packages
 
 install_requires = [
-    'requests>=2.5',
-    'websocket-client>=0.37.0',
+    'bintrees==2.0.7',
+    'requests==2.13.0',
+    'six==1.10.0',
+    'websocket-client==0.40.0',
 ]
 
 setup(
     name = 'GDAX',
-    version = '0.2.0',
+    version = '0.2.2',
     author = 'Daniel Paquin',
     author_email = 'dpaq34@gmail.com',
     license='MIT',
     url = 'https://github.com/danpaquin/GDAX-Python',
     packages = find_packages(),
     install_requires = install_requires,
-    description = 'The Python client for the GDAX API',
+    description = 'The unofficial Python client for the GDAX API',
     download_url = 'https://github.com/danpaquin/GDAX-Python/archive/master.zip',
-    keywords = ['coinbase', 'gdax', 'bitcoin', 'BTC', 'ETH', 'ethereum', 'client', 'api', 'wrapper', 'exchange', 'crypto', 'currency'],
+    keywords = ['gdax', 'gdax-api', 'orderbook', 'trade', 'bitcoin', 'ethereum', 'BTC', 'ETH', 'client', 'api', 'wrapper', 'exchange', 'crypto', 'currency', 'trading', 'trading-api', 'coinbase'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',

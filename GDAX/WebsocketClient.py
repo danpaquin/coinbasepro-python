@@ -1,9 +1,8 @@
-"""
-GDAX/WebsocketClient.py
-Daniel Paquin
-
-Template object to receive messages from the GDAX Websocket Feed
-"""
+#
+# GDAX/WebsocketClient.py
+# Daniel Paquin
+#
+# Template object to receive messages from the GDAX Websocket Feed
 
 from __future__ import print_function
 import json
