@@ -1,2 +1,4 @@
-requests>=2.5
-websocket-client>=0.37.0
+bintrees==2.0.7
+requests==2.13.0
+six==1.10.0
+websocket-client==0.40.0
