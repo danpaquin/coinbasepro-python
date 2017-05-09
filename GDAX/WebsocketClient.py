@@ -88,11 +88,10 @@ if __name__ == "__main__":
         def onClose(self):
             print("-- Goodbye! --")
 
-
     wsClient = MyWebsocketClient()
     wsClient.start()
     # Do some logic with the data
-    while wsClient.MessageCount < 500:
+    while (wsClient.MessageCount < 500):
         print("\nMessageCount =", "%i \n" % wsClient.MessageCount)
         time.sleep(1)
     wsClient.close()

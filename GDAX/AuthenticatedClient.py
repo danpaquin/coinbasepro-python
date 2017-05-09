@@ -134,7 +134,7 @@ class AuthenticatedClient(PublicClient):
         if 'cb-after' in r.headers:
             return self.paginateFills(list, r.headers['cb-after'], orderId=orderId, productId=productId)
         return list
-
+        
     def deposit(self, amount="", accountId=""):
         payload = {
             "type": "deposit",
@@ -145,6 +145,16 @@ class AuthenticatedClient(PublicClient):
         r.raise_for_status()
         return r.json()
 
+    def deposit_coinbase(self, amount="", currency="", coinbase_account_id=""):
+        payload = {
+            #"type": "deposit",
+            "amount": amount,
+            "currency": currency,
+            "coinbase_account_id": coinbase_account_id
+        }
+        r = requests.post(self.url + "/deposits/coinbase-account", data=json.dumps(payload), auth=self.auth)
+        return r.json()
+
     def withdraw(self, amount="", accountId=""):
         payload = {
             "type": "withdraw",
@@ -153,6 +163,26 @@ class AuthenticatedClient(PublicClient):
         }
         r = requests.post(self.url + "/transfers", data=json.dumps(payload), auth=self.auth)
         r.raise_for_status()
+        return r.json()
+        
+    def withdraw_coinbase(self, amount="", currency="", coinbase_account_id=""):
+        payload = {
+            #"type": "deposit",
+            "amount": amount,
+            "currency": currency,
+            "coinbase_account_id": coinbase_account_id
+        }
+        r = requests.post(self.url + "/withdrawals/coinbase-account", data=json.dumps(payload), auth=self.auth)
+        return r.json()
+        
+    def withdraw_crypto(self, amount="", currency="", crypto_address=""):
+        payload = {
+            #"type": "deposit",
+            "amount": amount,
+            "currency": currency,
+            "crypto_address": crypto_address
+        }
+        r = requests.post(self.url + "/withdrawals/crypto", data=json.dumps(payload), auth=self.auth)
         return r.json()
 
     def getPaymentMethods(self):
