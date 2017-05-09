@@ -17,8 +17,10 @@ class WebsocketClient(object):
             url = "wss://ws-feed.gdax.com"
 
         if products is None:
-            products = ["BTC-USD"]
-
+            products = ["BTC-USD"]        
+        elif not isinstance(products, list):
+            products = [products]
+            
         self.url = url
         if self.url[-1] == "/":
             self.url = self.url[:-1]
