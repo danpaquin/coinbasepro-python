@@ -16,14 +16,7 @@ class WebsocketClient(object):
         if url is None:
             url = "wss://ws-feed.gdax.com"
 
-        if products is None:
-            products = ["BTC-USD"]        
-        elif not isinstance(products, list):
-            products = [products]
-            
         self.url = url
-        if self.url[-1] == "/":
-            self.url = self.url[:-1]
         self.products = products
         self.stop = None
         self.ws = None
@@ -40,6 +33,14 @@ class WebsocketClient(object):
         self.thread.start()
 
     def _connect(self):
+        if self.products is None:
+            self.products = ["BTC-USD"]
+        elif not isinstance(self.products, list):
+            self.products = [self.products]
+
+        if self.url[-1] == "/":
+            self.url = self.url[:-1]
+
         self.stop = False
         sub_params = json.dumps({"type": "subscribe", "product_ids": self.products})
         self.ws.send(sub_params)
@@ -73,26 +74,26 @@ class WebsocketClient(object):
 
 
 if __name__ == "__main__":
-    class MyWebsocketClient(WebsocketClient):
-        def __init__(self):
-            super(MyWebsocketClient, self).__init__()
-            self.MessageCount = 0
-
+    import GDAX, time
+    class myWebsocketClient(GDAX.WebsocketClient):
         def onOpen(self):
-            print("Let's count the messages!")
+            self.url = "wss://ws-feed.gdax.com/"
+            self.products = ["BTC-USD", "ETH-USD"]
+            self.MessageCount = 0
+            print ("Lets count the messages!")
 
         def onMessage(self, msg):
-            print("Message type: ", msg["type"], "\t@ %.3f" % float(msg["price"]))
+            print ("Message type:", msg["type"], "\t@ %.3f" % float(msg["price"]))
             self.MessageCount += 1
 
         def onClose(self):
-            print("-- Goodbye! --")
+            print ("-- Goodbye! --")
 
-
-    wsClient = MyWebsocketClient()
+    wsClient = myWebsocketClient()
     wsClient.start()
+    print(wsClient.url, wsClient.products)
     # Do some logic with the data
-    while wsClient.MessageCount < 500:
-        print("\nMessageCount =", "%i \n" % wsClient.MessageCount)
+    while (wsClient.MessageCount < 500):
+        print ("\nMessageCount =", "%i \n") % wsClient.MessageCount
         time.sleep(1)
     wsClient.close()

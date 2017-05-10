@@ -249,22 +249,24 @@ The ```WebsocketClient``` subscribes in a separate thread upon initialization.  
 import GDAX, time
 class myWebsocketClient(GDAX.WebsocketClient):
     def onOpen(self):
+        self.url = "wss://ws-feed.gdax.com/"
+        self.products = ["BTC-USD", "ETH-USD"]
         self.MessageCount = 0
-        print "Lets count the messages!"
+        print("Lets count the messages!")
     def onMessage(self, msg):
-        print "Message type:", msg["type"], "\t@ %.3f" % float(msg["price"])
+        print("Message type:", msg["type"], "\t@ %.3f" % float(msg["price"]))
         self.MessageCount += 1
     def onClose(self):
-        print "-- Goodbye! --"
+        print("-- Goodbye! --")
 
 wsClient = myWebsocketClient()
 wsClient.start()
+print(wsClient.url, wsClient.products)
 # Do some logic with the data
 while (wsClient.MessageCount < 500):
-    print "\nMessageCount =", "%i \n" % wsClient.MessageCount
+    print("\nMessageCount =", "%i \n" % wsClient.MessageCount)
     time.sleep(1)
-wsClient.close()
-```
+wsClient.close()```
 
 ## Change Log
 *0.2.2* **Current PyPI release**
