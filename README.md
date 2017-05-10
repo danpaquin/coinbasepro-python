@@ -266,7 +266,8 @@ print(wsClient.url, wsClient.products)
 while (wsClient.MessageCount < 500):
     print("\nMessageCount =", "%i \n" % wsClient.MessageCount)
     time.sleep(1)
-wsClient.close()```
+wsClient.close()
+```
 
 ## Change Log
 *0.2.2* **Current PyPI release**
