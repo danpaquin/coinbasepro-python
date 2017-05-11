@@ -118,6 +118,7 @@ class AuthenticatedClient(PublicClient):
         if after: url += "after=%s&" %str(after)
         if limit: url += "limit=%s&" %str(limit)
         r = requests.get(url, auth=self.auth)
+        r.raise_for_status()
         list.append(r.json())
         if 'cb-after' in r.headers and limit is not len(r.json()):
             return self.paginateFills(list, r.headers['cb-after'], orderId=orderId, productId=productId)
@@ -133,6 +134,18 @@ class AuthenticatedClient(PublicClient):
             list.append(r.json())
         if 'cb-after' in r.headers:
             return self.paginateFills(list, r.headers['cb-after'], orderId=orderId, productId=productId)
+        return list
+
+    def getFundings(self, list='', status='', after=''):
+        if not list: list = []
+        url = self.url + '/funding?'
+        if status: url += "status=%s&" % str(status)
+        if after: url += 'after=%s&' % str(after)
+        r = requests.get(url, auth=self.auth)
+        r.raise_for_status()
+        list.append(r.json())
+        if 'cb-after' in r.headers:
+            return self.getFundings(list, status=status, after=r.headers['cb-after'])
         return list
 
     def deposit(self, amount="", accountId=""):
