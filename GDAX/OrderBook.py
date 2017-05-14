@@ -14,10 +14,10 @@ from GDAX.WebsocketClient import WebsocketClient
 class OrderBook(WebsocketClient):
 
     def __init__(self, product_id='BTC-USD'):
-        WebsocketClient.__init__(self, products=[product_id])
+        WebsocketClient.__init__(self, products=product_id)
         self._asks = RBTree()
         self._bids = RBTree()
-        self._client = PublicClient(product_id='BTC-USD')
+        self._client = PublicClient(product_id=product_id)
         self._sequence = -1
 
     def onMessage(self, message):
@@ -182,5 +182,8 @@ class OrderBook(WebsocketClient):
 
 
 if __name__ == '__main__':
+    import time
     order_book = OrderBook()
     order_book.start()
+    time.sleep(10)
+    order_book.close()

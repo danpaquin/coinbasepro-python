@@ -241,7 +241,7 @@ wsClient.close()
 ### WebsocketClient Methods
 The ```WebsocketClient``` subscribes in a separate thread upon initialization.  There are three methods which you could overwrite (before initialization) so it can react to the data streaming in.  The current client is a template used for illustration purposes only.
 
-- onOpen - called once, *immediately before* the socket connection is made
+- onOpen - called once, *immediately before* the socket connection is made, this is where you want to add inital parameters.
 - onMessage - called once for every message that arrives and accepts one argument that contains the message of dict type.
 - onClose - called once after the websocket has been closed.
 - close - call this method to close the websocket connection (do not overwrite).
@@ -269,6 +269,17 @@ while (wsClient.MessageCount < 500):
 wsClient.close()
 ```
 
+### OrderBook Methods
+The ```OrderBook``` subscribes to a websocket and keeps a real-time record of the orderbook for the product_id input.  Please provide your feedback for future improvements.
+
+```python
+import GDAX, time
+order_book = GDAX.OrderBook(product_id='BTC-USD')
+order_book.start()
+time.sleep(10)
+order_book.close()
+```
+
 ## Change Log
 *0.2.2* **Current PyPI release**
 - Added additional API functionality such as cancelAll() and ETH withdrawal.
@@ -287,11 +298,3 @@ wsClient.close()
 
 *0.1.1b2*
 - Original PyPI Release
-
-### Recommended Additions
-The following projects are suggested to improve the functionality of this project.  Please use them at your own risk as I will not take responsibility for the functionality of any of the following projects:
-
-- [**danielktaylor/PyLimitBook**](https://github.com/danielktaylor/PyLimitBook)
-   *Python implementation of fast limit-order book.*
-- [**PierreRochard/coinbase-exchange-order-book**](https://github.com/PierreRochard/coinbase-exchange-order-book)
-    *Real-time Coinbase Exchange order book + basic market maker bot (Python3)*
