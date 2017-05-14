@@ -269,7 +269,7 @@ while (wsClient.MessageCount < 500):
 wsClient.close()
 ```
 
-### OrderBook Methods
+### Real-time OrderBook
 The ```OrderBook``` subscribes to a websocket and keeps a real-time record of the orderbook for the product_id input.  Please provide your feedback for future improvements.
 
 ```python
