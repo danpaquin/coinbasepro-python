@@ -150,31 +150,85 @@ class AuthenticatedClient(PublicClient):
 
     def repayFunding(self, amount='', currency=''):
         payload = {
-            "amount": amount or 0,
-            "currency": currency or "USD" #example: USD
+            "amount": amount,
+            "currency": currency #example: USD
         }
-        r = requests.post(self.url + "/funding/repay&amount=10&currency='USD'", auth=self.auth)
+        r = requests.post(self.url + "/funding/repay", data=json.dumps(payload), auth=self.auth)
         #r.raise_for_status()
         return r.json()
 
-    def deposit(self, amount="", accountId=""):
+    def marginTransfer(self, margin_profile_id="", type="",currency="",amount=""):
         payload = {
-            "type": "deposit",
-            "amount": amount,
-            "accountId": accountId
+            "margin_profile_id": margin_profile_id
+            "type": type,
+            "currency": currency, # example: USD
+            "amount": amount
         }
-        r = requests.post(self.url + "/transfers", data=json.dumps(payload), auth=self.auth)
+        r = requests.post(self.url + "/profiles/margin-transfer", data=json.dumps(payload), auth=self.auth)
+        # r.raise_for_status()
+        return r.json()
+
+    def getPosition(self):
+        r = requests.get(self.url + "/position", auth=self.auth)
+        # r.raise_for_status()
+        return r.json()
+
+    def closePosition(self, repay_only=""):
+        payload = {
+            "repay_only": repay_only or False
+        }
+        r = requests.post(self.url + "/position/close", data=json.dumps(payload), auth=self.auth)
+        # r.raise_for_status()
+        return r.json()
+
+    def deposit(self, amount="", currency="", payment_method_id=""):
+        payload = {
+            "amount": amount,
+            "currency": currency,
+            "payment_method_id": payment_method_id
+        }
+        r = requests.post(self.url + "/deposits/payment-method", data=json.dumps(payload), auth=self.auth)
         #r.raise_for_status()
         return r.json()
 
-    def withdraw(self, amount="", accountId=""):
+    def coinbaseDeposit(self, amount="", currency="", coinbase_account_id=""):
         payload = {
-            "type": "withdraw",
             "amount": amount,
-            "accountId": accountId
+            "currency": currency,
+            "coinbase_account_id": coinbase_account_id
         }
-        r = requests.post(self.url + "/transfers", data=json.dumps(payload), auth=self.auth)
+        r = requests.post(self.url + "/deposits/coinbase-account", data=json.dumps(payload), auth=self.auth)
+        # r.raise_for_status()
+        return r.json()
+
+    def withdraw(self, amount="", currency="", payment_method_id=""):
+        payload = {
+            "amount": amount,
+            "currency": currency,
+            "payment_method_id": payment_method_id
+        }
+        r = requests.post(self.url + "/withdrawals/payment-method", data=json.dumps(payload), auth=self.auth)
         #r.raise_for_status()
+        return r.json()
+
+    def coinbaseWithdraw(self, amount="", currency="", coinbase_account_id=""):
+        payload = {
+            "amount": amount,
+            "currency": currency,
+            "coinbase_account_id": coinbase_account_id
+        }
+        r = requests.post(self.url + "/withdrawals/coinbase", data=json.dumps(payload), auth=self.auth)
+        # r.raise_for_status()
+        return r.json()
+
+    def cryptoWithdraw(self, amount="", currency="", crypto_address=""):
+        payload = {
+            "amount": amount,
+            "currency": currency,
+            "crypto_address": crypto_address
+        }
+        r = requests.post(self.url + "/withdrawals/crypto", data=json.dumps(payload), auth=self.auth)
+        # r.raise_for_status()
         return r.json()
 
     def getPaymentMethods(self):
