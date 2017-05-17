@@ -12,12 +12,13 @@ from websocket import create_connection
 
 
 class WebsocketClient(object):
-    def __init__(self, url=None, products=None):
+    def __init__(self, url=None, products=None, type=None):
         if url is None:
             url = "wss://ws-feed.gdax.com"
 
         self.url = url
         self.products = products
+        self.type = type or "subscribe"
         self.stop = None
         self.ws = None
         self.thread = None
@@ -42,8 +43,13 @@ class WebsocketClient(object):
             self.url = self.url[:-1]
 
         self.stop = False
-        sub_params = json.dumps({"type": "subscribe", "product_ids": self.products})
-        self.ws.send(sub_params)
+        sub_params = {'type': self.type}
+        if self.type is "subscribe":
+            sub_params['product_ids'] = self.products
+        elif self.type is "heartbeat":
+            sub_params['on'] = True
+        print(json.dumps(sub_params))
+        self.ws.send(json.dumps(sub_params))
 
     def _listen(self):
         while not self.stop:
@@ -55,6 +61,8 @@ class WebsocketClient(object):
                 self.onMessage(msg)
 
     def close(self):
+        if self.type is "heartbeat":
+            self.ws.send({"type": "heartbeat", "on": False})
         if self.stop is False:
             self.ws.close()
             self.onClose()

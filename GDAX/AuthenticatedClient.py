@@ -159,7 +159,7 @@ class AuthenticatedClient(PublicClient):
 
     def marginTransfer(self, margin_profile_id="", type="",currency="",amount=""):
         payload = {
-            "margin_profile_id": margin_profile_id
+            "margin_profile_id": margin_profile_id,
             "type": type,
             "currency": currency, # example: USD
             "amount": amount
