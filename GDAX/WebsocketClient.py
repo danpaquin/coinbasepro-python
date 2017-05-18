@@ -10,7 +10,6 @@ import time
 from threading import Thread
 from websocket import create_connection
 
-
 class WebsocketClient(object):
     def __init__(self, url=None, products=None, type=None):
         if url is None:
@@ -43,13 +42,11 @@ class WebsocketClient(object):
             self.url = self.url[:-1]
 
         self.stop = False
-        sub_params = {'type': self.type}
-        if self.type is "subscribe":
-            sub_params['product_ids'] = self.products
-        elif self.type is "heartbeat":
-            sub_params['on'] = "true"
-        print(json.dumps(sub_params))
+        sub_params = {'type': 'subscribe', 'product_ids': self.products}
         self.ws.send(json.dumps(sub_params))
+        if self.type is "heartbeat":
+            sub_params = {"type": "heartbeat", "on": True}
+            self.ws.send(json.dumps(sub_params))
 
     def _listen(self):
         while not self.stop:
@@ -57,16 +54,17 @@ class WebsocketClient(object):
                 msg = json.loads(self.ws.recv())
             except Exception as e:
                 self.onError(e)
+                self.close()
             else:
                 self.onMessage(msg)
 
     def close(self):
-        if self.type is "heartbeat":
-            self.ws.send({"type": "heartbeat", "on": "false"})
         if self.stop is False:
-            self.ws.close()
+            if self.type is "heartbeat":
+                self.ws.send(json.dumps({"type": "heartbeat", "on": False}))
+            self.stop = True
             self.onClose()
-        self.stop = True
+            self.ws.close()
 
     def onOpen(self):
         print("-- Subscribed! --\n")
