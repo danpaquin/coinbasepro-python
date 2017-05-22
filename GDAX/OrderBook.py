@@ -167,7 +167,12 @@ class OrderBook(WebsocketClient):
         result['asks'] = list()
         result['bids'] = list()
         for ask in self._asks:
-            thisAsk = self._asks[ask]
+            try:
+                # There can be a race condition here, where a price point is removed
+                # between these two ops
+                thisAsk = self._asks[ask]
+            except KeyError:
+                continue
             for order in thisAsk:
                 result['asks'].append([
                     order['price'],
@@ -175,7 +180,13 @@ class OrderBook(WebsocketClient):
                     order['id'],
                 ])
         for bid in self._bids:
-            thisBid = self._bids[bid]
+            try:
+                # There can be a race condition here, where a price point is removed
+                # between these two ops
+                thisBid = self._bids[bid]
+            except KeyError:
+                continue
+
             for order in thisBid:
                 result['bids'].append([
                     order['price'],
