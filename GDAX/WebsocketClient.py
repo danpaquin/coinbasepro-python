@@ -63,14 +63,14 @@ class WebsocketClient(object):
             if self.type == "heartbeat":
                 self.ws.send(json.dumps({"type": "heartbeat", "on": False}))
             self.onClose()
+            self.stop = True
+            #self.thread = None
+            self.ws.close()
 
     def onOpen(self):
         print("-- Subscribed! --\n")
 
     def onClose(self):
-        self.stop = True
-        #self.thread = None
-        self.ws.close()
         print("\n-- Socket Closed --")
 
     def onMessage(self, msg):
