@@ -42,9 +42,11 @@ class OrderBook(WebsocketClient):
                 })
             self._sequence = res['sequence']
 
-        if sequence <= self._sequence or sequence > self._sequence + 1:
-            print("Out of sequence!", sequence, self._sequence)
-            self._sequence = sequence
+        if sequence <= self._sequence:
+            return #ignore old messages
+        elif sequence > self._sequence + 1:
+            self.close()
+            self.start()
             return
 
         # print(message)
