@@ -17,8 +17,8 @@ class WebsocketClient(object):
 
         self.url = url
         self.products = products
-        self.type = type or "subscribe"
-        self.stop = None
+        self.type = "subscribe" #type or "subscribe"
+        self.stop = False
         self.ws = None
         self.thread = None
 
@@ -44,7 +44,7 @@ class WebsocketClient(object):
         self.stop = False
         sub_params = {'type': 'subscribe', 'product_ids': self.products}
         self.ws.send(json.dumps(sub_params))
-        if self.type is "heartbeat":
+        if self.type == "heartbeat":
             sub_params = {"type": "heartbeat", "on": True}
             self.ws.send(json.dumps(sub_params))
 
@@ -59,11 +59,12 @@ class WebsocketClient(object):
                 self.onMessage(msg)
 
     def close(self):
-        if self.stop is False:
-            if self.type is "heartbeat":
+        if not self.stop:
+            if self.type == "heartbeat":
                 self.ws.send(json.dumps({"type": "heartbeat", "on": False}))
-            self.stop = True
             self.onClose()
+            self.stop = True
+            #self.thread = None
             self.ws.close()
 
     def onOpen(self):

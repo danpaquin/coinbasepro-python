@@ -43,7 +43,7 @@ class OrderBook(WebsocketClient):
             self._sequence = res['sequence']
 
         if sequence <= self._sequence:
-            return
+            return #ignore old messages
         elif sequence > self._sequence + 1:
             self.close()
             self.start()
@@ -59,6 +59,7 @@ class OrderBook(WebsocketClient):
             self.match(message)
         elif msg_type == 'change':
             self.change(message)
+
         self._sequence = sequence
 
         # bid = self.get_bid()
@@ -116,6 +117,8 @@ class OrderBook(WebsocketClient):
 
         if order['side'] == 'buy':
             bids = self.get_bids(price)
+            if not bids:
+                return
             assert bids[0]['id'] == order['maker_order_id']
             if bids[0]['size'] == size:
                 self.set_bids(price, bids[1:])
@@ -124,6 +127,8 @@ class OrderBook(WebsocketClient):
                 self.set_bids(price, bids)
         else:
             asks = self.get_asks(price)
+            if not asks:
+                return
             assert asks[0]['id'] == order['maker_order_id']
             if asks[0]['size'] == size:
                 self.set_asks(price, asks[1:])
@@ -155,6 +160,29 @@ class OrderBook(WebsocketClient):
 
         if node is None or not any(o['id'] == order['order_id'] for o in node):
             return
+
+    def get_current_book(self):
+        result = dict()
+        result['sequence'] = self._sequence
+        result['asks'] = list()
+        result['bids'] = list()
+        for ask in self._asks:
+            thisAsk = self._asks[ask]
+            for order in thisAsk:
+                result['asks'].append([
+                    order['price'],
+                    order['size'],
+                    order['id'],
+                ])
+        for bid in self._bids:
+            thisBid = self._bids[bid]
+            for order in thisBid:
+                result['bids'].append([
+                    order['price'],
+                    order['size'],
+                    order['id'],
+                ])
+        return result
 
     def get_ask(self):
         return self._asks.min_key()
