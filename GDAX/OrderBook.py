@@ -20,7 +20,13 @@ class OrderBook(WebsocketClient):
         self._client = PublicClient(product_id=product_id)
         self._sequence = -1
 
+    def onOpen(self):
+        self.products = ["BTC-USD"]
+        print ("Showing current order book")
+
     def onMessage(self, message):
+        self.printMessage(message)
+
         sequence = message['sequence']
         if self._sequence == -1:
             self._asks = RBTree()
@@ -62,6 +68,10 @@ class OrderBook(WebsocketClient):
 
         self._sequence = sequence
 
+    def printMessage(self, msg):
+        if isinstance(msg, dict):
+            print  ", ".join(msg.keys())
+            print ", ".join(str(value) for value in msg.values())
         # bid = self.get_bid()
         # bids = self.get_bids(bid)
         # bid_depth = sum([b['size'] for b in bids])
