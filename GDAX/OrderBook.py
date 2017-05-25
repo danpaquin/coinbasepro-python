@@ -20,13 +20,7 @@ class OrderBook(WebsocketClient):
         self._client = PublicClient(product_id=product_id)
         self._sequence = -1
 
-    def onOpen(self):
-        self.products = ["BTC-USD"]
-        print ("Showing current order book")
-
     def onMessage(self, message):
-        self.printMessage(message)
-
         sequence = message['sequence']
         if self._sequence == -1:
             self._asks = RBTree()
@@ -68,10 +62,6 @@ class OrderBook(WebsocketClient):
 
         self._sequence = sequence
 
-    def printMessage(self, msg):
-        if isinstance(msg, dict):
-            print  ", ".join(msg.keys())
-            print ", ".join(str(value) for value in msg.values())
         # bid = self.get_bid()
         # bids = self.get_bids(bid)
         # bid_depth = sum([b['size'] for b in bids])
@@ -231,8 +221,26 @@ class OrderBook(WebsocketClient):
 
 
 if __name__ == '__main__':
-    import time
-    order_book = OrderBook()
-    order_book.start()
-    time.sleep(10)
-    order_book.close()
+    class WebsocketOrderBook(WebsocketClient):
+        def onOpen(self):
+            self.url = "wss://ws-feed.gdax.com/"
+            self.products = ["BTC-USD"]
+            self.MessageCount = 0
+            print ("Lets count the messages for the order book!")
+
+        def onMessage(self, msg):
+            print  ", ".join(msg.keys())
+            print ", ".join(str(value) for value in msg.values())
+            self.MessageCount += 1
+
+        def onClose(self):
+            print ("-- Goodbye! --")
+
+    wsOrderBookClient = WebsocketOrderBook()
+    wsOrderBookClient.start()
+
+    print(wsOrderBookClient.url, wsOrderBookClient.products)
+
+    while (wsOrderBookClient.MessageCount < 5):
+        time.sleep(1)
+    wsOrderBookClient.close()
