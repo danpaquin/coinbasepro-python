@@ -65,6 +65,7 @@ class WebsocketClient(object):
             self.onClose()
             self.stop = True
             #self.thread = None
+            self.thread.join()
             self.ws.close()
 
     def onOpen(self):
@@ -101,6 +102,6 @@ if __name__ == "__main__":
     print(wsClient.url, wsClient.products)
     # Do some logic with the data
     while (wsClient.MessageCount < 500):
-        print ("\nMessageCount =", "%i \n") % wsClient.MessageCount
+        print ("\nMessageCount =", "%i \n" % wsClient.MessageCount)
         time.sleep(1)
     wsClient.close()

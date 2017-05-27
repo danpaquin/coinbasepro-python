@@ -250,19 +250,19 @@ import GDAX, time
 class myWebsocketClient(GDAX.WebsocketClient):
     def onOpen(self):
         self.url = "wss://ws-feed.gdax.com/"
-        self.products = ["BTC-USD", "ETH-USD"]
+        self.products = ["LTC-USD"]
         self.MessageCount = 0
         print("Lets count the messages!")
     def onMessage(self, msg):
-        print("Message type:", msg["type"], "\t@ %.3f" % float(msg["price"]))
         self.MessageCount += 1
+        if 'price' in msg and 'type' in msg:
+            print("Message type:", msg["type"], "\t@ %.3f" % float(msg["price"]))
     def onClose(self):
         print("-- Goodbye! --")
 
 wsClient = myWebsocketClient()
 wsClient.start()
 print(wsClient.url, wsClient.products)
-# Do some logic with the data
 while (wsClient.MessageCount < 500):
     print("\nMessageCount =", "%i \n" % wsClient.MessageCount)
     time.sleep(1)
@@ -281,7 +281,14 @@ order_book.close()
 ```
 
 ## Change Log
-*0.2.2* **Current PyPI release**
+*0.3* **Current PyPI release**
+- Added crypto and LTC deposit & withdraw (undocumented).
+- Added support for Margin trading (undocumented).
+- Enhanced functionality of the WebsocketClient.
+- Soft launch of the OrderBook (undocumented).
+- Minor bug squashing & syntax improvements.
+
+*0.2.2*
 - Added additional API functionality such as cancelAll() and ETH withdrawal.
 
 *0.2.1*
@@ -289,12 +296,12 @@ order_book.close()
 
 *0.2.0*
 - Renamed project to GDAX-Python
-- Merged Websocket updates to handle errors and reconnect
+- Merged Websocket updates to handle errors and reconnect.
 
 *0.1.2*
-- Updated JSON handling for increased compatibility among some users
-- Added support for payment methods, reports, and coinbase user accounts
-- Other compatibility updates
+- Updated JSON handling for increased compatibility among some users.
+- Added support for payment methods, reports, and coinbase user accounts.
+- Other compatibility updates.
 
 *0.1.1b2*
-- Original PyPI Release
+- Original PyPI Release.
