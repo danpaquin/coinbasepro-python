@@ -102,10 +102,6 @@ if __name__ == "__main__":
     print(wsClient.url, wsClient.products)
     # Do some logic with the data
     while (wsClient.MessageCount < 500):
-<<<<<<< HEAD
         print ("\nMessageCount =", "%i \n" % wsClient.MessageCount)
-=======
-        print("\nMessageCount =", "%i \n" % wsClient.MessageCount)
->>>>>>> e5d2bb8d930db1ddf64ab446467845a41f0ab5cd
         time.sleep(1)
     wsClient.close()
