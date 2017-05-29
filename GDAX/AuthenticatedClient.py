@@ -60,18 +60,20 @@ class AuthenticatedClient(PublicClient):
             self.holdsPagination(accountId, list, r.headers["cb-after"])
         return list
 
-    def buy(self, buyParams):
-        buyParams["side"] = "buy"
-        if not buyParams["product_id"]:
-            buyParams["product_id"] = self.productId
-        r = requests.post(self.url + '/orders', data=json.dumps(buyParams), auth=self.auth)
-        #r.raise_for_status()
+    def buy(self, **kwargs):
+        kwargs["side"] = "buy"
+        if not "product_id" in kwargs:
+            kwargs["product_id"] = self.productId
+        r = requests.post(self.url + '/orders',
+                          data=json.dumps(kwargs),
+                          auth=self.auth)
         return r.json()
 
-    def sell(self, sellParams):
-        sellParams["side"] = "sell"
-        r = requests.post(self.url + '/orders', data=json.dumps(sellParams), auth=self.auth)
-        #r.raise_for_status()
+    def sell(self, **kwargs):
+        kwargs["side"] = "sell"
+        r = requests.post(self.url + '/orders',
+                          data=json.dumps(kwargs),
+                          auth=self.auth)
         return r.json()
 
     def cancelOrder(self, orderId):
