@@ -91,7 +91,8 @@ if __name__ == "__main__":
             print ("Lets count the messages!")
 
         def onMessage(self, msg):
-            print ("Message type:", msg["type"], "\t@ %.3f" % float(msg["price"]))
+            if 'price' in msg and 'type' in msg:
+                print ("Message type:", msg["type"], "\t@ %.3f" % float(msg["price"]))
             self.MessageCount += 1
 
         def onClose(self):
