@@ -22,21 +22,21 @@ class PublicClient():
         if type(json) is dict:
             if "product" in json: product = json["product"]
             if "level" in json: level = json['level']
-        r = requests.get(self.url + '/products/%s/book?level=%s' % (product or self.productId, str(level)))
+        r = requests.get(self.url + '/products/{}/book?level={}'.format(product or self.productId, str(level)))
         #r.raise_for_status()
         return r.json()
 
     def getProductTicker(self, json=None, product=''):
         if type(json) is dict:
             if "product" in json: product = json["product"]
-        r = requests.get(self.url + '/products/%s/ticker' % (product or self.productId))
+        r = requests.get(self.url + '/products/{}/ticker'.format(product or self.productId))
         #r.raise_for_status()
         return r.json()
 
     def getProductTrades(self, json=None, product=''):
         if type(json) is dict:
             if "product" in json: product = json["product"]
-        r = requests.get(self.url + '/products/%s/trades' % (product or self.productId))
+        r = requests.get(self.url + '/products/{}/trades'.format(product or self.productId))
         #r.raise_for_status()
         return r.json()
 
@@ -49,14 +49,14 @@ class PublicClient():
             payload["start"] = start
             payload["end"] = end
             payload["granularity"] = granularity
-        r = requests.get(self.url + '/products/%s/candles' % (product or self.productId), params=payload)
+        r = requests.get(self.url + '/products/{}/candles'.format(product or self.productId), params=payload)
         #r.raise_for_status()
         return r.json()
 
     def getProduct24HrStats(self, json=None, product=''):
         if type(json) is dict:
             if "product" in json: product = json["product"]
-        r = requests.get(self.url + '/products/%s/stats' % (product or self.productId))
+        r = requests.get(self.url + '/products/{}/stats'.format(product or self.productId))
         #r.raise_for_status()
         return r.json()
 

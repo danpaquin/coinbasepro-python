@@ -26,7 +26,7 @@ class AuthenticatedClient(PublicClient):
 
     def getAccountHistory(self, accountId):
         list = []
-        r = requests.get(self.url + '/accounts/%s/ledger' %accountId, auth=self.auth)
+        r = requests.get(self.url + '/accounts/{}/ledger'.format(accountId), auth=self.auth)
         #r.raise_for_status()
         list.append(r.json())
         if "cb-after" in r.headers:
@@ -34,7 +34,7 @@ class AuthenticatedClient(PublicClient):
         return list
 
     def historyPagination(self, accountId, list, after):
-        r = requests.get(self.url + '/accounts/%s/ledger?after=%s' %(accountId, str(after)), auth=self.auth)
+        r = requests.get(self.url + '/accounts/{}/ledger?after={}'.format(accountId, str(after)), auth=self.auth)
         #r.raise_for_status()
         if r.json():
             list.append(r.json())
@@ -44,7 +44,7 @@ class AuthenticatedClient(PublicClient):
 
     def getAccountHolds(self, accountId):
         list = []
-        r = requests.get(self.url + '/accounts/%s/holds' %accountId, auth=self.auth)
+        r = requests.get(self.url + '/accounts/{}/holds'.format(accountId), auth=self.auth)
         #r.raise_for_status()
         list.append(r.json())
         if "cb-after" in r.headers:
@@ -52,7 +52,7 @@ class AuthenticatedClient(PublicClient):
         return list
 
     def holdsPagination(self, accountId, list, after):
-        r = requests.get(self.url + '/accounts/%s/holds?after=%s' %(accountId, str(after)), auth=self.auth)
+        r = requests.get(self.url + '/accounts/{}/holds?after={}'.format(accountId, str(after)), auth=self.auth)
         #r.raise_for_status()
         if r.json():
             list.append(r.json())
@@ -101,7 +101,7 @@ class AuthenticatedClient(PublicClient):
         return list
 
     def paginateOrders(self, list, after):
-        r = requests.get(self.url + '/orders?after=%s' %str(after))
+        r = requests.get(self.url + '/orders?after={}'.format(str(after)))
         #r.raise_for_status()
         if r.json():
             list.append(r.json())
@@ -112,11 +112,11 @@ class AuthenticatedClient(PublicClient):
     def getFills(self, orderId='', productId='', before='', after='', limit=''):
         list = []
         url = self.url + '/fills?'
-        if orderId: url += "order_id=%s&" %str(orderId)
-        if productId: url += "product_id=%s&" %(productId or self.productId)
-        if before: url += "before=%s&" %str(before)
-        if after: url += "after=%s&" %str(after)
-        if limit: url += "limit=%s&" %str(limit)
+        if orderId: url += "order_id={}&".format(str(orderId))
+        if productId: url += "product_id={}&".format(productId or self.productId)
+        if before: url += "before={}&".format(str(before))
+        if after: url += "after={}&".format(str(after))
+        if limit: url += "limit={}&".format(str(limit))
         r = requests.get(url, auth=self.auth)
         #r.raise_for_status()
         list.append(r.json())
@@ -125,9 +125,9 @@ class AuthenticatedClient(PublicClient):
         return list
 
     def paginateFills(self, list, after, orderId='', productId=''):
-        url = self.url + '/fills?after=%s&' % str(after)
-        if orderId: url += "order_id=%s&" % str(orderId)
-        if productId: url += "product_id=%s&" % (productId or self.productId)
+        url = self.url + '/fills?after={}&'.format(str(after))
+        if orderId: url += "order_id={}&".format(str(orderId))
+        if productId: url += "product_id={}&".format(productId or self.productId)
         r = requests.get(url, auth=self.auth)
         #r.raise_for_status()
         if r.json():
@@ -139,8 +139,8 @@ class AuthenticatedClient(PublicClient):
     def getFundings(self, list='', status='', after=''):
         if not list: list = []
         url = self.url + '/funding?'
-        if status: url += "status=%s&" % str(status)
-        if after: url += 'after=%s&' % str(after)
+        if status: url += "status={}&".format(str(status))
+        if after: url += 'after={}&'.format(str(after))
         r = requests.get(url, auth=self.auth)
         #r.raise_for_status()
         list.append(r.json())
