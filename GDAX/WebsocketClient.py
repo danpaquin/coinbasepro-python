@@ -65,6 +65,8 @@ class WebsocketClient(object):
                 self.ws.send(json.dumps({"type": "heartbeat", "on": False}))
             self.onClose()
             self.stop = True
+            #self.thread = None
+            self.thread.join()
             self.ws.close()
 
     def onOpen(self):
@@ -90,7 +92,8 @@ if __name__ == "__main__":
             print ("Lets count the messages!")
 
         def onMessage(self, msg):
-            print ("Message type:", msg["type"], "\t@ %.3f" % float(msg["price"]))
+            if 'price' in msg and 'type' in msg:
+                print ("Message type:", msg["type"], "\t@ %.3f" % float(msg["price"]))
             self.MessageCount += 1
 
         def onClose(self):
@@ -101,6 +104,6 @@ if __name__ == "__main__":
     print(wsClient.url, wsClient.products)
     # Do some logic with the data
     while (wsClient.MessageCount < 500):
-        print ("\nMessageCount =", "%i \n") % wsClient.MessageCount
+        print ("\nMessageCount =", "%i \n" % wsClient.MessageCount)
         time.sleep(1)
     wsClient.close()
