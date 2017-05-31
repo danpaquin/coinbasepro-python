@@ -6,6 +6,7 @@
 
 from operator import itemgetter
 from bintrees import RBTree
+from collections import deque
 
 from GDAX.PublicClient import PublicClient
 from GDAX.WebsocketClient import WebsocketClient
@@ -13,14 +14,19 @@ from GDAX.WebsocketClient import WebsocketClient
 
 class OrderBook(WebsocketClient):
 
-    def __init__(self, product_id='BTC-USD'):
+    def __init__(self, product_id='BTC-USD', log=False):
         WebsocketClient.__init__(self, products=product_id)
         self._asks = RBTree()
         self._bids = RBTree()
+        self._deque = deque()
         self._client = PublicClient(product_id=product_id)
         self._sequence = -1
+        self._log = log
 
     def onMessage(self, message):
+        if self._log:
+            self._deque.append(message)
+
         sequence = message['sequence']
         if self._sequence == -1:
             self._asks = RBTree()
@@ -45,8 +51,7 @@ class OrderBook(WebsocketClient):
         if sequence <= self._sequence:
             return #ignore old messages
         elif sequence > self._sequence + 1:
-            self.close()
-            self.start()
+            self.reset()
             return
 
         # print(message)
@@ -69,6 +74,11 @@ class OrderBook(WebsocketClient):
         # asks = self.get_asks(ask)
         # ask_depth = sum([a['size'] for a in asks])
         # print('bid: %f @ %f - ask: %f @ %f' % (bid_depth, bid, ask_depth, ask))
+    def reset(self):
+        print("Restarting thread.")
+        self.close()
+        self.start()
+        self._sequence = -1
 
     def add(self, order):
         order = {
@@ -194,6 +204,12 @@ class OrderBook(WebsocketClient):
                     order['id'],
                 ])
         return result
+
+    def get_deque(self):
+        return self._deque
+
+    def clear_deque(self):
+        self._deque.clear()
 
     def get_ask(self):
         return self._asks.min_key()

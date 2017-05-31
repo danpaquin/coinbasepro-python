@@ -11,13 +11,14 @@ from threading import Thread
 from websocket import create_connection
 
 class WebsocketClient(object):
+    # Need to make a server to test. 
     def __init__(self, url=None, products=None, type=None):
         if url is None:
             url = "wss://ws-feed.gdax.com"
 
         self.url = url
         self.products = products
-        self.type = "subscribe" #type or "subscribe"
+        self.type = type or "subscribe"
         self.stop = False
         self.ws = None
         self.thread = None
@@ -28,7 +29,6 @@ class WebsocketClient(object):
             self._listen()
 
         self.onOpen()
-        self.ws = create_connection(self.url)
         self.thread = Thread(target=_go)
         self.thread.start()
 
@@ -42,6 +42,7 @@ class WebsocketClient(object):
             self.url = self.url[:-1]
 
         self.stop = False
+        self.ws = create_connection(self.url)
         sub_params = {'type': 'subscribe', 'product_ids': self.products}
         self.ws.send(json.dumps(sub_params))
         if self.type == "heartbeat":
@@ -64,7 +65,6 @@ class WebsocketClient(object):
                 self.ws.send(json.dumps({"type": "heartbeat", "on": False}))
             self.onClose()
             self.stop = True
-            #self.thread = None
             self.ws.close()
 
     def onOpen(self):
