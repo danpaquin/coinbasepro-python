@@ -24,11 +24,10 @@ class Ticker(WebsocketClient):
         self._current_ticker = None
 
     def onMessage(self, message):
-        if self._log_to:
-            pickle.dump(message, self._log_to)
-
         if 'type' in message and message['type'] == 'match':
             self._current_ticker = message
+            if self._log_to:
+                pickle.dump(message, self._log_to)
 
     def get_current_ticker(self):
         return self._current_ticker
