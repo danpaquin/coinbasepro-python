@@ -15,19 +15,19 @@ from GDAX.WebsocketClient import WebsocketClient
 
 class OrderBook(WebsocketClient):
 
-    def __init__(self, product_id='BTC-USD', logTo=None):
+    def __init__(self, product_id='BTC-USD', log_to=None):
         WebsocketClient.__init__(self, products=product_id)
         self._asks = RBTree()
         self._bids = RBTree()
         self._client = PublicClient(product_id=product_id)
         self._sequence = -1
-        if logTo:
-            assert hasattr(logTo, 'write')
-        self._logTo = logTo
+        if log_to:
+            assert hasattr(log_to, 'write')
+        self._log_to = log_to
 
     def onMessage(self, message):
-        if self._logTo:
-            pickle.dump(message, self._logTo)
+        if self._log_to:
+            pickle.dump(message, self._log_to)
 
         sequence = message['sequence']
         if self._sequence == -1:
@@ -57,7 +57,6 @@ class OrderBook(WebsocketClient):
             self.start()
             return
 
-        # print(message)
         msg_type = message['type']
         if msg_type == 'open':
             self.add(message)
@@ -83,7 +82,7 @@ class OrderBook(WebsocketClient):
             'id': order['order_id'] if 'order_id' in order else order['id'],
             'side': order['side'],
             'price': Decimal(order['price']),
-            'size': Decimal(order.get('size', order['remaining_size']))
+            'size': Decimal(order['size'] if 'size' in order else order['remaining_size'])
         }
         if order['side'] == 'buy':
             bids = self.get_bids(order['price'])

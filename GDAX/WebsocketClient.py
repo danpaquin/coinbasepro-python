@@ -17,7 +17,7 @@ class WebsocketClient(object):
 
         self.url = url
         self.products = products
-        self.type = "subscribe" #type or "subscribe"
+        self.type = type or "subscribe"
         self.stop = False
         self.ws = None
         self.thread = None
