@@ -110,7 +110,14 @@ print (method1, method2)
 
 
 ### Authenticated Client
-Not all API endpoints are available to everyone.  Those requiring user authentication can be reached using ```AuthenticatedClient```. You must setup API access within your [account settings](https://www.gdax.com/settings/api). The ```AuthenticatedClient``` inherits all methods from the ```PrivateClient``` class, so you will only need to initialize one if you are planning to integrate both into your script.
+
+Not all API endpoints are available to everyone.
+Those requiring user authentication can be reached using `AuthenticatedClient`.
+You must setup API access within your
+[account settings](https://www.gdax.com/settings/api).
+The `AuthenticatedClient` inherits all methods from the `PublicClient`
+class, so you will only need to initialize one if you are planning to
+integrate both into your script.
 
 ```python
 import GDAX
