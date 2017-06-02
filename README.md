@@ -96,12 +96,12 @@ Only available for the `PublicClient`, you may pass any function above raw JSON 
 import GDAX
 publicClient = GDAX.PublicClient()
 
-method1 = public.getProductHistoricRates(granularity='3000')
+method1 = publicClient.getProductHistoricRates(granularity='3000')
 
 params = {
 'granularity': '3000'
 }
-method2 = public.getProductHistoricRates(params)
+method2 = publicClient.getProductHistoricRates(params)
 
 # Both methods will send the same request, but not always return the same data if run in series.
 print (method1, method2)
