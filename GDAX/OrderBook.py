@@ -222,8 +222,26 @@ class OrderBook(WebsocketClient):
 
 
 if __name__ == '__main__':
-    import time
-    order_book = OrderBook()
-    order_book.start()
-    time.sleep(10)
-    order_book.close()
+    class WebsocketOrderBook(WebsocketClient):
+        def onOpen(self):
+            self.url = "wss://ws-feed.gdax.com/"
+            self.products = ["BTC-USD"]
+            self.MessageCount = 0
+            print ("Lets count the messages for the order book!")
+
+        def onMessage(self, msg):
+            print  ", ".join(msg.keys())
+            print ", ".join(str(value) for value in msg.values())
+            self.MessageCount += 1
+
+        def onClose(self):
+            print ("-- Goodbye! --")
+
+    wsOrderBookClient = WebsocketOrderBook()
+    wsOrderBookClient.start()
+
+    print(wsOrderBookClient.url, wsOrderBookClient.products)
+
+    while (wsOrderBookClient.MessageCount < 5):
+        time.sleep(1)
+    wsOrderBookClient.close()
