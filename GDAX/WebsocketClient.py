@@ -88,11 +88,11 @@ if __name__ == "__main__":
             self.url = "wss://ws-feed.gdax.com/"
             self.products = ["BTC-USD", "ETH-USD"]
             self.MessageCount = 0
-            print ("Lets count the messages!")
+            print("Let's count the messages!")
 
         def onMessage(self, msg):
             if 'price' in msg and 'type' in msg:
-                print ("Message type:", msg["type"], "\t@ %.3f" % float(msg["price"]))
+                print("Message type:", msg["type"], "\t@ %.3f" % float(msg["price"]))
             self.MessageCount += 1
 
         def onClose(self):
@@ -103,6 +103,6 @@ if __name__ == "__main__":
     print(wsClient.url, wsClient.products)
     # Do some logic with the data
     while (wsClient.MessageCount < 500):
-        print ("\nMessageCount =", "%i \n" % wsClient.MessageCount)
+        print("\nMessageCount =", "%i \n" % wsClient.MessageCount)
         time.sleep(1)
     wsClient.close()

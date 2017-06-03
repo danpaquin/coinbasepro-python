@@ -13,7 +13,6 @@ from GDAX.WebsocketClient import WebsocketClient
 
 
 class OrderBook(WebsocketClient):
-
     def __init__(self, product_id='BTC-USD'):
         WebsocketClient.__init__(self, products=product_id)
         self._asks = RBTree()
@@ -44,8 +43,10 @@ class OrderBook(WebsocketClient):
             self._sequence = res['sequence']
 
         if sequence <= self._sequence:
-            return #ignore old messages
+            # ignore older messages (e.g. before order book initialization from getProductOrderBook)
+            return
         elif sequence > self._sequence + 1:
+            print('Error: messages missing ({} - {}). Re-initializing websocket.'.format(sequence, self._sequence))
             self.close()
             self.start()
             return
@@ -73,10 +74,10 @@ class OrderBook(WebsocketClient):
 
     def add(self, order):
         order = {
-            'id': order['order_id'] if 'order_id' in order else order['id'],
+            'id': order.get('order_id') or order['id'],
             'side': order['side'],
             'price': Decimal(order['price']),
-            'size': Decimal(order.get('size', order['remaining_size']))
+            'size': Decimal(order.get('size') or order['remaining_size'])
         }
         if order['side'] == 'buy':
             bids = self.get_bids(order['price'])
@@ -163,10 +164,11 @@ class OrderBook(WebsocketClient):
             return
 
     def get_current_book(self):
-        result = dict()
-        result['sequence'] = self._sequence
-        result['asks'] = list()
-        result['bids'] = list()
+        result = {
+            'sequence': self._sequence,
+            'asks': [],
+            'bids': [],
+        }
         for ask in self._asks:
             try:
                 # There can be a race condition here, where a price point is removed
@@ -223,6 +225,7 @@ class OrderBook(WebsocketClient):
 
 if __name__ == '__main__':
     import time
+
     order_book = OrderBook()
     order_book.start()
     time.sleep(10)
