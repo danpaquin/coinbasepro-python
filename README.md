@@ -110,7 +110,14 @@ print (method1, method2)
 
 
 ### Authenticated Client
-Not all API endpoints are available to everyone.  Those requiring user authentication can be reached using ```AuthenticatedClient```. You must setup API access within your [account settings](https://www.gdax.com/settings/api). The ```AuthenticatedClient``` inherits all methods from the ```PrivateClient``` class, so you will only need to initialize one if you are planning to integrate both into your script.
+
+Not all API endpoints are available to everyone.
+Those requiring user authentication can be reached using `AuthenticatedClient`.
+You must setup API access within your
+[account settings](https://www.gdax.com/settings/api).
+The `AuthenticatedClient` inherits all methods from the `PublicClient`
+class, so you will only need to initialize one if you are planning to
+integrate both into your script.
 
 ```python
 import GDAX
@@ -154,21 +161,15 @@ authClient.getAccountHolds("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 - [buy & sell](https://docs.gdax.com/#place-a-new-order)
 ```python
 # Buy 0.01 BTC @ 100 USD
-buyParams = {
-        'price': '100.00', #USD
-        'size': '0.01', #BTC
-        'product_id': 'BTC-USD'
-}
-authClient.buy(buyParams)
+authClient.buy(price='100.00', #USD
+               size='0.01', #BTC
+               product_id='BTC-USD')
 ```
 ```python
 # Sell 0.01 BTC @ 200 USD
-sellParams = {
-        'price': '200.00', #USD
-        'size': '0.01', #BTC
-        #product_id not needed if default is desired
-}
-authClient.sell(sellParams)
+authClient.sell(price='200.00', #USD
+                size='0.01', #BTC
+                product_id='BTC-USD')
 ```
 
 - [cancelOrder](https://docs.gdax.com/#cancel-an-order)
