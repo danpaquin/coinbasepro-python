@@ -176,9 +176,9 @@ authClient.sell(price='200.00', #USD
 ```python
 authClient.cancelOrder("d50ec984-77a8-460a-b958-66f114b0de9b")
 ```
-- [cancelAll](https://docs.gdax.com/#cancel-an-order)
+- [cancelAll](https://docs.gdax.com/#cancel-all)
 ```python
-authClient.cancelOrder(productId='BTC-USD')
+authClient.cancelAll(product='BTC-USD')
 ```
 
 - [getOrders](https://docs.gdax.com/#list-orders) (paginated)
