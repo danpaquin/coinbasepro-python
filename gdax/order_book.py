@@ -8,8 +8,8 @@ from operator import itemgetter
 from bintrees import RBTree
 from decimal import Decimal
 
-from gdax.PublicClient import PublicClient
-from gdax.WebsocketClient import WebsocketClient
+from gdax.public_client import PublicClient
+from gdax.websocket_client import WebsocketClient
 
 
 class OrderBook(WebsocketClient):
