@@ -4,66 +4,72 @@
 #
 # For authenticated requests to the GDAX exchange
 
-import hmac, hashlib, time, requests, base64, json
+import hmac
+import hashlib
+import time
+import requests
+import base64
+import json
 from requests.auth import AuthBase
-from GDAX.PublicClient import PublicClient
+from gdax.PublicClient import PublicClient
+
 
 class AuthenticatedClient(PublicClient):
     def __init__(self, key, b64secret, passphrase, api_url="https://api.gdax.com", product_id="BTC-USD"):
         self.url = api_url
         if api_url[-1] == "/":
             self.url = api_url[:-1]
-        self.productId = product_id
+        self.product_id = product_id
         self.auth = GdaxAuth(key, b64secret, passphrase)
 
-    def getAccount(self, accountId):
-        r = requests.get(self.url + '/accounts/' + accountId, auth=self.auth)
-        #r.raise_for_status()
+    def get_account(self, account_id):
+        r = requests.get(self.url + '/accounts/' + account_id, auth=self.auth)
+        # r.raise_for_status()
         return r.json()
 
-    def getAccounts(self):
-        return self.getAccount('')
+    def get_accounts(self):
+        return self.get_account('')
 
-    def getAccountHistory(self, accountId):
-        list = []
-        r = requests.get(self.url + '/accounts/%s/ledger' %accountId, auth=self.auth)
-        #r.raise_for_status()
-        list.append(r.json())
+    def get_account_history(self, account_id):
+        result = []
+        r = requests.get(self.url + '/accounts/%s/ledger' % account_id, auth=self.auth)
+        # r.raise_for_status()
+        result.append(r.json())
         if "cb-after" in r.headers:
-            self.historyPagination(accountId, list, r.headers["cb-after"])
-        return list
+            self.history_pagination(account_id, result, r.headers["cb-after"])
+        return result
 
-    def historyPagination(self, accountId, list, after):
-        r = requests.get(self.url + '/accounts/%s/ledger?after=%s' %(accountId, str(after)), auth=self.auth)
-        #r.raise_for_status()
+    def history_pagination(self, account_id, result, after):
+        r = requests.get(self.url + '/accounts/%s/ledger?after=%s' % (account_id, str(after)), auth=self.auth)
+        # r.raise_for_status()
         if r.json():
-            list.append(r.json())
+            result.append(r.json())
         if "cb-after" in r.headers:
-            self.historyPagination(accountId, list, r.headers["cb-after"])
-        return list
+            self.history_pagination(account_id, result, r.headers["cb-after"])
+        return result
 
-    def getAccountHolds(self, accountId):
-        list = []
-        r = requests.get(self.url + '/accounts/%s/holds' %accountId, auth=self.auth)
-        #r.raise_for_status()
-        list.append(r.json())
+    def get_account_holds(self, account_id):
+        result = []
+        r = requests.get(self.url + '/accounts/%s/holds' % account_id, auth=self.auth)
+        # r.raise_for_status()
+        result.append(r.json())
         if "cb-after" in r.headers:
-            self.holdsPagination(accountId, list, r.headers["cb-after"])
-        return list
+            self.holds_pagination(account_id, result, r.headers["cb-after"])
+        return result
 
-    def holdsPagination(self, accountId, list, after):
-        r = requests.get(self.url + '/accounts/%s/holds?after=%s' %(accountId, str(after)), auth=self.auth)
-        #r.raise_for_status()
+    def holds_pagination(self, account_id, result, after):
+        r = requests.get(self.url + '/accounts/%s/holds?after=%s' % (account_id, str(after)), auth=self.auth)
+        # r.raise_for_status()
         if r.json():
-            list.append(r.json())
+            result.append(r.json())
         if "cb-after" in r.headers:
-            self.holdsPagination(accountId, list, r.headers["cb-after"])
-        return list
+            self.holds_pagination(account_id, result, r.headers["cb-after"])
+        return result
 
     def buy(self, **kwargs):
         kwargs["side"] = "buy"
-        if not "product_id" in kwargs:
-            kwargs["product_id"] = self.productId
+        if "product_id" not in kwargs:
+            kwargs["product_id"] = self.product_id
         r = requests.post(self.url + '/orders',
                           data=json.dumps(kwargs),
                           auth=self.auth)
@@ -76,106 +82,118 @@ class AuthenticatedClient(PublicClient):
                           auth=self.auth)
         return r.json()
 
-    def cancelOrder(self, orderId):
-        r = requests.delete(self.url + '/orders/' + orderId, auth=self.auth)
-        #r.raise_for_status()
+    def cancel_order(self, order_id):
+        r = requests.delete(self.url + '/orders/' + order_id, auth=self.auth)
+        # r.raise_for_status()
         return r.json()
 
-    def cancelAll(self, data=None, product=''):
+    def cancel_all(self, data=None, product=''):
         if type(data) is dict:
-            if "product" in data: product = data["product"]
-        r = requests.delete(self.url + '/orders/', data=json.dumps({'product_id':product or self.productId}), auth=self.auth)
-        #r.raise_for_status()
+            if "product" in data:
+                product = data["product"]
+        r = requests.delete(self.url + '/orders/',
+                            data=json.dumps({'product_id': product or self.product_id}), auth=self.auth)
+        # r.raise_for_status()
         return r.json()
 
-    def getOrder(self, orderId):
-        r = requests.get(self.url + '/orders/' + orderId, auth=self.auth)
-        #r.raise_for_status()
+    def get_order(self, order_id):
+        r = requests.get(self.url + '/orders/' + order_id, auth=self.auth)
+        # r.raise_for_status()
         return r.json()
 
-    def getOrders(self):
-        list = []
+    def get_orders(self):
+        result = []
         r = requests.get(self.url + '/orders/', auth=self.auth)
-        #r.raise_for_status()
-        list.append(r.json())
+        # r.raise_for_status()
+        result.append(r.json())
         if 'cb-after' in r.headers:
-            self.paginateOrders(list, r.headers['cb-after'])
-        return list
+            self.paginate_orders(result, r.headers['cb-after'])
+        return result
 
-    def paginateOrders(self, list, after):
-        r = requests.get(self.url + '/orders?after=%s' %str(after))
-        #r.raise_for_status()
+    def paginate_orders(self, result, after):
+        r = requests.get(self.url + '/orders?after=%s' % str(after))
+        # r.raise_for_status()
         if r.json():
-            list.append(r.json())
+            result.append(r.json())
         if 'cb-after' in r.headers:
-            self.paginateOrders(list, r.headers['cb-after'])
-        return list
+            self.paginate_orders(result, r.headers['cb-after'])
+        return result
 
-    def getFills(self, orderId='', productId='', before='', after='', limit=''):
-        list = []
+    def get_fills(self, order_id='', product_id='', before='', after='', limit=''):
+        result = []
         url = self.url + '/fills?'
-        if orderId: url += "order_id=%s&" %str(orderId)
-        if productId: url += "product_id=%s&" %(productId or self.productId)
-        if before: url += "before=%s&" %str(before)
-        if after: url += "after=%s&" %str(after)
-        if limit: url += "limit=%s&" %str(limit)
+        if order_id:
+            url += "order_id=%s&" % str(order_id)
+        if product_id:
+            url += "product_id=%s&" % (product_id or self.product_id)
+        if before:
+            url += "before=%s&" % str(before)
+        if after:
+            url += "after=%s&" % str(after)
+        if limit:
+            url += "limit=%s&" % str(limit)
         r = requests.get(url, auth=self.auth)
-        #r.raise_for_status()
-        list.append(r.json())
+        # r.raise_for_status()
+        result.append(r.json())
         if 'cb-after' in r.headers and limit is not len(r.json()):
-            return self.paginateFills(list, r.headers['cb-after'], orderId=orderId, productId=productId)
-        return list
+            return self.paginate_fills(result, r.headers['cb-after'], order_id=order_id, product_id=product_id)
+        return result
 
-    def paginateFills(self, list, after, orderId='', productId=''):
+    def paginate_fills(self, result, after, order_id='', product_id=''):
         url = self.url + '/fills?after=%s&' % str(after)
-        if orderId: url += "order_id=%s&" % str(orderId)
-        if productId: url += "product_id=%s&" % (productId or self.productId)
+        if order_id:
+            url += "order_id=%s&" % str(order_id)
+        if product_id:
+            url += "product_id=%s&" % (product_id or self.product_id)
         r = requests.get(url, auth=self.auth)
-        #r.raise_for_status()
+        # r.raise_for_status()
         if r.json():
-            list.append(r.json())
+            result.append(r.json())
         if 'cb-after' in r.headers:
-            return self.paginateFills(list, r.headers['cb-after'], orderId=orderId, productId=productId)
-        return list
+            return self.paginate_fills(result, r.headers['cb-after'], order_id=order_id, product_id=product_id)
+        return result
 
-    def getFundings(self, list='', status='', after=''):
-        if not list: list = []
+    def get_fundings(self, result='', status='', after=''):
+        if not result:
+            result = []
         url = self.url + '/funding?'
-        if status: url += "status=%s&" % str(status)
-        if after: url += 'after=%s&' % str(after)
+        if status:
+            url += "status=%s&" % str(status)
+        if after:
+            url += 'after=%s&' % str(after)
         r = requests.get(url, auth=self.auth)
-        #r.raise_for_status()
-        list.append(r.json())
+        # r.raise_for_status()
+        result.append(r.json())
         if 'cb-after' in r.headers:
-            return self.getFundings(list, status=status, after=r.headers['cb-after'])
-        return list
+            return self.get_fundings(result, status=status, after=r.headers['cb-after'])
+        return result
 
-    def repayFunding(self, amount='', currency=''):
+    def repay_funding(self, amount='', currency=''):
         payload = {
             "amount": amount,
-            "currency": currency #example: USD
+            "currency": currency  # example: USD
         }
         r = requests.post(self.url + "/funding/repay", data=json.dumps(payload), auth=self.auth)
-        #r.raise_for_status()
+        # r.raise_for_status()
         return r.json()
 
-    def marginTransfer(self, margin_profile_id="", type="",currency="",amount=""):
+    def margin_transfer(self, margin_profile_id="", transfer_type="", currency="", amount=""):
         payload = {
             "margin_profile_id": margin_profile_id,
-            "type": type,
-            "currency": currency, # example: USD
+            "type": transfer_type,
+            "currency": currency,  # example: USD
             "amount": amount
         }
         r = requests.post(self.url + "/profiles/margin-transfer", data=json.dumps(payload), auth=self.auth)
         # r.raise_for_status()
         return r.json()
 
-    def getPosition(self):
+    def get_position(self):
         r = requests.get(self.url + "/position", auth=self.auth)
         # r.raise_for_status()
         return r.json()
 
-    def closePosition(self, repay_only=""):
+    def close_position(self, repay_only=""):
         payload = {
             "repay_only": repay_only or False
         }
@@ -190,10 +208,10 @@ class AuthenticatedClient(PublicClient):
             "payment_method_id": payment_method_id
         }
         r = requests.post(self.url + "/deposits/payment-method", data=json.dumps(payload), auth=self.auth)
-        #r.raise_for_status()
+        # r.raise_for_status()
         return r.json()
 
-    def coinbaseDeposit(self, amount="", currency="", coinbase_account_id=""):
+    def coinbase_deposit(self, amount="", currency="", coinbase_account_id=""):
         payload = {
             "amount": amount,
             "currency": currency,
@@ -210,10 +228,10 @@ class AuthenticatedClient(PublicClient):
             "payment_method_id": payment_method_id
         }
         r = requests.post(self.url + "/withdrawals/payment-method", data=json.dumps(payload), auth=self.auth)
-        #r.raise_for_status()
+        # r.raise_for_status()
         return r.json()
 
-    def coinbaseWithdraw(self, amount="", currency="", coinbase_account_id=""):
+    def coinbase_withdraw(self, amount="", currency="", coinbase_account_id=""):
         payload = {
             "amount": amount,
             "currency": currency,
@@ -223,7 +241,7 @@ class AuthenticatedClient(PublicClient):
         # r.raise_for_status()
         return r.json()
 
-    def cryptoWithdraw(self, amount="", currency="", crypto_address=""):
+    def crypto_withdraw(self, amount="", currency="", crypto_address=""):
         payload = {
             "amount": amount,
             "currency": currency,
@@ -233,39 +251,41 @@ class AuthenticatedClient(PublicClient):
         # r.raise_for_status()
         return r.json()
 
-    def getPaymentMethods(self):
+    def get_payment_methods(self):
         r = requests.get(self.url + "/payment-methods", auth=self.auth)
-        #r.raise_for_status()
+        # r.raise_for_status()
         return r.json()
 
-    def getCoinbaseAccounts(self):
+    def get_coinbase_accounts(self):
         r = requests.get(self.url + "/coinbase-accounts", auth=self.auth)
-        #r.raise_for_status()
+        # r.raise_for_status()
         return r.json()
 
-    def createReport(self, type="", start_date="", end_date="", product_id="", account_id="", format="", email=""):
+    def create_report(self, report_type="", start_date="", end_date="", product_id="", account_id="", report_format="",
+                      email=""):
         payload = {
-            "type": type,
+            "type": report_type,
             "start_date": start_date,
             "end_date": end_date,
             "product_id": product_id,
             "account_id": account_id,
-            "format": format,
+            "format": report_format,
             "email": email
         }
         r = requests.post(self.url + "/reports", data=json.dumps(payload), auth=self.auth)
-        #r.raise_for_status()
+        # r.raise_for_status()
         return r.json()
 
-    def getReport(self, reportId=""):
-        r = requests.get(self.url + "/reports/" + reportId, auth=self.auth)
-        #r.raise_for_status()
+    def get_report(self, report_id=""):
+        r = requests.get(self.url + "/reports/" + report_id, auth=self.auth)
+        # r.raise_for_status()
         return r.json()
 
-    def getTrailingVolume(self):
+    def get_trailing_volume(self):
         r = requests.get(self.url + "/users/self/trailing-volume", auth=self.auth)
-        #r.raise_for_status()
+        # r.raise_for_status()
         return r.json()
+
 
 class GdaxAuth(AuthBase):
     # Provided by GDAX: https://docs.gdax.com/#signing-a-message

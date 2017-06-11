@@ -8,8 +8,8 @@ from operator import itemgetter
 from bintrees import RBTree
 from decimal import Decimal
 
-from GDAX.PublicClient import PublicClient
-from GDAX.WebsocketClient import WebsocketClient
+from gdax.PublicClient import PublicClient
+from gdax.WebsocketClient import WebsocketClient
 
 
 class OrderBook(WebsocketClient):
@@ -20,12 +20,12 @@ class OrderBook(WebsocketClient):
         self._client = PublicClient(product_id=product_id)
         self._sequence = -1
 
-    def onMessage(self, message):
+    def on_message(self, message):
         sequence = message['sequence']
         if self._sequence == -1:
             self._asks = RBTree()
             self._bids = RBTree()
-            res = self._client.getProductOrderBook(level=3)
+            res = self._client.get_product_order_book(level=3)
             for bid in res['bids']:
                 self.add({
                     'id': bid[2],
@@ -173,29 +173,21 @@ class OrderBook(WebsocketClient):
             try:
                 # There can be a race condition here, where a price point is removed
                 # between these two ops
-                thisAsk = self._asks[ask]
+                this_ask = self._asks[ask]
             except KeyError:
                 continue
-            for order in thisAsk:
-                result['asks'].append([
-                    order['price'],
-                    order['size'],
-                    order['id'],
-                ])
+            for order in this_ask:
+                result['asks'].append([order['price'], order['size'], order['id']])
         for bid in self._bids:
             try:
                 # There can be a race condition here, where a price point is removed
                 # between these two ops
-                thisBid = self._bids[bid]
+                this_bid = self._bids[bid]
             except KeyError:
                 continue
 
-            for order in thisBid:
-                result['bids'].append([
-                    order['price'],
-                    order['size'],
-                    order['id'],
-                ])
+            for order in this_bid:
+                result['bids'].append([order['price'], order['size'], order['id']])
         return result
 
     def get_ask(self):

@@ -10,17 +10,17 @@ install_requires = [
 ]
 
 setup(
-    name = 'GDAX',
-    version = '0.3.1',
-    author = 'Daniel Paquin',
-    author_email = 'dpaq34@gmail.com',
+    name='GDAX',
+    version='0.3.1',
+    author='Daniel Paquin',
+    author_email='dpaq34@gmail.com',
     license='MIT',
-    url = 'https://github.com/danpaquin/GDAX-Python',
-    packages = find_packages(),
-    install_requires = install_requires,
-    description = 'The unofficial Python client for the GDAX API',
-    download_url = 'https://github.com/danpaquin/GDAX-Python/archive/master.zip',
-    keywords = ['gdax', 'gdax-api', 'orderbook', 'trade', 'bitcoin', 'ethereum', 'BTC', 'ETH', 'client', 'api', 'wrapper', 'exchange', 'crypto', 'currency', 'trading', 'trading-api', 'coinbase'],
+    url='https://github.com/danpaquin/GDAX-Python',
+    packages=find_packages(),
+    install_requires=install_requires,
+    description='The unofficial Python client for the GDAX API',
+    download_url='https://github.com/danpaquin/GDAX-Python/archive/master.zip',
+    keywords=['gdax', 'gdax-api', 'orderbook', 'trade', 'bitcoin', 'ethereum', 'BTC', 'ETH', 'client', 'api', 'wrapper', 'exchange', 'crypto', 'currency', 'trading', 'trading-api', 'coinbase'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
