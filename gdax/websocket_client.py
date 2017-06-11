@@ -11,10 +11,7 @@ from websocket import create_connection
 
 
 class WebsocketClient(object):
-    def __init__(self, url=None, products=None, message_type="subscribe"):
-        if url is None:
-            url = "wss://ws-feed.gdax.com"
-
+    def __init__(self, url="wss://ws-feed.gdax.com", products=None, message_type="subscribe"):
         self.url = url
         self.products = products
         self.type = message_type

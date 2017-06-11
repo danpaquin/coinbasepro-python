@@ -14,7 +14,7 @@ from gdax.WebsocketClient import WebsocketClient
 
 class OrderBook(WebsocketClient):
     def __init__(self, product_id='BTC-USD'):
-        WebsocketClient.__init__(self, products=product_id)
+        super(self.__class__, self).__init__(products=product_id)
         self._asks = RBTree()
         self._bids = RBTree()
         self._client = PublicClient(product_id=product_id)
