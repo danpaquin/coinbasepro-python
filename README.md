@@ -160,7 +160,7 @@ authClient.getAccountHolds("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 
 - [buy & sell](https://docs.gdax.com/#place-a-new-order)
 ```python
-# Buy 0.01 BTC @ 100 USD
+# Buy BTC @ 100 USD
 authClient.buy({
         'type': 'market',
         'product_id': 'BTC-USD',
@@ -168,7 +168,7 @@ authClient.buy({
     })
 ```
 ```python
-# Sell 0.01 BTC @ 200 USD
+# Sell 0.01 BTC @ market price
 authClient.sell({
         'type': 'market',
         'product_id': 'BTC-USD',
