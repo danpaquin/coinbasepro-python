@@ -221,6 +221,9 @@ class OrderBook(WebsocketClient):
 
     def set_bids(self, price, bids):
         self._bids.insert(price, bids)
+        
+    def is_empty(self):
+        return len(self._asks) == 0 or len(self._bids) == 0
 
 
 if __name__ == '__main__':
