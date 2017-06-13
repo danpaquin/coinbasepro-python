@@ -23,7 +23,7 @@ class PublicClient(object):
                 product = json["product"]
             if "level" in json:
                 level = json['level']
-        r = requests.get(self.url + '/products/%s/book?level=%s' % (product or self.product_id, str(level)))
+        r = requests.get(self.url + '/products/{}/book?level={}'.format(product or self.product_id, str(level)))
         # r.raise_for_status()
         return r.json()
 
@@ -31,7 +31,7 @@ class PublicClient(object):
         if type(json) is dict:
             if "product" in json:
                 product = json["product"]
-        r = requests.get(self.url + '/products/%s/ticker' % (product or self.product_id))
+        r = requests.get(self.url + '/products/{}/ticker'.format(product or self.product_id))
         # r.raise_for_status()
         return r.json()
 
@@ -39,7 +39,7 @@ class PublicClient(object):
         if type(json) is dict:
             if "product" in json:
                 product = json["product"]
-        r = requests.get(self.url + '/products/%s/trades' % (product or self.product_id))
+        r = requests.get(self.url + '/products/{}/trades'.format(product or self.product_id))
         # r.raise_for_status()
         return r.json()
 
@@ -53,7 +53,7 @@ class PublicClient(object):
             payload["start"] = start
             payload["end"] = end
             payload["granularity"] = granularity
-        r = requests.get(self.url + '/products/%s/candles' % (product or self.product_id), params=payload)
+        r = requests.get(self.url + '/products/{}/candles'.format(product or self.product_id), params=payload)
         # r.raise_for_status()
         return r.json()
 
@@ -61,7 +61,7 @@ class PublicClient(object):
         if type(json) is dict:
             if "product" in json:
                 product = json["product"]
-        r = requests.get(self.url + '/products/%s/stats' % (product or self.product_id))
+        r = requests.get(self.url + '/products/{}/stats'.format(product or self.product_id))
         # r.raise_for_status()
         return r.json()
 

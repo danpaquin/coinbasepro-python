@@ -257,7 +257,7 @@ class myWebsocketClient(GDAX.WebsocketClient):
     def onMessage(self, msg):
         self.MessageCount += 1
         if 'price' in msg and 'type' in msg:
-            print("Message type:", msg["type"], "\t@ %.3f" % float(msg["price"]))
+            print ("Message type:", msg["type"], "\t@ {}.3f".format(float(msg["price"])))
     def onClose(self):
         print("-- Goodbye! --")
 
@@ -265,7 +265,7 @@ wsClient = myWebsocketClient()
 wsClient.start()
 print(wsClient.url, wsClient.products)
 while (wsClient.MessageCount < 500):
-    print("\nMessageCount =", "%i \n" % wsClient.MessageCount)
+    print ("\nMessageCount =", "{} \n".format(wsClient.MessageCount))
     time.sleep(1)
 wsClient.close()
 ```
