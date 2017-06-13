@@ -105,4 +105,5 @@ if __name__ == "__main__":
     while (wsClient.MessageCount < 500):
         print("\nMessageCount =", "%i \n" % wsClient.MessageCount)
         time.sleep(1)
+
     wsClient.close()
