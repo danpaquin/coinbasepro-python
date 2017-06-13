@@ -7,6 +7,7 @@
 from __future__ import print_function
 import json
 import time
+import traceback
 from threading import Thread
 from websocket import create_connection
 
@@ -53,8 +54,10 @@ class WebsocketClient(object):
             try:
                 msg = json.loads(self.ws.recv())
             except Exception as e:
+                traceback.print_exc()
                 self.onError(e)
                 self.close()
+                self.start()
             else:
                 self.onMessage(msg)
 
@@ -78,7 +81,7 @@ class WebsocketClient(object):
         print(msg)
 
     def onError(self, e):
-        SystemError(e)
+        return
 
 
 if __name__ == "__main__":

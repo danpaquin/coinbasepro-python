@@ -12,11 +12,10 @@ import pickle
 from GDAX.PublicClient import PublicClient
 from GDAX.WebsocketClient import WebsocketClient
 
-
 class OrderBook(WebsocketClient):
 
-    def __init__(self, product_id='BTC-USD', log_to=None):
-        WebsocketClient.__init__(self, products=product_id)
+    def __init__(self, url=None, product_id='BTC-USD', live=True, log_to=None):
+        WebsocketClient.__init__(self, url=url, products=product_id)
         self._asks = RBTree()
         self._bids = RBTree()
         self._client = PublicClient(product_id=product_id)
@@ -24,38 +23,41 @@ class OrderBook(WebsocketClient):
         if log_to:
             assert hasattr(log_to, 'write')
         self._log_to = log_to
+        self._current_ticker = None
+        self.__live = live
 
     def onMessage(self, message):
         if self._log_to:
             pickle.dump(message, self._log_to)
 
         sequence = message['sequence']
-        if self._sequence == -1:
-            self._asks = RBTree()
-            self._bids = RBTree()
-            res = self._client.getProductOrderBook(level=3)
-            for bid in res['bids']:
-                self.add({
-                    'id': bid[2],
-                    'side': 'buy',
-                    'price': Decimal(bid[0]),
-                    'size': Decimal(bid[1])
-                })
-            for ask in res['asks']:
-                self.add({
-                    'id': ask[2],
-                    'side': 'sell',
-                    'price': Decimal(ask[0]),
-                    'size': Decimal(ask[1])
-                })
-            self._sequence = res['sequence']
+        if self.__live:
+            if self._sequence == -1:
+                self._asks = RBTree()
+                self._bids = RBTree()
+                res = self._client.getProductOrderBook(level=3)
+                for bid in res['bids']:
+                    self.add({
+                        'id': bid[2],
+                        'side': 'buy',
+                        'price': Decimal(bid[0]),
+                        'size': Decimal(bid[1])
+                    })
+                for ask in res['asks']:
+                    self.add({
+                        'id': ask[2],
+                        'side': 'sell',
+                        'price': Decimal(ask[0]),
+                        'size': Decimal(ask[1])
+                    })
+                self._sequence = res['sequence']
 
-        if sequence <= self._sequence:
-            return #ignore old messages
-        elif sequence > self._sequence + 1:
-            self.close()
-            self.start()
-            return
+            if sequence <= self._sequence:
+                return #ignore old messages
+            elif sequence > self._sequence + 1:
+                self.close()
+                self.start()
+                return
 
         msg_type = message['type']
         if msg_type == 'open':
@@ -64,6 +66,7 @@ class OrderBook(WebsocketClient):
             self.remove(message)
         elif msg_type == 'match':
             self.match(message)
+            self._current_ticker = message
         elif msg_type == 'change':
             self.change(message)
 
@@ -167,6 +170,9 @@ class OrderBook(WebsocketClient):
 
         if node is None or not any(o['id'] == order['order_id'] for o in node):
             return
+
+    def get_current_ticker(self):
+        return self._current_ticker
 
     def get_current_book(self):
         result = dict()
