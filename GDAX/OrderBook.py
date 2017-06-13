@@ -13,14 +13,9 @@ from GDAX.PublicClient import PublicClient
 from GDAX.WebsocketClient import WebsocketClient
 
 class OrderBook(WebsocketClient):
-<<<<<<< HEAD
 
     def __init__(self, url=None, product_id='BTC-USD', live=True, log_to=None):
         WebsocketClient.__init__(self, url=url, products=product_id)
-=======
-    def __init__(self, product_id='BTC-USD'):
-        WebsocketClient.__init__(self, products=product_id)
->>>>>>> upstream/master
         self._asks = RBTree()
         self._bids = RBTree()
         self._client = PublicClient(product_id=product_id)
