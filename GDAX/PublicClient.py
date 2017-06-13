@@ -7,23 +7,14 @@
 import requests
 
 class PublicClient():
-    def __init__(
-            self,
-            api_url="https://api.gdax.com",
-            product_id="BTC-USD",
-            url_only=False
-        ):
+    def __init__(self, api_url="https://api.gdax.com", product_id="BTC-USD"):
         self.url = api_url
-        self.url_only = url_only
         if api_url[-1] == "/":
             self.url = api_url[:-1]
         self.productId = product_id
 
     def getProducts(self):
-        url = self.url + '/products'
-
-        if self.url_only: return url
-        r = requests.get(url)
+        r = requests.get(self.url + '/products')
         #r.raise_for_status()
         return r.json()
 
@@ -31,33 +22,21 @@ class PublicClient():
         if type(json) is dict:
             if "product" in json: product = json["product"]
             if "level" in json: level = json['level']
-
-        url = self.url + '/products/%s/book?level=%s' % (product or self.productId, str(level))
-
-        if self.url_only: return url
-        r = requests.get(url)
+        r = requests.get(self.url + '/products/{}/book?level={}'.format(product or self.productId, str(level)))
         #r.raise_for_status()
         return r.json()
 
     def getProductTicker(self, json=None, product=''):
         if type(json) is dict:
             if "product" in json: product = json["product"]
-
-        url = self.url + '/products/%s/ticker' % (product or self.productId)
-
-        if self.url_only: return url
-        r = requests.get(url)
+        r = requests.get(self.url + '/products/{}/ticker'.format(product or self.productId))
         #r.raise_for_status()
         return r.json()
 
     def getProductTrades(self, json=None, product=''):
         if type(json) is dict:
             if "product" in json: product = json["product"]
-
-        url = self.url + '/products/%s/trades' % (product or self.productId)
-
-        if self.url_only: return url
-        r = requests.get(url)
+        r = requests.get(self.url + '/products/{}/trades'.format(product or self.productId))
         #r.raise_for_status()
         return r.json()
 
@@ -70,37 +49,23 @@ class PublicClient():
             payload["start"] = start
             payload["end"] = end
             payload["granularity"] = granularity
-
-        url = self.url + '/products/%s/candles' % (product or self.productId)
-
-        if self.url_only: return url
-        r = requests.get(url, params=payload)
+        r = requests.get(self.url + '/products/{}/candles'.format(product or self.productId), params=payload)
         #r.raise_for_status()
         return r.json()
 
     def getProduct24HrStats(self, json=None, product=''):
         if type(json) is dict:
             if "product" in json: product = json["product"]
-
-        url = self.url + '/products/%s/stats' % (product or self.productId)
-
-        if self.url_only: return url
-        r = requests.get(url)
+        r = requests.get(self.url + '/products/{}/stats'.format(product or self.productId))
         #r.raise_for_status()
         return r.json()
 
     def getCurrencies(self):
-        url = self.url + '/currencies'
-
-        if self.url_only: return url
-        r = requests.get(url)
+        r = requests.get(self.url + '/currencies')
         #r.raise_for_status()
         return r.json()
 
     def getTime(self):
-        url = self.url + '/time'
-
-        if self.url_only: return url
-        r = requests.get(url)
+        r = requests.get(self.url + '/time')
         #r.raise_for_status()
         return r.json()

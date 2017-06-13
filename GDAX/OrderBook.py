@@ -13,9 +13,14 @@ from GDAX.PublicClient import PublicClient
 from GDAX.WebsocketClient import WebsocketClient
 
 class OrderBook(WebsocketClient):
+<<<<<<< HEAD
 
     def __init__(self, url=None, product_id='BTC-USD', live=True, log_to=None):
         WebsocketClient.__init__(self, url=url, products=product_id)
+=======
+    def __init__(self, product_id='BTC-USD'):
+        WebsocketClient.__init__(self, products=product_id)
+>>>>>>> upstream/master
         self._asks = RBTree()
         self._bids = RBTree()
         self._client = PublicClient(product_id=product_id)
@@ -31,33 +36,34 @@ class OrderBook(WebsocketClient):
             pickle.dump(message, self._log_to)
 
         sequence = message['sequence']
-        if self.__live:
-            if self._sequence == -1:
-                self._asks = RBTree()
-                self._bids = RBTree()
-                res = self._client.getProductOrderBook(level=3)
-                for bid in res['bids']:
-                    self.add({
-                        'id': bid[2],
-                        'side': 'buy',
-                        'price': Decimal(bid[0]),
-                        'size': Decimal(bid[1])
-                    })
-                for ask in res['asks']:
-                    self.add({
-                        'id': ask[2],
-                        'side': 'sell',
-                        'price': Decimal(ask[0]),
-                        'size': Decimal(ask[1])
-                    })
-                self._sequence = res['sequence']
+        if self._sequence == -1:
+            self._asks = RBTree()
+            self._bids = RBTree()
+            res = self._client.getProductOrderBook(level=3)
+            for bid in res['bids']:
+                self.add({
+                    'id': bid[2],
+                    'side': 'buy',
+                    'price': Decimal(bid[0]),
+                    'size': Decimal(bid[1])
+                })
+            for ask in res['asks']:
+                self.add({
+                    'id': ask[2],
+                    'side': 'sell',
+                    'price': Decimal(ask[0]),
+                    'size': Decimal(ask[1])
+                })
+            self._sequence = res['sequence']
 
-            if sequence <= self._sequence:
-                return #ignore old messages
-            elif sequence > self._sequence + 1:
-                self.close()
-                self.start()
-                return
+        if sequence <= self._sequence:
+            # ignore older messages (e.g. before order book initialization from getProductOrderBook)
+            return
+        elif sequence > self._sequence + 1:
+            print('Error: messages missing ({} - {}). Re-initializing websocket.'.format(sequence, self._sequence))
+            self.close()
+            self.start()
+            return
 
         msg_type = message['type']
         if msg_type == 'open':
@@ -82,10 +88,10 @@ class OrderBook(WebsocketClient):
 
     def add(self, order):
         order = {
-            'id': order['order_id'] if 'order_id' in order else order['id'],
+            'id': order.get('order_id') or order['id'],
             'side': order['side'],
             'price': Decimal(order['price']),
-            'size': Decimal(order['size'] if 'size' in order else order['remaining_size'])
+            'size': Decimal(order.get('size') or order['remaining_size'])
         }
         if order['side'] == 'buy':
             bids = self.get_bids(order['price'])
@@ -175,10 +181,11 @@ class OrderBook(WebsocketClient):
         return self._current_ticker
 
     def get_current_book(self):
-        result = dict()
-        result['sequence'] = self._sequence
-        result['asks'] = list()
-        result['bids'] = list()
+        result = {
+            'sequence': self._sequence,
+            'asks': [],
+            'bids': [],
+        }
         for ask in self._asks:
             try:
                 # There can be a race condition here, where a price point is removed
@@ -235,6 +242,7 @@ class OrderBook(WebsocketClient):
 
 if __name__ == '__main__':
     import time
+
     order_book = OrderBook()
     order_book.start()
     time.sleep(10)

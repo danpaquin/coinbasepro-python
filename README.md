@@ -96,12 +96,12 @@ Only available for the `PublicClient`, you may pass any function above raw JSON 
 import GDAX
 publicClient = GDAX.PublicClient()
 
-method1 = public.getProductHistoricRates(granularity='3000')
+method1 = publicClient.getProductHistoricRates(granularity='3000')
 
 params = {
 'granularity': '3000'
 }
-method2 = public.getProductHistoricRates(params)
+method2 = publicClient.getProductHistoricRates(params)
 
 # Both methods will send the same request, but not always return the same data if run in series.
 print (method1, method2)
@@ -110,7 +110,14 @@ print (method1, method2)
 
 
 ### Authenticated Client
-Not all API endpoints are available to everyone.  Those requiring user authentication can be reached using ```AuthenticatedClient```. You must setup API access within your [account settings](https://www.gdax.com/settings/api). The ```AuthenticatedClient``` inherits all methods from the ```PrivateClient``` class, so you will only need to initialize one if you are planning to integrate both into your script.
+
+Not all API endpoints are available to everyone.
+Those requiring user authentication can be reached using `AuthenticatedClient`.
+You must setup API access within your
+[account settings](https://www.gdax.com/settings/api).
+The `AuthenticatedClient` inherits all methods from the `PublicClient`
+class, so you will only need to initialize one if you are planning to
+integrate both into your script.
 
 ```python
 import GDAX
@@ -154,30 +161,24 @@ authClient.getAccountHolds("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 - [buy & sell](https://docs.gdax.com/#place-a-new-order)
 ```python
 # Buy 0.01 BTC @ 100 USD
-buyParams = {
-        'price': '100.00', #USD
-        'size': '0.01', #BTC
-        'product_id': 'BTC-USD'
-}
-authClient.buy(buyParams)
+authClient.buy(price='100.00', #USD
+               size='0.01', #BTC
+               product_id='BTC-USD')
 ```
 ```python
 # Sell 0.01 BTC @ 200 USD
-sellParams = {
-        'price': '200.00', #USD
-        'size': '0.01', #BTC
-        #product_id not needed if default is desired
-}
-authClient.sell(sellParams)
+authClient.sell(price='200.00', #USD
+                size='0.01', #BTC
+                product_id='BTC-USD')
 ```
 
 - [cancelOrder](https://docs.gdax.com/#cancel-an-order)
 ```python
 authClient.cancelOrder("d50ec984-77a8-460a-b958-66f114b0de9b")
 ```
-- [cancelAll](https://docs.gdax.com/#cancel-an-order)
+- [cancelAll](https://docs.gdax.com/#cancel-all)
 ```python
-authClient.cancelOrder(productId='BTC-USD')
+authClient.cancelAll(product='BTC-USD')
 ```
 
 - [getOrders](https://docs.gdax.com/#list-orders) (paginated)
@@ -256,7 +257,7 @@ class myWebsocketClient(GDAX.WebsocketClient):
     def onMessage(self, msg):
         self.MessageCount += 1
         if 'price' in msg and 'type' in msg:
-            print("Message type:", msg["type"], "\t@ %.3f" % float(msg["price"]))
+            print ("Message type:", msg["type"], "\t@ {}.3f".format(float(msg["price"])))
     def onClose(self):
         print("-- Goodbye! --")
 
@@ -264,7 +265,7 @@ wsClient = myWebsocketClient()
 wsClient.start()
 print(wsClient.url, wsClient.products)
 while (wsClient.MessageCount < 500):
-    print("\nMessageCount =", "%i \n" % wsClient.MessageCount)
+    print ("\nMessageCount =", "{} \n".format(wsClient.MessageCount))
     time.sleep(1)
 wsClient.close()
 ```
