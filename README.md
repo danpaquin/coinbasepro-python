@@ -195,9 +195,9 @@ auth_client.get_order("d50ec984-77a8-460a-b958-66f114b0de9b")
 ```python
 auth_client.get_fills()
 # Get fills for a specific order
-auth_client.get_fills(orderId="d50ec984-77a8-460a-b958-66f114b0de9b")
+auth_client.get_fills(order_id="d50ec984-77a8-460a-b958-66f114b0de9b")
 # Get fills for a specific product
-auth_client.get_fills(productId="ETH-BTC")
+auth_client.get_fills(product_id="ETH-BTC")
 ```
 
 - [deposit & withdraw](https://docs.gdax.com/#depositwithdraw)

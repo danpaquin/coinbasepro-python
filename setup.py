@@ -10,7 +10,7 @@ install_requires = [
 ]
 
 setup(
-    name='GDAX',
+    name='gdax',
     version='0.3.1',
     author='Daniel Paquin',
     author_email='dpaq34@gmail.com',
