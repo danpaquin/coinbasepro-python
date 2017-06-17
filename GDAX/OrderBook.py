@@ -80,6 +80,10 @@ class OrderBook(WebsocketClient):
         # asks = self.get_asks(ask)
         # ask_depth = sum([a['size'] for a in asks])
         # print('bid: %f @ %f - ask: %f @ %f' % (bid_depth, bid, ask_depth, ask))
+    def onError(self, e):
+        self._sequence = -1
+        self.close()
+        self.start()
 
     def add(self, order):
         order = {

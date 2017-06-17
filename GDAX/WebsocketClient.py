@@ -29,11 +29,11 @@ class WebsocketClient(object):
             self._listen()
 
         self.onOpen()
-        self.ws = create_connection(self.url)
         self.thread = Thread(target=_go)
         self.thread.start()
 
     def _connect(self):
+        self.ws = create_connection(self.url)
         if self.products is None:
             self.products = ["BTC-USD"]
         elif not isinstance(self.products, list):
@@ -54,10 +54,8 @@ class WebsocketClient(object):
             try:
                 msg = json.loads(self.ws.recv())
             except Exception as e:
-                traceback.print_exc()
+                #traceback.print_exc()
                 self.onError(e)
-                self.close()
-                self.start()
             else:
                 self.onMessage(msg)
 
@@ -67,9 +65,10 @@ class WebsocketClient(object):
                 self.ws.send(json.dumps({"type": "heartbeat", "on": False}))
             self.onClose()
             self.stop = True
-            #self.thread = None
-            self.thread.join()
-            self.ws.close()
+            try:
+                self.ws.close()
+            except WebSocketConnectionClosedException as e:
+                pass
 
     def onOpen(self):
         print("-- Subscribed! --\n")
