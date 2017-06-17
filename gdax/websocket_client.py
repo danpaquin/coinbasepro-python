@@ -6,19 +6,16 @@
 
 from __future__ import print_function
 import json
-import time
-import traceback
+
 from threading import Thread
 from websocket import create_connection
 
-class WebsocketClient(object):
-    def __init__(self, url=None, products=None, type=None):
-        if url is None:
-            url = "wss://ws-feed.gdax.com"
 
+class WebsocketClient(object):
+    def __init__(self, url="wss://ws-feed.gdax.com", products=None, message_type="subscribe"):
         self.url = url
         self.products = products
-        self.type = type or "subscribe"
+        self.type = message_type
         self.stop = False
         self.ws = None
         self.thread = None
@@ -28,12 +25,13 @@ class WebsocketClient(object):
             self._connect()
             self._listen()
 
-        self.onOpen()
+        self.on_open()
         self.thread = Thread(target=_go)
         self.thread.start()
 
     def _connect(self):
         self.ws = create_connection(self.url)
+        
         if self.products is None:
             self.products = ["BTC-USD"]
         elif not isinstance(self.products, list):
@@ -54,58 +52,58 @@ class WebsocketClient(object):
             try:
                 msg = json.loads(self.ws.recv())
             except Exception as e:
-                #traceback.print_exc()
-                self.onError(e)
+                self.on_error(e)
             else:
-                self.onMessage(msg)
+                self.on_message(msg)
 
     def close(self):
         if not self.stop:
             if self.type == "heartbeat":
                 self.ws.send(json.dumps({"type": "heartbeat", "on": False}))
-            self.onClose()
+            self.on_close()
             self.stop = True
             try:
                 self.ws.close()
             except WebSocketConnectionClosedException as e:
                 pass
 
-    def onOpen(self):
+    def on_open(self):
         print("-- Subscribed! --\n")
 
-    def onClose(self):
+    def on_close(self):
         print("\n-- Socket Closed --")
 
-    def onMessage(self, msg):
+    def on_message(self, msg):
         print(msg)
 
-    def onError(self, e):
+    def on_error(self, e):
         return
 
-
 if __name__ == "__main__":
-    import GDAX, time
-    class myWebsocketClient(GDAX.WebsocketClient):
-        def onOpen(self):
+    import gdax
+    import time
+
+    class MyWebsocketClient(gdax.WebsocketClient):
+        def on_open(self):
             self.url = "wss://ws-feed.gdax.com/"
             self.products = ["BTC-USD", "ETH-USD"]
-            self.MessageCount = 0
+            self.message_count = 0
             print("Let's count the messages!")
 
-        def onMessage(self, msg):
+        def on_message(self, msg):
             if 'price' in msg and 'type' in msg:
                 print("Message type:", msg["type"], "\t@ %.3f" % float(msg["price"]))
-            self.MessageCount += 1
+            self.message_count += 1
 
-        def onClose(self):
-            print ("-- Goodbye! --")
+        def on_close(self):
+            print("-- Goodbye! --")
 
-    wsClient = myWebsocketClient()
+    wsClient = MyWebsocketClient()
     wsClient.start()
     print(wsClient.url, wsClient.products)
     # Do some logic with the data
-    while (wsClient.MessageCount < 500):
-        print("\nMessageCount =", "%i \n" % wsClient.MessageCount)
+    while wsClient.message_count < 500:
+        print("\nMessageCount =", "%i \n" % wsClient.message_count)
         time.sleep(1)
 
     wsClient.close()

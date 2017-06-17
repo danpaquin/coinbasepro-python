@@ -30,62 +30,62 @@ pip install GDAX
 Only some endpoints in the API are available to everyone.  The public endpoints can be reached using ```PublicClient```
 
 ```python
-import GDAX
-publicClient = GDAX.PublicClient()
+import gdax
+public_client = gdax.PublicClient()
 # Set a default product
-publicClient = GDAX.PublicClient(product_id="ETH-USD")
+public_client = gdax.PublicClient(product_id="ETH-USD")
 ```
 
 ### PublicClient Methods
 - [getProducts](https://docs.gdax.com/#get-products)
 ```python
-publicClient.getProducts()
+public_client.get_products()
 ```
 
 - [getProductOrderBook](https://docs.gdax.com/#get-product-order-book)
 ```python
 # Get the order book at the default level.
-publicClient.getProductOrderBook()
-# Get the order book at a specfific level.
-publicClient.getProductOrderBook(level=1)
+public_client.get_product_order_book()
+# Get the order book at a specific level.
+public_client.get_product_order_book(level=1)
 ```
 
 - [getProductTicker](https://docs.gdax.com/#get-product-ticker)
 ```python
 # Get the product ticker for the default product.
-publicClient.getProductTicker()
+public_client.get_product_ticker()
 # Get the product ticker for a specific product.
-publicClient.getProductTicker(product="ETH-USD")
+public_client.get_product_ticker(product="ETH-USD")
 ```
 
 - [getProductTrades](https://docs.gdax.com/#get-trades)
 ```python
 # Get the product trades for the default product.
-publicClient.getProductTrades()
+public_client.get_product_trades()
 # Get the product trades for a specific product.
-publicClient.getProductTrades(product="ETH-USD")
+public_client.get_product_trades(product="ETH-USD")
 ```
 
 - [getProductHistoricRates](https://docs.gdax.com/#get-historic-rates)
 ```python
-publicClient.getProductHistoricRates()
+public_client.get_product_historic_rates()
 # To include other parameters, see official documentation:
-publicClient.getProductHistoricRates(granularity=3000)
+public_client.get_product_historic_rates(granularity=3000)
 ```
 
 - [getProduct24HrStates](https://docs.gdax.com/#get-24hr-stats)
 ```python
-publicClient.getProduct24HrStats()
+public_client.get_product_24hr_stats()
 ```
 
 - [getCurrencies](https://docs.gdax.com/#get-currencies)
 ```python
-publicClient.getCurrencies()
+public_client.get_currencies()
 ```
 
 - [getTime](https://docs.gdax.com/#time)
 ```python
-publicClient.getTime()
+public_client.get_time()
 ```
 
 #### *In Development* JSON Parsing
@@ -93,15 +93,15 @@ Only available for the `PublicClient`, you may pass any function above raw JSON 
 
 - Both of these calls send the same request:
 ```python
-import GDAX
-publicClient = GDAX.PublicClient()
+import gdax
+public_client = gdax.PublicClient()
 
-method1 = publicClient.getProductHistoricRates(granularity='3000')
+method1 = public_client.get_product_historic_rates(granularity='3000')
 
 params = {
 'granularity': '3000'
 }
-method2 = publicClient.getProductHistoricRates(params)
+method2 = public_client.get_product_historic_rates(params)
 
 # Both methods will send the same request, but not always return the same data if run in series.
 print (method1, method2)
@@ -120,18 +120,18 @@ class, so you will only need to initialize one if you are planning to
 integrate both into your script.
 
 ```python
-import GDAX
-authClient = GDAX.AuthenticatedClient(key, b64secret, passphrase)
+import gdax
+auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase)
 # Set a default product
-authClient = GDAX.AuthenticatedClient(key, b64secret, passphrase, product_id="ETH-USD")
-# Use the sandbox API (requires a different set of API access crudentials)
-authClient = GDAX.AuthenticatedClient(key, b64secret, passphrase, api_url="https://api-public.sandbox.gdax.com")
+auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase, product_id="ETH-USD")
+# Use the sandbox API (requires a different set of API access credentials)
+auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase, api_url="https://api-public.sandbox.gdax.com")
 ```
 
 ### Pagination
 Some calls are [paginated](https://docs.gdax.com/#pagination), meaning multiple calls must be made to receive the full set of data.  Each page/request is a list of dict objects that are then appended to a master list, making it easy to navigate pages (e.g. ```request[0]``` would return the first page of data in the example below). *This feature is under consideration for redesign.  Please provide feedback if you have issues or suggestions*
 ```python
-request = authClient.getFills(limit=100)
+request = auth_client.get_fills(limit=100)
 request[0] # Page 1 always present
 request[1] # Page 2+ present only if the data exists
 ```
@@ -140,64 +140,64 @@ It should be noted that limit does not behave exactly as the official documentat
 ### AuthenticatedClient Methods
 - [getAccounts](https://docs.gdax.com/#list-accounts)
 ```python
-authClient.getAccounts()
+auth_client.get_accounts()
 ```
 
 - [getAccount](https://docs.gdax.com/#get-an-account)
 ```python
-authClient.getAccount("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
+auth_client.get_account("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 ```
 
 - [getAccountHistory](https://docs.gdax.com/#get-account-history) (paginated)
 ```python
-authClient.getAccountHistory("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
+auth_client.get_account_history("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 ```
 
 - [getAccountHolds](https://docs.gdax.com/#get-holds) (paginated)
 ```python
-authClient.getAccountHolds("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
+auth_client.get_account_holds("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 ```
 
 - [buy & sell](https://docs.gdax.com/#place-a-new-order)
 ```python
 # Buy 0.01 BTC @ 100 USD
-authClient.buy(price='100.00', #USD
+auth_client.buy(price='100.00', #USD
                size='0.01', #BTC
                product_id='BTC-USD')
 ```
 ```python
 # Sell 0.01 BTC @ 200 USD
-authClient.sell(price='200.00', #USD
+auth_client.sell(price='200.00', #USD
                 size='0.01', #BTC
                 product_id='BTC-USD')
 ```
 
 - [cancelOrder](https://docs.gdax.com/#cancel-an-order)
 ```python
-authClient.cancelOrder("d50ec984-77a8-460a-b958-66f114b0de9b")
+auth_client.cancel_order("d50ec984-77a8-460a-b958-66f114b0de9b")
 ```
 - [cancelAll](https://docs.gdax.com/#cancel-all)
 ```python
-authClient.cancelAll(product='BTC-USD')
+auth_client.cancel_all(product='BTC-USD')
 ```
 
 - [getOrders](https://docs.gdax.com/#list-orders) (paginated)
 ```python
-authClient.getOrders()
+auth_client.get_orders()
 ```
 
 - [getOrder](https://docs.gdax.com/#get-an-order)
 ```python
-authClient.getOrder("d50ec984-77a8-460a-b958-66f114b0de9b")
+auth_client.get_order("d50ec984-77a8-460a-b958-66f114b0de9b")
 ```
 
 - [getFills](https://docs.gdax.com/#list-fills) (paginated)
 ```python
-authClient.getFills()
+auth_client.get_fills()
 # Get fills for a specific order
-authClient.getFills(orderId="d50ec984-77a8-460a-b958-66f114b0de9b")
+auth_client.get_fills(order_id="d50ec984-77a8-460a-b958-66f114b0de9b")
 # Get fills for a specific product
-authClient.getFills(productId="ETH-BTC")
+auth_client.get_fills(product_id="ETH-BTC")
 ```
 
 - [deposit & withdraw](https://docs.gdax.com/#depositwithdraw)
@@ -207,7 +207,7 @@ depositParams = {
         'amount': '25.00', # Currency determined by account specified
         'coinbase_account_id': '60680c98bfe96c2601f27e9c'
 }
-authClient.deposit(depositParams)
+auth_client.deposit(depositParams)
 ```
 ```python
 # Withdraw from GDAX into Coinbase Wallet
@@ -215,7 +215,7 @@ withdrawParams = {
         'amount': '1.00', # Currency determined by account specified
         'coinbase_account_id': '536a541fa9393bb3c7000023'
 }
-authClient.withdraw(withdrawParams)
+auth_client.withdraw(withdrawParams)
 ```
 
 ### WebsocketClient
@@ -223,18 +223,18 @@ If you would like to receive real-time market updates, you must subscribe to the
 
 #### Subscribe to a single product
 ```python
-import GDAX
+import gdax
 # Paramters are optional
-wsClient = GDAX.WebsocketClient(url="wss://ws-feed.gdax.com", products="BTC-USD")
+wsClient = gdax.WebsocketClient(url="wss://ws-feed.gdax.com", products="BTC-USD")
 # Do other stuff...
 wsClient.close()
 ```
 
 #### Subscribe to multiple products
 ```python
-import GDAX
+import gdax
 # Paramters are optional
-wsClient = GDAX.WebsocketClient(url="wss://ws-feed.gdax.com", products=["BTC-USD", "ETH-USD"])
+wsClient = gdax.WebsocketClient(url="wss://ws-feed.gdax.com", products=["BTC-USD", "ETH-USD"])
 # Do other stuff...
 wsClient.close()
 ```
@@ -247,25 +247,25 @@ The ```WebsocketClient``` subscribes in a separate thread upon initialization.  
 - onClose - called once after the websocket has been closed.
 - close - call this method to close the websocket connection (do not overwrite).
 ```python
-import GDAX, time
-class myWebsocketClient(GDAX.WebsocketClient):
-    def onOpen(self):
+import gdax, time
+class myWebsocketClient(gdax.WebsocketClient):
+    def on_open(self):
         self.url = "wss://ws-feed.gdax.com/"
         self.products = ["LTC-USD"]
-        self.MessageCount = 0
+        self.message_count = 0
         print("Lets count the messages!")
-    def onMessage(self, msg):
-        self.MessageCount += 1
+    def on_message(self, msg):
+        self.message_count += 1
         if 'price' in msg and 'type' in msg:
             print ("Message type:", msg["type"], "\t@ {}.3f".format(float(msg["price"])))
-    def onClose(self):
+    def on_close(self):
         print("-- Goodbye! --")
 
 wsClient = myWebsocketClient()
 wsClient.start()
 print(wsClient.url, wsClient.products)
-while (wsClient.MessageCount < 500):
-    print ("\nMessageCount =", "{} \n".format(wsClient.MessageCount))
+while (wsClient.message_count < 500):
+    print ("\nmessage_count =", "{} \n".format(wsClient.message_count))
     time.sleep(1)
 wsClient.close()
 ```
@@ -274,8 +274,8 @@ wsClient.close()
 The ```OrderBook``` subscribes to a websocket and keeps a real-time record of the orderbook for the product_id input.  Please provide your feedback for future improvements.
 
 ```python
-import GDAX, time
-order_book = GDAX.OrderBook(product_id='BTC-USD')
+import gdax, time
+order_book = gdax.OrderBook(product_id='BTC-USD')
 order_book.start()
 time.sleep(10)
 order_book.close()
