@@ -8,7 +8,7 @@ from __future__ import print_function
 import json
 
 from threading import Thread
-from websocket import create_connection
+from websocket import create_connection, WebSocketConnectionClosedException
 
 
 class WebsocketClient(object):
@@ -63,7 +63,8 @@ class WebsocketClient(object):
             self.on_close()
             self.stop = True
             try:
-                self.ws.close()
+                if self.ws:
+                    self.ws.close()
             except WebSocketConnectionClosedException as e:
                 pass
 
