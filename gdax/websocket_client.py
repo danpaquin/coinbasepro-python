@@ -30,8 +30,6 @@ class WebsocketClient(object):
         self.thread.start()
 
     def _connect(self):
-        self.ws = create_connection(self.url)
-        
         if self.products is None:
             self.products = ["BTC-USD"]
         elif not isinstance(self.products, list):
@@ -39,6 +37,8 @@ class WebsocketClient(object):
 
         if self.url[-1] == "/":
             self.url = self.url[:-1]
+
+        self.ws = create_connection(self.url)
 
         self.stop = False
         sub_params = {'type': 'subscribe', 'product_ids': self.products}
