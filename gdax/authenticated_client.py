@@ -15,23 +15,153 @@ from gdax.public_client import PublicClient
 
 
 class AuthenticatedClient(PublicClient):
+    """ Provides access to Private Endpoints on the GDAX API.
+
+    All requests default to the live `api_url`: 'https://api.gdax.com'.
+    To test your application using the sandbox modify the `api_url`.
+
+    Attributes:
+        url (str): The api url for this client instance to use.
+        auth (GdaxAuth): Custom authentication handler for each request.
+        session (requests.Session): Persistent HTTP connection object.
+    """
     def __init__(self, key, b64secret, passphrase,
                  api_url="https://api.gdax.com"):
+        """ Create an instance of the AuthenticatedClient class.
+
+        Args:
+            key (str): Your API key.
+            b64secret (str): The secret key matching your API key.
+            passphrase (str): Passphrase chosen when setting up key.
+            api_url (Optional[str]): API URL. Defaults to GDAX API.
+        """
         super(self.__class__, self).__init__(api_url)
         self.auth = GdaxAuth(key, b64secret, passphrase)
         self.session = requests.Session()
 
     def get_account(self, account_id):
+        """ Get information for a single account.
+
+        Use this endpoint when you know the account_id.
+
+        Args:
+            account_id (str): Account id for account you want to get.
+
+        Returns:
+            dict: Account information. Example::
+                {
+                    "id": "a1b2c3d4",
+                    "balance": "1.100",
+                    "holds": "0.100",
+                    "available": "1.00",
+                    "currency": "USD"
+                }
+        """
         return self._send_message('get', '/accounts/' + account_id)
 
     def get_accounts(self):
+        """ Get a list of trading all accounts.
+
+        When you place an order, the funds for the order are placed on
+        hold. They cannot be used for other orders or withdrawn. Funds
+        will remain on hold until the order is filled or canceled. The
+        funds on hold for each account will be specified.
+
+        Returns:
+            list: Info about all accounts. Example::
+                [
+                    {
+                        "id": "71452118-efc7-4cc4-8780-a5e22d4baa53",
+                        "currency": "BTC",
+                        "balance": "0.0000000000000000",
+                        "available": "0.0000000000000000",
+                        "hold": "0.0000000000000000",
+                        "profile_id": "75da88c5-05bf-4f54-bc85-5c775bd68254"
+                    },
+                    {
+                        "id": "e316cb9a-0808-4fd7-8914-97829c1925de",
+                        "currency": "USD",
+                        "balance": "80.2301373066930000",
+                        "available": "79.2266348066930000",
+                        "hold": "1.0035025000000000",
+                        "profile_id": "75da88c5-05bf-4f54-bc85-5c775bd68254"
+                    }
+                ]
+
+        * Additional info included in response for margin accounts.
+        """
         return self.get_account('')
 
     def get_account_history(self, account_id, **kwargs):
+        """ List account activity. Account activity either increases or
+        decreases your account balance.
+
+        Entry type indicates the reason for the account change.
+        * transfer:	Funds moved to/from Coinbase to GDAX
+        * match:	Funds moved as a result of a trade
+        * fee:	    Fee as a result of a trade
+        * rebate:   Fee rebate as per our fee schedule
+
+        If an entry is the result of a trade (match, fee), the details
+        field will contain additional information about the trade.
+
+        Args:
+            account_id (str): Account id to get history of.
+            kwargs (dict): Additional HTTP request parameters.
+
+        Returns:
+            list: History information for the account. Example::
+                [
+                    {
+                        "id": "100",
+                        "created_at": "2014-11-07T08:19:27.028459Z",
+                        "amount": "0.001",
+                        "balance": "239.669",
+                        "type": "fee",
+                        "details": {
+                            "order_id": "d50ec984-77a8-460a-b958-66f114b0de9b",
+                            "trade_id": "74",
+                            "product_id": "BTC-USD"
+                        }
+                    }
+                ]
+        """
         endpoint = '/accounts/{}/ledger'.format(account_id)
         return self._send_message('get', endpoint, params=kwargs)[0]
 
     def get_account_holds(self, account_id, **kwargs):
+        """ Holds are placed on an account for active orders or pending
+        withdraw requests.
+
+        As an order is filled, the hold amount is updated. If an order
+        is canceled, any remaining hold is removed. For a withdraw, once
+        it is completed, the hold is removed.
+
+        The `type` field will indicate why the hold exists. The hold
+        type is 'order' for holds related to open orders and 'transfer'
+        for holds related to a withdraw.
+
+        The `ref` field contains the id of the order or transfer which
+        created the hold.
+
+        Args:
+            account_id (str): Account id to get holds of.
+            kwargs (dict): Additional HTTP request parameters.
+
+        Returns:
+            list: Hold information for the provided account. Example::
+                [
+                    {
+                        "id": "82dcd140-c3c7-4507-8de4-2c529cd1a28f",
+                        "account_id": "e0b3f39a-183d-453e-b754-0c13e5bab0b3",
+                        "created_at": "2014-11-06T10:34:47.123456Z",
+                        "updated_at": "2014-11-06T10:40:47.123456Z",
+                        "amount": "4.23",
+                        "type": "order",
+                        "ref": "0a205de4-dd35-4370-a285-fe8fc375a273",
+                    }
+                ]
+        """
         endpoint = '/accounts/{}/holds'.format(account_id)
         return self._send_message('get', endpoint, params=kwargs)[0]
 
@@ -64,7 +194,7 @@ class AuthenticatedClient(PublicClient):
         params = {'product_id': product_id,
                   'side': side,
                   'type': order_type
-                  }
+                 }
         params.update(kwargs)
         return self._send_message('post', '/orders', data=json.dumps(params))
 
@@ -130,9 +260,42 @@ class AuthenticatedClient(PublicClient):
         return self.place_order(**params)
 
     def cancel_order(self, order_id):
+        """ Cancel a previously placed order.
+
+        If the order had no matches during its lifetime its record may
+        be purged. This means the order details will not be available
+        with get_order(order_id). If the order could not be canceled
+        (already filled or previously canceled, etc), then an error
+        response will indicate the reason in the message field.
+
+        **Caution**: The order id is the server-assigned order id and
+        not the optional client_oid.
+
+        Args:
+            order_id (str): The order_id of the order you want to cancel
+
+        Returns:
+            list: Containing the order_id of cancelled order. Example::
+                [ "c5ab5eae-76be-480e-8961-00792dc7e138" ]
+        """
         return self._send_message('delete', '/orders/' + order_id)
 
     def cancel_all(self, product_id=None):
+        """ With best effort, cancel all open orders.
+
+        Args:
+            product_id (Optional[str]): Only cancel ordrers for this product_id
+
+        Returns:
+            list: A list of ids of the canceled orders. Example::
+                [
+                    "144c6f8e-713f-4682-8435-5280fbe8b2b4",
+                    "debe4907-95dc-442f-af3b-cec12f42ebda",
+                    "cf7aceee-7b08-4227-a76c-3858144323ab",
+                    "dfc5ae27-cadb-4c0c-beef-8994936fde8a",
+                    "34fecfbf-de33-4273-b2c6-baf8e8948be4"
+                ]
+        """
         if product_id is not None:
             params = {'product_id': product_id}
             data = json.dumps(params)
@@ -141,12 +304,131 @@ class AuthenticatedClient(PublicClient):
         return self._send_message('delete', '/orders', data=data)
 
     def get_order(self, order_id):
+        """ Get a single order by order id.
+
+        If the order is canceled the response may have status code 404
+        if the order had no matches.
+
+        **Caution**: Open orders may change state between the request
+        and the response depending on market conditions.
+
+        Args:
+            order_id (str): The order to get information of.
+
+        Returns:
+            dict: Containing information on order. Example::
+                {
+                    "created_at": "2017-06-18T00:27:42.920136Z",
+                    "executed_value": "0.0000000000000000",
+                    "fill_fees": "0.0000000000000000",
+                    "filled_size": "0.00000000",
+                    "id": "9456f388-67a9-4316-bad1-330c5353804f",
+                    "post_only": true,
+                    "price": "1.00000000",
+                    "product_id": "BTC-USD",
+                    "settled": false,
+                    "side": "buy",
+                    "size": "1.00000000",
+                    "status": "pending",
+                    "stp": "dc",
+                    "time_in_force": "GTC",
+                    "type": "limit"
+                }
+        """
         return self._send_message('get', '/orders/' + order_id)
 
     def get_orders(self, **kwargs):
+        """ List your current open orders.
+
+        Only open or un-settled orders are returned. As soon as an order
+        is no longer open and settled, it will no longer appear in the
+        default request.
+
+        Orders which are no longer resting on the order book, will be
+        marked with the 'done' status. There is a small window between
+        an order being 'done' and 'settled'. An order is 'settled' when
+        all of the fills have settled and the remaining holds (if any)
+        have been removed.
+
+        For high-volume trading it is strongly recommended that you
+        maintain your own list of open orders and use one of the
+        streaming market data feeds to keep it updated. You should poll
+        the open orders endpoint once when you start trading to obtain
+        the current state of any open orders.
+
+        Args:
+            kwargs (dict): usage below
+                * status: Limit list of orders to these statuses.
+                          Passing 'all' returns orders of all statuses.
+                          ** default: ['open', 'pending', 'active']
+                * product_id: Only list orders for a specific product
+
+        Returns:
+            list: Containing information on orders. Example::
+                [
+                    {
+                        "id": "d0c5340b-6d6c-49d9-b567-48c4bfca13d2",
+                        "price": "0.10000000",
+                        "size": "0.01000000",
+                        "product_id": "BTC-USD",
+                        "side": "buy",
+                        "stp": "dc",
+                        "type": "limit",
+                        "time_in_force": "GTC",
+                        "post_only": false,
+                        "created_at": "2016-12-08T20:02:28.53864Z",
+                        "fill_fees": "0.0000000000000000",
+                        "filled_size": "0.00000000",
+                        "executed_value": "0.0000000000000000",
+                        "status": "open",
+                        "settled": false
+                    },
+                    {
+                        ...
+                    }
+                ]
+        """
         return self._send_message('get', '/orders', params=kwargs)[0]
 
     def get_fills(self, product_id=None, order_id=None, **kwargs):
+        """ Get a list of recent fills.
+
+        Fees are recorded in two stages. Immediately after the matching
+        engine completes a match, the fill is inserted into our
+        datastore. Once the fill is recorded, a settlement process will
+        settle the fill and credit both trading counterparties.
+
+        The 'fee' field indicates the fees charged for this fill.
+
+        The 'liquidity' field indicates if the fill was the result of a
+        liquidity provider or liquidity taker. M indicates Maker and T
+        indicates Taker.
+
+        Args:
+            product_id (Optional[str]): Limit list to this product_id
+            order_id (Optional[str]): Limit list to this order_id
+            kwargs (dict): Additional HTTP request parameters.
+
+        Returns:
+            list: Containing information on fills. Example::
+                [
+                    {
+                        "trade_id": 74,
+                        "product_id": "BTC-USD",
+                        "price": "10.00",
+                        "size": "0.01",
+                        "order_id": "d50ec984-77a8-460a-b958-66f114b0de9b",
+                        "created_at": "2014-11-07T22:19:28.578544Z",
+                        "liquidity": "T",
+                        "fee": "0.00025",
+                        "settled": true,
+                        "side": "buy"
+                    },
+                    {
+                        ...
+                    }
+                ]
+        """
         params = {}
         if product_id:
             params['product_id'] = product_id
@@ -160,6 +442,34 @@ class AuthenticatedClient(PublicClient):
         return r.headers['cb-after'], message
 
     def get_fundings(self, status=None, **kwargs):
+        """ Every order placed with a margin profile that draws funding
+        will create a funding record.
+
+        Args:
+            status (list/str): Limit funding records to these statuses.
+                ** Options: 'open', 'active', 'pending'
+            kwargs (dict): Additional HTTP request parameters.
+
+        Returns:
+            list: Containing information on margin funding. Example::
+                [
+                    {
+                        "id": "b93d26cd-7193-4c8d-bfcc-446b2fe18f71",
+                        "order_id": "b93d26cd-7193-4c8d-bfcc-446b2fe18f71",
+                        "profile_id": "d881e5a6-58eb-47cd-b8e2-8d9f2e3ec6f6",
+                        "amount": "1057.6519956381537500",
+                        "status": "settled",
+                        "created_at": "2017-03-17T23:46:16.663397Z",
+                        "currency": "USD",
+                        "repaid_amount": "1057.6519956381537500",
+                        "default_amount": "0",
+                        "repaid_default": false
+                    },
+                    {
+                        ...
+                    }
+                ]
+        """
         params = {}
         if status is not None:
             params['status'] = status
@@ -167,6 +477,15 @@ class AuthenticatedClient(PublicClient):
         return self._send_message('get', '/funding', params=params)[0]
 
     def repay_funding(self, amount, currency):
+        """ Repay funding. Repays the older funding records first.
+
+        Args:
+            amount (int): Amount of currency to repay
+            currency (str): The currency, example USD
+
+        Returns:
+            ???
+        """
         params = {
             'amount': amount,
             'currency': currency  # example: USD
@@ -194,6 +513,25 @@ class AuthenticatedClient(PublicClient):
                                   data=json.dumps(params))[0]
 
     def deposit(self, amount, currency, payment_method_id):
+        """ Deposit funds from a payment method.
+
+        See AuthenticatedClient.get_payment_methods() to receive
+        information regarding payment methods.
+
+        Args:
+            amount (int): The amount to depost.
+            currency (str): The type of currency.
+            payment_method_id (str): ID of the payment method.
+
+        Returns:
+            dict: Information about the deposit. Example::
+                {
+                    "id": "593533d2-ff31-46e0-b22e-ca754147a96a",
+                    "amount": "10.00",
+                    "currency": "USD",
+                    "payout_at": "2016-08-20T00:31:09Z"
+                }
+        """
         params = {
             'amount': amount,
             'currency': currency,
@@ -203,6 +541,28 @@ class AuthenticatedClient(PublicClient):
                                   data=json.dumps(params))[0]
 
     def coinbase_deposit(self, amount, currency, coinbase_account_id):
+        """ Deposit funds from a coinbase account.
+
+        You can move funds between your Coinbase accounts and your GDAX
+        trading accounts within your daily limits. Moving funds between
+        Coinbase and GDAX is instant and free.
+
+        See AuthenticatedClient.get_coinbase_accounts() to receive
+        information regarding your coinbase_accounts.
+
+        Args:
+            amount (int): The amount to depost.
+            currency (str): The type of currency.
+            coinbase_account_id (str): ID of the coinbase account.
+
+        Returns:
+            dict: Information about the deposit. Example::
+                {
+                    "id": "593533d2-ff31-46e0-b22e-ca754147a96a",
+                    "amount": "10.00",
+                    "currency": "BTC",
+                }
+        """
         params = {
             'amount': amount,
             'currency': currency,
