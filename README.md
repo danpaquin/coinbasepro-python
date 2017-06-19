@@ -1,113 +1,102 @@
 # GDAX-Python
-The Python client for the [GDAX API](https://docs.gdax.com/) (formerly known as the Coinbase Exchange API)
+The Python client for the [GDAX API](https://docs.gdax.com/) (formerly known as 
+the Coinbase Exchange API)
 
 ##### Provided under MIT License by Daniel Paquin.
-*Note: this library may be subtly broken or buggy. The code is released under the MIT License – please take the following message to heart:*
-> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+*Note: this library may be subtly broken or buggy. The code is released under 
+the MIT License – please take the following message to heart:*
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS 
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR 
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER 
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ## Benefits
 - A simple to use python wrapper for both public and authenticated endpoints.
-- In about 10 minutes, you could be programmatically trading on one of the largest Bitcoin exchanges in the *world*!
-- Do not worry about handling the nuances of the API with easy-to-use methods for every API endpoint.
-- Gain an advantage in the market by getting under the hood of GDAX to learn what and who is *really* behind every tick.
+- In about 10 minutes, you could be programmatically trading on one of the 
+largest Bitcoin exchanges in the *world*!
+- Do not worry about handling the nuances of the API with easy-to-use methods 
+for every API endpoint.
+- Gain an advantage in the market by getting under the hood of GDAX to learn 
+what and who is *really* behind every tick.
 
 ## Under Development
-- Test Scripts **on dev branch**
-- Additional Functionality for *WebsocketClient*, including a real-time order book
+- Testing
+- Additional Functionality for *WebsocketClient*, including a real-time order 
+book
 - FIX API Client **Looking for support**
 
 ## Getting Started
-This README is documentation on the syntax of the python client presented in this repository.  **In order to use this wrapper to its full potential, you must familiarize yourself with the official GDAX documentation.**
+This README is documentation on the syntax of the python client presented in 
+this repository. See function docstrings for full syntax details.  
+**This API attempts to present a clean interface to GDAX, but n order to use it 
+to its full potential, you must familiarize yourself with the official GDAX 
+documentation.**
 
 - https://docs.gdax.com/
 
 - You may manually install the project or use ```pip```:
 ```python
-pip install GDAX
+pip install gdax
 ```
 
 ### Public Client
-Only some endpoints in the API are available to everyone.  The public endpoints can be reached using ```PublicClient```
+Only some endpoints in the API are available to everyone.  The public endpoints 
+can be reached using ```PublicClient```
 
 ```python
 import gdax
 public_client = gdax.PublicClient()
-# Set a default product
-public_client = gdax.PublicClient(product_id="ETH-USD")
 ```
 
 ### PublicClient Methods
-- [getProducts](https://docs.gdax.com/#get-products)
+- [get_products](https://docs.gdax.com/#get-products)
 ```python
 public_client.get_products()
 ```
 
-- [getProductOrderBook](https://docs.gdax.com/#get-product-order-book)
+- [get_product_order_book](https://docs.gdax.com/#get-product-order-book)
 ```python
 # Get the order book at the default level.
-public_client.get_product_order_book()
+public_client.get_product_order_book('BTC-USD')
 # Get the order book at a specific level.
-public_client.get_product_order_book(level=1)
+public_client.get_product_order_book('BTC-USD', level=1)
 ```
 
-- [getProductTicker](https://docs.gdax.com/#get-product-ticker)
+- [get_product_ticker](https://docs.gdax.com/#get-product-ticker)
 ```python
-# Get the product ticker for the default product.
-public_client.get_product_ticker()
 # Get the product ticker for a specific product.
-public_client.get_product_ticker(product="ETH-USD")
+public_client.get_product_ticker(product_id='ETH-USD')
 ```
 
-- [getProductTrades](https://docs.gdax.com/#get-trades)
+- [get_product_trades](https://docs.gdax.com/#get-trades)
 ```python
-# Get the product trades for the default product.
-public_client.get_product_trades()
 # Get the product trades for a specific product.
-public_client.get_product_trades(product="ETH-USD")
+public_client.get_product_trades(product_id='ETH-USD')
 ```
 
-- [getProductHistoricRates](https://docs.gdax.com/#get-historic-rates)
+- [get_product_historic_rates](https://docs.gdax.com/#get-historic-rates)
 ```python
-public_client.get_product_historic_rates()
-# To include other parameters, see official documentation:
-public_client.get_product_historic_rates(granularity=3000)
+public_client.get_product_historic_rates('ETH-USD')
+# To include other parameters, see function docstring:
+public_client.get_product_historic_rates('ETH-USD', granularity=3000)
 ```
 
-- [getProduct24HrStates](https://docs.gdax.com/#get-24hr-stats)
+- [get_product_24hr_stats](https://docs.gdax.com/#get-24hr-stats)
 ```python
-public_client.get_product_24hr_stats()
+public_client.get_product_24hr_stats('ETH-USD')
 ```
 
-- [getCurrencies](https://docs.gdax.com/#get-currencies)
+- [get_currencies](https://docs.gdax.com/#get-currencies)
 ```python
 public_client.get_currencies()
 ```
 
-- [getTime](https://docs.gdax.com/#time)
+- [get_time](https://docs.gdax.com/#time)
 ```python
 public_client.get_time()
 ```
-
-#### *In Development* JSON Parsing
-Only available for the `PublicClient`, you may pass any function above raw JSON data.  This may be useful for some applications of the project and should not hinder performance, but we are looking into this.  *Do you love or hate this?  Please share your thoughts within the issue tab!*
-
-- Both of these calls send the same request:
-```python
-import gdax
-public_client = gdax.PublicClient()
-
-method1 = public_client.get_product_historic_rates(granularity='3000')
-
-params = {
-'granularity': '3000'
-}
-method2 = public_client.get_product_historic_rates(params)
-
-# Both methods will send the same request, but not always return the same data if run in series.
-print (method1, method2)
-```
-
-
 
 ### Authenticated Client
 
@@ -123,37 +112,47 @@ integrate both into your script.
 import gdax
 auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase)
 # Set a default product
-auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase, product_id="ETH-USD")
+auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase, 
+                                       product_id="ETH-USD")
 # Use the sandbox API (requires a different set of API access credentials)
-auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase, api_url="https://api-public.sandbox.gdax.com")
+auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase, 
+                                  api_url="https://api-public.sandbox.gdax.com")
 ```
 
 ### Pagination
-Some calls are [paginated](https://docs.gdax.com/#pagination), meaning multiple calls must be made to receive the full set of data.  Each page/request is a list of dict objects that are then appended to a master list, making it easy to navigate pages (e.g. ```request[0]``` would return the first page of data in the example below). *This feature is under consideration for redesign.  Please provide feedback if you have issues or suggestions*
+Some calls are [paginated](https://docs.gdax.com/#pagination), meaning multiple 
+calls must be made to receive the full set of data.  Each page/request is a list 
+of dict objects that are then appended to a master list, making it easy to 
+navigate pages (e.g. ```request[0]``` would return the first page of data in the 
+example below). *This feature is under consideration for redesign.  Please 
+provide feedback if you have issues or suggestions*
 ```python
 request = auth_client.get_fills(limit=100)
 request[0] # Page 1 always present
 request[1] # Page 2+ present only if the data exists
 ```
-It should be noted that limit does not behave exactly as the official documentation specifies.  If you request a limit and that limit is met, additional pages will not be returned.  This is to ensure speedy response times when less data is prefered.
+It should be noted that limit does not behave exactly as the official 
+documentation specifies.  If you request a limit and that limit is met, 
+additional pages will not be returned.  This is to ensure speedy response times 
+when less data is preferred.
 
 ### AuthenticatedClient Methods
-- [getAccounts](https://docs.gdax.com/#list-accounts)
+- [get_accounts](https://docs.gdax.com/#list-accounts)
 ```python
 auth_client.get_accounts()
 ```
 
-- [getAccount](https://docs.gdax.com/#get-an-account)
+- [get_account](https://docs.gdax.com/#get-an-account)
 ```python
 auth_client.get_account("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 ```
 
-- [getAccountHistory](https://docs.gdax.com/#get-account-history) (paginated)
+- [get_account_history](https://docs.gdax.com/#get-account-history) (paginated)
 ```python
 auth_client.get_account_history("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 ```
 
-- [getAccountHolds](https://docs.gdax.com/#get-holds) (paginated)
+- [get_account_holds](https://docs.gdax.com/#get-holds) (paginated)
 ```python
 auth_client.get_account_holds("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 ```
@@ -172,26 +171,26 @@ auth_client.sell(price='200.00', #USD
                 product_id='BTC-USD')
 ```
 
-- [cancelOrder](https://docs.gdax.com/#cancel-an-order)
+- [cancel_order](https://docs.gdax.com/#cancel-an-order)
 ```python
 auth_client.cancel_order("d50ec984-77a8-460a-b958-66f114b0de9b")
 ```
-- [cancelAll](https://docs.gdax.com/#cancel-all)
+- [cancel_all](https://docs.gdax.com/#cancel-all)
 ```python
 auth_client.cancel_all(product='BTC-USD')
 ```
 
-- [getOrders](https://docs.gdax.com/#list-orders) (paginated)
+- [get_orders](https://docs.gdax.com/#list-orders) (paginated)
 ```python
 auth_client.get_orders()
 ```
 
-- [getOrder](https://docs.gdax.com/#get-an-order)
+- [get_order](https://docs.gdax.com/#get-an-order)
 ```python
 auth_client.get_order("d50ec984-77a8-460a-b958-66f114b0de9b")
 ```
 
-- [getFills](https://docs.gdax.com/#list-fills) (paginated)
+- [get_fills](https://docs.gdax.com/#list-fills) (paginated)
 ```python
 auth_client.get_fills()
 # Get fills for a specific order
@@ -219,7 +218,8 @@ auth_client.withdraw(withdrawParams)
 ```
 
 ### WebsocketClient
-If you would like to receive real-time market updates, you must subscribe to the [websocket feed](https://docs.gdax.com/#websocket-feed).
+If you would like to receive real-time market updates, you must subscribe to the 
+[websocket feed](https://docs.gdax.com/#websocket-feed).
 
 #### Subscribe to a single product
 ```python
@@ -233,17 +233,23 @@ wsClient.close()
 #### Subscribe to multiple products
 ```python
 import gdax
-# Paramters are optional
-wsClient = gdax.WebsocketClient(url="wss://ws-feed.gdax.com", products=["BTC-USD", "ETH-USD"])
+# Paramaters are optional
+wsClient = gdax.WebsocketClient(url="wss://ws-feed.gdax.com", 
+                                products=["BTC-USD", "ETH-USD"])
 # Do other stuff...
 wsClient.close()
 ```
 
 ### WebsocketClient Methods
-The ```WebsocketClient``` subscribes in a separate thread upon initialization.  There are three methods which you could overwrite (before initialization) so it can react to the data streaming in.  The current client is a template used for illustration purposes only.
+The ```WebsocketClient``` subscribes in a separate thread upon initialization. 
+There are three methods which you could overwrite (before initialization) so it 
+can react to the data streaming in.  The current client is a template used for 
+illustration purposes only.
 
-- onOpen - called once, *immediately before* the socket connection is made, this is where you want to add inital parameters.
-- onMessage - called once for every message that arrives and accepts one argument that contains the message of dict type.
+- onOpen - called once, *immediately before* the socket connection is made, this 
+is where you want to add inital parameters.
+- onMessage - called once for every message that arrives and accepts one 
+argument that contains the message of dict type.
 - onClose - called once after the websocket has been closed.
 - close - call this method to close the websocket connection (do not overwrite).
 ```python
@@ -257,7 +263,8 @@ class myWebsocketClient(gdax.WebsocketClient):
     def on_message(self, msg):
         self.message_count += 1
         if 'price' in msg and 'type' in msg:
-            print ("Message type:", msg["type"], "\t@ {}.3f".format(float(msg["price"])))
+            print ("Message type:", msg["type"], 
+                   "\t@ {}.3f".format(float(msg["price"])))
     def on_close(self):
         print("-- Goodbye! --")
 
@@ -269,9 +276,17 @@ while (wsClient.message_count < 500):
     time.sleep(1)
 wsClient.close()
 ```
+## Testing
+A test suite is under development. To run the tests, start in the project 
+directory and run
+```
+python -m pytest
+```
 
 ### Real-time OrderBook
-The ```OrderBook``` subscribes to a websocket and keeps a real-time record of the orderbook for the product_id input.  Please provide your feedback for future improvements.
+The ```OrderBook``` subscribes to a websocket and keeps a real-time record of 
+the orderbook for the product_id input.  Please provide your feedback for future 
+improvements.
 
 ```python
 import gdax, time
@@ -293,7 +308,8 @@ order_book.close()
 - Added additional API functionality such as cancelAll() and ETH withdrawal.
 
 *0.2.1*
-- Allowed ```WebsocketClient``` to operate intuitively and restructured example workflow.
+- Allowed ```WebsocketClient``` to operate intuitively and restructured example 
+workflow.
 
 *0.2.0*
 - Renamed project to GDAX-Python
