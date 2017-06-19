@@ -9,6 +9,10 @@ install_requires = [
     'websocket-client==0.40.0',
 ]
 
+tests_require = [
+    'pytest',
+    ]
+
 setup(
     name='gdax',
     version='0.3.1',
@@ -18,6 +22,7 @@ setup(
     url='https://github.com/danpaquin/GDAX-Python',
     packages=find_packages(),
     install_requires=install_requires,
+    tests_require=tests_require,
     description='The unofficial Python client for the GDAX API',
     download_url='https://github.com/danpaquin/GDAX-Python/archive/master.zip',
     keywords=['gdax', 'gdax-api', 'orderbook', 'trade', 'bitcoin', 'ethereum', 'BTC', 'ETH', 'client', 'api', 'wrapper', 'exchange', 'crypto', 'currency', 'trading', 'trading-api', 'coinbase'],
