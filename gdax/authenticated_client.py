@@ -35,7 +35,7 @@ class AuthenticatedClient(PublicClient):
             passphrase (str): Passphrase chosen when setting up key.
             api_url (Optional[str]): API URL. Defaults to GDAX API.
         """
-        super(self.__class__, self).__init__(api_url)
+        super(AuthenticatedClient, self).__init__(api_url)
         self.auth = GdaxAuth(key, b64secret, passphrase)
         self.session = requests.Session()
 
@@ -79,12 +79,7 @@ class AuthenticatedClient(PublicClient):
                         "profile_id": "75da88c5-05bf-4f54-bc85-5c775bd68254"
                     },
                     {
-                        "id": "e316cb9a-0808-4fd7-8914-97829c1925de",
-                        "currency": "USD",
-                        "balance": "80.2301373066930000",
-                        "available": "79.2266348066930000",
-                        "hold": "1.0035025000000000",
-                        "profile_id": "75da88c5-05bf-4f54-bc85-5c775bd68254"
+                        ...
                     }
                 ]
 
@@ -123,11 +118,14 @@ class AuthenticatedClient(PublicClient):
                             "trade_id": "74",
                             "product_id": "BTC-USD"
                         }
+                    },
+                    {
+                        ...
                     }
                 ]
         """
         endpoint = '/accounts/{}/ledger'.format(account_id)
-        return self._send_message('get', endpoint, params=kwargs)[0]
+        return self._send_paginated_message(endpoint, params=kwargs)
 
     def get_account_holds(self, account_id, **kwargs):
         """ Holds are placed on an account for active orders or pending
@@ -159,11 +157,14 @@ class AuthenticatedClient(PublicClient):
                         "amount": "4.23",
                         "type": "order",
                         "ref": "0a205de4-dd35-4370-a285-fe8fc375a273",
+                    },
+                    {
+                    ...
                     }
                 ]
         """
         endpoint = '/accounts/{}/holds'.format(account_id)
-        return self._send_message('get', endpoint, params=kwargs)[0]
+        return self._send_paginated_message(endpoint, params=kwargs)
 
     def place_order(self, product_id, side, order_type, **kwargs):
         # Margin parameter checks
@@ -193,8 +194,7 @@ class AuthenticatedClient(PublicClient):
         # Build params dict
         params = {'product_id': product_id,
                   'side': side,
-                  'type': order_type
-                 }
+                  'type': order_type}
         params.update(kwargs)
         return self._send_message('post', '/orders', data=json.dumps(params))
 
@@ -284,7 +284,8 @@ class AuthenticatedClient(PublicClient):
         """ With best effort, cancel all open orders.
 
         Args:
-            product_id (Optional[str]): Only cancel ordrers for this product_id
+            product_id (Optional[str]): Only cancel orders for this
+                product_id
 
         Returns:
             list: A list of ids of the canceled orders. Example::
@@ -337,12 +338,12 @@ class AuthenticatedClient(PublicClient):
         """
         return self._send_message('get', '/orders/' + order_id)
 
-    def get_orders(self, **kwargs):
+    def get_orders(self, product_id=None, status=None, **kwargs):
         """ List your current open orders.
 
-        Only open or un-settled orders are returned. As soon as an order
-        is no longer open and settled, it will no longer appear in the
-        default request.
+        Only open or un-settled orders are returned. As soon as an
+        order is no longer open and settled, it will no longer appear
+        in the default request.
 
         Orders which are no longer resting on the order book, will be
         marked with the 'done' status. There is a small window between
@@ -357,11 +358,14 @@ class AuthenticatedClient(PublicClient):
         the current state of any open orders.
 
         Args:
-            kwargs (dict): usage below
-                * status: Limit list of orders to these statuses.
-                          Passing 'all' returns orders of all statuses.
-                          ** default: ['open', 'pending', 'active']
-                * product_id: Only list orders for a specific product
+            product_id (Optional[str]): Only list orders for this
+                product
+            status (Optional[list/str]): Limit list of orders to
+                this status or statuses. Passing 'all' returns orders
+                of all statuses.
+                ** Options: 'open', 'pending', 'active', 'done',
+                    'settled'
+                ** default: ['open', 'pending', 'active']
 
         Returns:
             list: Containing information on orders. Example::
@@ -388,7 +392,12 @@ class AuthenticatedClient(PublicClient):
                     }
                 ]
         """
-        return self._send_message('get', '/orders', params=kwargs)[0]
+        params = kwargs
+        if product_id is not None:
+            params['product_id'] = product_id
+        if status is not None:
+            params['status'] = status
+        return self._send_paginated_message('/orders', params=kwargs)
 
     def get_fills(self, product_id=None, order_id=None, **kwargs):
         """ Get a list of recent fills.
@@ -436,10 +445,7 @@ class AuthenticatedClient(PublicClient):
             params['order_id'] = order_id
         params.update(kwargs)
 
-        # Return `after` param so client can access more recent fills on next
-        # call of get_fills if desired.
-        message, r = self._send_message('get', '/fills', params=params)
-        return r.headers['cb-after'], message
+        return self._send_paginated_message('/fills', params=params)
 
     def get_fundings(self, status=None, **kwargs):
         """ Every order placed with a margin profile that draws funding
@@ -447,7 +453,7 @@ class AuthenticatedClient(PublicClient):
 
         Args:
             status (list/str): Limit funding records to these statuses.
-                ** Options: 'open', 'active', 'pending'
+                ** Options: 'outstanding', 'settled', 'rejected'
             kwargs (dict): Additional HTTP request parameters.
 
         Returns:
@@ -474,7 +480,7 @@ class AuthenticatedClient(PublicClient):
         if status is not None:
             params['status'] = status
         params.update(kwargs)
-        return self._send_message('get', '/funding', params=params)[0]
+        return self._send_paginated_message('/funding', params=params)
 
     def repay_funding(self, amount, currency):
         """ Repay funding. Repays the older funding records first.
@@ -495,22 +501,20 @@ class AuthenticatedClient(PublicClient):
 
     def margin_transfer(self, margin_profile_id, transfer_type, currency,
                         amount):
-        params = {
-            'margin_profile_id': margin_profile_id,
-            'type': transfer_type,
-            'currency': currency,  # example: USD
-            'amount': amount
-        }
+        params = {'margin_profile_id': margin_profile_id,
+                  'type': transfer_type,
+                  'currency': currency,  # example: USD
+                  'amount': amount}
         return self._send_message('post', '/profiles/margin-transfer',
                                   data=json.dumps(params))
 
     def get_position(self):
-        return self._send_message('get', '/position')[0]
+        return self._send_message('get', '/position')
 
     def close_position(self, repay_only):
         params = {'repay_only': repay_only}
         return self._send_message('post', '/position/close',
-                                  data=json.dumps(params))[0]
+                                  data=json.dumps(params))
 
     def deposit(self, amount, currency, payment_method_id):
         """ Deposit funds from a payment method.
@@ -519,7 +523,7 @@ class AuthenticatedClient(PublicClient):
         information regarding payment methods.
 
         Args:
-            amount (int): The amount to depost.
+            amount (int): The amount to deposit.
             currency (str): The type of currency.
             payment_method_id (str): ID of the payment method.
 
@@ -532,13 +536,11 @@ class AuthenticatedClient(PublicClient):
                     "payout_at": "2016-08-20T00:31:09Z"
                 }
         """
-        params = {
-            'amount': amount,
-            'currency': currency,
-            'payment_method_id': payment_method_id
-        }
+        params = {'amount': amount,
+                  'currency': currency,
+                  'payment_method_id': payment_method_id}
         return self._send_message('post', '/deposits/payment-method',
-                                  data=json.dumps(params))[0]
+                                  data=json.dumps(params))
 
     def coinbase_deposit(self, amount, currency, coinbase_account_id):
         """ Deposit funds from a coinbase account.
@@ -551,7 +553,7 @@ class AuthenticatedClient(PublicClient):
         information regarding your coinbase_accounts.
 
         Args:
-            amount (int): The amount to depost.
+            amount (int): The amount to deposit.
             currency (str): The type of currency.
             coinbase_account_id (str): ID of the coinbase account.
 
@@ -563,55 +565,45 @@ class AuthenticatedClient(PublicClient):
                     "currency": "BTC",
                 }
         """
-        params = {
-            'amount': amount,
-            'currency': currency,
-            'coinbase_account_id': coinbase_account_id
-        }
+        params = {'amount': amount,
+                  'currency': currency,
+                  'coinbase_account_id': coinbase_account_id}
         return self._send_message('post', '/deposits/coinbase-account',
-                                  data=json.dumps(params))[0]
+                                  data=json.dumps(params))
 
     def withdraw(self, amount, currency, payment_method_id):
-        params = {
-            'amount': amount,
-            'currency': currency,
-            'payment_method_id': payment_method_id
-        }
+        params = {'amount': amount,
+                  'currency': currency,
+                  'payment_method_id': payment_method_id}
         return self._send_message('post', '/withdrawals/payment-method',
-                                  data=json.dumps(params))[0]
+                                  data=json.dumps(params))
 
     def coinbase_withdraw(self, amount, currency, coinbase_account_id):
-        params = {
-            'amount': amount,
-            'currency': currency,
-            'coinbase_account_id': coinbase_account_id
-        }
+        params = {'amount': amount,
+                  'currency': currency,
+                  'coinbase_account_id': coinbase_account_id}
         return self._send_message('post', '/withdrawals/coinbase',
-                                  data=json.dumps(params))[0]
+                                  data=json.dumps(params))
 
     def crypto_withdraw(self, amount, currency, crypto_address):
-        params = {
-            'amount': amount,
-            'currency': currency,
-            'crypto_address': crypto_address
-        }
+        params = {'amount': amount,
+                  'currency': currency,
+                  'crypto_address': crypto_address}
         return self._send_message('post', '/withdrawals/crypto',
-                                  data=json.dumps(params))[0]
+                                  data=json.dumps(params))
 
     def get_payment_methods(self):
-        return self._send_message('get', '/payment-methods')[0]
+        return self._send_message('get', '/payment-methods')
 
     def get_coinbase_accounts(self):
-        return self._send_message('get', '/coinbase-accounts')[0]
+        return self._send_message('get', '/coinbase-accounts')
 
     def create_report(self, report_type, start_date, end_date, product_id=None,
                       account_id=None, report_format='pdf', email=None):
-        params = {
-            'type': report_type,
-            'start_date': start_date,
-            'end_date': end_date,
-            'format': report_format,
-        }
+        params = {'type': report_type,
+                  'start_date': start_date,
+                  'end_date': end_date,
+                  'format': report_format}
         if product_id is not None:
             params['product_id'] = product_id
         if account_id is not None:
@@ -620,16 +612,16 @@ class AuthenticatedClient(PublicClient):
             params['email'] = email
 
         return self._send_message('post', '/reports',
-                                  data=json.dumps(params))[0]
+                                  data=json.dumps(params))
 
     def get_report(self, report_id):
-        return self._send_message('get', '/reports/' + report_id)[0]
+        return self._send_message('get', '/reports/' + report_id)
 
     def get_trailing_volume(self):
-        return self._send_message('get', '/users/self/trailing-volume')[0]
+        return self._send_message('get', '/users/self/trailing-volume')
 
     def _send_message(self, method, endpoint, params=None, data=None):
-        """Get a paginated response by making multiple http requests.
+        """Send API request.
 
         Args:
             method (str): HTTP method (get, post, delete, etc.)
@@ -638,26 +630,27 @@ class AuthenticatedClient(PublicClient):
             data (Optional[str]): JSON-encoded string payload for POST
 
         Returns:
-            list: Merged responses from paginated requests
-            requests.models.Response: Response object from last HTTP
-                response
+            dict/list: JSON response
 
         """
-        if params is None:
-            params = {}
-        response_data = []
         url = self.url + endpoint
         r = self.session.request(method, url, params=params, data=data,
                                  auth=self.auth)
-        if r.json():
-            response_data = r.json()
-        if method == 'get':
-            while 'cb-after' in r.headers:
+        return r.json()
+
+    def _send_paginated_message(self, endpoint, params=None):
+        url = self.url + endpoint
+        while True:
+            r = self.session.get(url, params=params, auth=self.auth)
+            results = r.json()
+            for result in results:
+                yield result
+            # If there are no more pages, we're done. Otherwise update `after`
+            # param to get next page
+            if not r.headers.get('cb-after'):
+                break
+            else:
                 params['after'] = r.headers['cb-after']
-                r = self.session.get(url, params=params, auth=self.auth)
-                if r.json():
-                    response_data += r.json()
-        return response_data, r
 
 
 class GdaxAuth(AuthBase):
