@@ -397,7 +397,7 @@ class AuthenticatedClient(PublicClient):
             params['product_id'] = product_id
         if status is not None:
             params['status'] = status
-        return self._send_paginated_message('/orders', params=kwargs)
+        return self._send_paginated_message('/orders', params=params)
 
     def get_fills(self, product_id=None, order_id=None, **kwargs):
         """ Get a list of recent fills.
