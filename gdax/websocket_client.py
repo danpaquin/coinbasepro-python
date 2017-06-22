@@ -6,8 +6,9 @@
 
 from __future__ import print_function
 import json
+
 from threading import Thread
-from websocket import create_connection
+from websocket import create_connection, WebSocketConnectionClosedException
 
 
 class WebsocketClient(object):
@@ -25,7 +26,6 @@ class WebsocketClient(object):
             self._listen()
 
         self.on_open()
-        self.ws = create_connection(self.url)
         self.thread = Thread(target=_go)
         self.thread.start()
 
@@ -37,6 +37,8 @@ class WebsocketClient(object):
 
         if self.url[-1] == "/":
             self.url = self.url[:-1]
+
+        self.ws = create_connection(self.url)
 
         self.stop = False
         sub_params = {'type': 'subscribe', 'product_ids': self.products}
@@ -51,7 +53,6 @@ class WebsocketClient(object):
                 msg = json.loads(self.ws.recv())
             except Exception as e:
                 self.on_error(e)
-                self.close()
             else:
                 self.on_message(msg)
 
@@ -61,8 +62,11 @@ class WebsocketClient(object):
                 self.ws.send(json.dumps({"type": "heartbeat", "on": False}))
             self.on_close()
             self.stop = True
-            self.thread.join()
-            self.ws.close()
+            try:
+                if self.ws:
+                    self.ws.close()
+            except WebSocketConnectionClosedException as e:
+                pass
 
     def on_open(self):
         print("-- Subscribed! --\n")
@@ -74,8 +78,7 @@ class WebsocketClient(object):
         print(msg)
 
     def on_error(self, e):
-        SystemError(e)
-
+        return
 
 if __name__ == "__main__":
     import gdax

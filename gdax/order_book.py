@@ -7,10 +7,10 @@
 from operator import itemgetter
 from bintrees import RBTree
 from decimal import Decimal
+import pickle
 
 from gdax.public_client import PublicClient
 from gdax.websocket_client import WebsocketClient
-
 
 class OrderBook(WebsocketClient):
     def __init__(self, product_id='BTC-USD'):
@@ -19,8 +19,15 @@ class OrderBook(WebsocketClient):
         self._bids = RBTree()
         self._client = PublicClient(product_id=product_id)
         self._sequence = -1
+        self._log_to = log_to
+        if self._log_to:
+            assert hasattr(self._log_to, 'write')
+        self._current_ticker = None
 
     def on_message(self, message):
+        if self._log_to:
+            pickle.dump(message, self._log_to)
+
         sequence = message['sequence']
         if self._sequence == -1:
             self._asks = RBTree()
@@ -51,7 +58,6 @@ class OrderBook(WebsocketClient):
             self.start()
             return
 
-        # print(message)
         msg_type = message['type']
         if msg_type == 'open':
             self.add(message)
@@ -59,6 +65,7 @@ class OrderBook(WebsocketClient):
             self.remove(message)
         elif msg_type == 'match':
             self.match(message)
+            self._current_ticker = message
         elif msg_type == 'change':
             self.change(message)
 
@@ -71,6 +78,11 @@ class OrderBook(WebsocketClient):
         # asks = self.get_asks(ask)
         # ask_depth = sum([a['size'] for a in asks])
         # print('bid: %f @ %f - ask: %f @ %f' % (bid_depth, bid, ask_depth, ask))
+
+    def on_error(self, e):
+        self._sequence = -1
+        self.close()
+        self.start()
 
     def add(self, order):
         order = {
@@ -162,6 +174,9 @@ class OrderBook(WebsocketClient):
 
         if node is None or not any(o['id'] == order['order_id'] for o in node):
             return
+
+    def get_current_ticker(self):
+        return self._current_ticker
 
     def get_current_book(self):
         result = {
