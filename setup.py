@@ -15,7 +15,7 @@ tests_require = [
 
 setup(
     name='gdax',
-    version='0.3.1',
+    version='1.0.0',
     author='Daniel Paquin',
     author_email='dpaq34@gmail.com',
     license='MIT',

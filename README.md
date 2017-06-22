@@ -22,10 +22,9 @@ for every API endpoint.
 what and who is *really* behind every tick.
 
 ## Under Development
-- Testing
-- Additional Functionality for *WebsocketClient*, including a real-time order 
-book
-- FIX API Client **Looking for support**
+- Test Scripts
+- Additional Functionality for the real-time order book
+- FIX API Client **Looking for assistance**
 
 ## Getting Started
 This README is documentation on the syntax of the python client presented in 
@@ -297,7 +296,12 @@ order_book.close()
 ```
 
 ## Change Log
-*0.3* **Current PyPI release**
+*1.0* **Current PyPI release**
+- The first release that is not backwards compatible 
+- Refactored to follow PEP 8 Standards
+- Improved Documentation
+
+*0.3*
 - Added crypto and LTC deposit & withdraw (undocumented).
 - Added support for Margin trading (undocumented).
 - Enhanced functionality of the WebsocketClient.
