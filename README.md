@@ -39,7 +39,7 @@ public_client = gdax.PublicClient(product_id="ETH-USD")
 ### PublicClient Methods
 - [getProducts](https://docs.gdax.com/#get-products)
 ```python
-public_client.getProdducts()
+public_client.getProducts()
 ```
 
 - [getProductOrderBook](https://docs.gdax.com/#get-product-order-book)
