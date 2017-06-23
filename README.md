@@ -75,7 +75,7 @@ public_client.getProductHistoricRates(granularity=3000)
 
 - [getProduct24HrStates](https://docs.gdax.com/#get-24hr-stats)
 ```python
-public_client.get_product_24hr_stats()
+public_client.getProduct24HrStats()
 ```
 
 - [getCurrencies](https://docs.gdax.com/#get-currencies)
