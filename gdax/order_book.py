@@ -12,17 +12,23 @@ import pickle
 from gdax.public_client import PublicClient
 from gdax.websocket_client import WebsocketClient
 
+
 class OrderBook(WebsocketClient):
-    def __init__(self, product_id='BTC-USD'):
+    def __init__(self, product_id='BTC-USD', log_to=None):
         super(OrderBook, self).__init__(products=product_id)
         self._asks = RBTree()
         self._bids = RBTree()
-        self._client = PublicClient(product_id=product_id)
+        self._client = PublicClient()
         self._sequence = -1
         self._log_to = log_to
         if self._log_to:
             assert hasattr(self._log_to, 'write')
         self._current_ticker = None
+
+    @property
+    def product_id(self):
+        ''' Currently OrderBook only supports a single product even though it is stored as a list of products. '''
+        return self.products[0]
 
     def on_message(self, message):
         if self._log_to:
@@ -32,7 +38,7 @@ class OrderBook(WebsocketClient):
         if self._sequence == -1:
             self._asks = RBTree()
             self._bids = RBTree()
-            res = self._client.get_product_order_book(level=3)
+            res = self._client.get_product_order_book(product_id=self.product_id, level=3)
             for bid in res['bids']:
                 self.add({
                     'id': bid[2],
