@@ -1,8 +1,8 @@
 #
-# GDAX/AuthenticatedClient.py
+# gdax/AuthenticatedClient.py
 # Daniel Paquin
 #
-# For authenticated requests to the GDAX exchange
+# For authenticated requests to the gdax exchange
 
 import hmac
 import hashlib
@@ -108,7 +108,7 @@ class AuthenticatedClient(PublicClient):
         return result
 
     def paginate_orders(self, result, after):
-        r = requests.get(self.url + '/orders?after={}'.format(str(after)))
+        r = requests.get(self.url + '/orders?after={}'.format(str(after)), auth=self.auth)
         # r.raise_for_status()
         if r.json():
             result.append(r.json())
@@ -285,7 +285,7 @@ class AuthenticatedClient(PublicClient):
 
 
 class GdaxAuth(AuthBase):
-    # Provided by GDAX: https://docs.gdax.com/#signing-a-message
+    # Provided by gdax: https://docs.gdax.com/#signing-a-message
     def __init__(self, api_key, secret_key, passphrase):
         self.api_key = api_key
         self.secret_key = secret_key

@@ -15,16 +15,16 @@ tests_require = [
 
 setup(
     name='gdax',
-    version='1.0.0',
+    version='1.0.6',
     author='Daniel Paquin',
     author_email='dpaq34@gmail.com',
     license='MIT',
-    url='https://github.com/danpaquin/GDAX-Python',
+    url='https://github.com/danpaquin/gdax-python',
     packages=find_packages(),
     install_requires=install_requires,
     tests_require=tests_require,
     description='The unofficial Python client for the GDAX API',
-    download_url='https://github.com/danpaquin/GDAX-Python/archive/master.zip',
+    download_url='https://github.com/danpaquin/gdax-Python/archive/master.zip',
     keywords=['gdax', 'gdax-api', 'orderbook', 'trade', 'bitcoin', 'ethereum', 'BTC', 'ETH', 'client', 'api', 'wrapper', 'exchange', 'crypto', 'currency', 'trading', 'trading-api', 'coinbase'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',

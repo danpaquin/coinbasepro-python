@@ -200,7 +200,7 @@ auth_client.get_fills(product_id="ETH-BTC")
 
 - [deposit & withdraw](https://docs.gdax.com/#depositwithdraw)
 ```python
-# Deposit into GDAX from Coinbase Wallet
+gdax
 depositParams = {
         'amount': '25.00', # Currency determined by account specified
         'coinbase_account_id': '60680c98bfe96c2601f27e9c'

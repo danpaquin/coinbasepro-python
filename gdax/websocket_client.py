@@ -1,8 +1,8 @@
 #
-# GDAX/WebsocketClient.py
+# gdax/WebsocketClient.py
 # Daniel Paquin
 #
-# Template object to receive messages from the GDAX Websocket Feed
+# Template object to receive messages from the gdax Websocket Feed
 
 from __future__ import print_function
 import json
