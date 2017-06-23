@@ -30,7 +30,7 @@ pip install GDAX
 Only some endpoints in the API are available to everyone.  The public endpoints can be reached using ```PublicClient```
 
 ```python
-import gdax
+import GDAX as gdax
 public_client = gdax.PublicClient()
 # Set a default product
 public_client = gdax.PublicClient(product_id="ETH-USD")
@@ -39,38 +39,38 @@ public_client = gdax.PublicClient(product_id="ETH-USD")
 ### PublicClient Methods
 - [getProducts](https://docs.gdax.com/#get-products)
 ```python
-public_client.get_products()
+public_client.getProdducts()
 ```
 
 - [getProductOrderBook](https://docs.gdax.com/#get-product-order-book)
 ```python
 # Get the order book at the default level.
-public_client.get_product_order_book()
+public_client.getProductOrderBook()
 # Get the order book at a specific level.
-public_client.get_product_order_book(level=1)
+public_client.getProductOrderBook(level=1)
 ```
 
 - [getProductTicker](https://docs.gdax.com/#get-product-ticker)
 ```python
 # Get the product ticker for the default product.
-public_client.get_product_ticker()
+public_client.getProductTicker()
 # Get the product ticker for a specific product.
-public_client.get_product_ticker(product="ETH-USD")
+public_client.getProductTicker(product="ETH-USD")
 ```
 
 - [getProductTrades](https://docs.gdax.com/#get-trades)
 ```python
 # Get the product trades for the default product.
-public_client.get_product_trades()
+public_client.getProductTrades()
 # Get the product trades for a specific product.
-public_client.get_product_trades(product="ETH-USD")
+public_client.getProductTrades(product="ETH-USD")
 ```
 
 - [getProductHistoricRates](https://docs.gdax.com/#get-historic-rates)
 ```python
-public_client.get_product_historic_rates()
+public_client.getProductHistoricRates()
 # To include other parameters, see official documentation:
-public_client.get_product_historic_rates(granularity=3000)
+public_client.getProductHistoricRates(granularity=3000)
 ```
 
 - [getProduct24HrStates](https://docs.gdax.com/#get-24hr-stats)
@@ -80,12 +80,12 @@ public_client.get_product_24hr_stats()
 
 - [getCurrencies](https://docs.gdax.com/#get-currencies)
 ```python
-public_client.get_currencies()
+public_client.getCurrencies()
 ```
 
 - [getTime](https://docs.gdax.com/#time)
 ```python
-public_client.get_time()
+public_client.getTime()
 ```
 
 #### *In Development* JSON Parsing
@@ -93,15 +93,15 @@ Only available for the `PublicClient`, you may pass any function above raw JSON 
 
 - Both of these calls send the same request:
 ```python
-import gdax
+import GDAX as gdax
 public_client = gdax.PublicClient()
 
-method1 = public_client.get_product_historic_rates(granularity='3000')
+method1 = public_client.getProductHistoricRates(granularity='3000')
 
 params = {
 'granularity': '3000'
 }
-method2 = public_client.get_product_historic_rates(params)
+method2 = public_client.getProductHistoricRates(params)
 
 # Both methods will send the same request, but not always return the same data if run in series.
 print (method1, method2)
@@ -140,22 +140,22 @@ It should be noted that limit does not behave exactly as the official documentat
 ### AuthenticatedClient Methods
 - [getAccounts](https://docs.gdax.com/#list-accounts)
 ```python
-auth_client.get_accounts()
+auth_client.getAccounts()
 ```
 
 - [getAccount](https://docs.gdax.com/#get-an-account)
 ```python
-auth_client.get_account("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
+auth_client.getAccount("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 ```
 
 - [getAccountHistory](https://docs.gdax.com/#get-account-history) (paginated)
 ```python
-auth_client.get_account_history("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
+auth_client.getAccountHistory("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 ```
 
 - [getAccountHolds](https://docs.gdax.com/#get-holds) (paginated)
 ```python
-auth_client.get_account_holds("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
+auth_client.getAccountHolds("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 ```
 
 - [buy & sell](https://docs.gdax.com/#place-a-new-order)
@@ -174,30 +174,30 @@ auth_client.sell(price='200.00', #USD
 
 - [cancelOrder](https://docs.gdax.com/#cancel-an-order)
 ```python
-auth_client.cancel_order("d50ec984-77a8-460a-b958-66f114b0de9b")
+auth_client.cancelOrder("d50ec984-77a8-460a-b958-66f114b0de9b")
 ```
 - [cancelAll](https://docs.gdax.com/#cancel-all)
 ```python
-auth_client.cancel_all(product='BTC-USD')
+auth_client.cancelAll(product='BTC-USD')
 ```
 
 - [getOrders](https://docs.gdax.com/#list-orders) (paginated)
 ```python
-auth_client.get_orders()
+auth_client.getOrders()
 ```
 
 - [getOrder](https://docs.gdax.com/#get-an-order)
 ```python
-auth_client.get_order("d50ec984-77a8-460a-b958-66f114b0de9b")
+auth_client.getOrder("d50ec984-77a8-460a-b958-66f114b0de9b")
 ```
 
 - [getFills](https://docs.gdax.com/#list-fills) (paginated)
 ```python
-auth_client.get_fills()
+auth_client.getFills()
 # Get fills for a specific order
-auth_client.get_fills(order_id="d50ec984-77a8-460a-b958-66f114b0de9b")
+auth_client.getFills(order_id="d50ec984-77a8-460a-b958-66f114b0de9b")
 # Get fills for a specific product
-auth_client.get_fills(product_id="ETH-BTC")
+auth_client.getFills(product_id="ETH-BTC")
 ```
 
 - [deposit & withdraw](https://docs.gdax.com/#depositwithdraw)
