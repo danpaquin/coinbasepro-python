@@ -109,7 +109,7 @@ class AuthenticatedClient(PublicClient):
 
     def paginate_orders(self, result, after):
         r = requests.get(self.url + '/orders?after={}'.format(str(after)), auth=self.auth)
-        # r.raise_for_status()
+        r.raise_for_status()
         if r.json():
             result.append(r.json())
         if 'cb-after' in r.headers:
@@ -130,7 +130,7 @@ class AuthenticatedClient(PublicClient):
         if limit:
             url += "limit={}&".format(str(limit))
         r = requests.get(url, auth=self.auth)
-        # r.raise_for_status()
+        r.raise_for_status()
         result.append(r.json())
         if 'cb-after' in r.headers and limit is not len(r.json()):
             return self.paginate_fills(result, r.headers['cb-after'], order_id=order_id, product_id=product_id)
@@ -143,7 +143,7 @@ class AuthenticatedClient(PublicClient):
         if product_id:
             url += "product_id={}&".format(product_id or self.product_id)
         r = requests.get(url, auth=self.auth)
-        # r.raise_for_status()
+        r.raise_for_status()
         if r.json():
             result.append(r.json())
         if 'cb-after' in r.headers:
@@ -159,7 +159,7 @@ class AuthenticatedClient(PublicClient):
         if after:
             url += 'after={}&'.format(str(after))
         r = requests.get(url, auth=self.auth)
-        # r.raise_for_status()
+        r.raise_for_status()
         result.append(r.json())
         if 'cb-after' in r.headers:
             return self.get_fundings(result, status=status, after=r.headers['cb-after'])
@@ -171,7 +171,7 @@ class AuthenticatedClient(PublicClient):
             "currency": currency  # example: USD
         }
         r = requests.post(self.url + "/funding/repay", data=json.dumps(payload), auth=self.auth)
-        # r.raise_for_status()
+        r.raise_for_status()
         return r.json()
 
     def margin_transfer(self, margin_profile_id="", transfer_type="", currency="", amount=""):
@@ -182,12 +182,12 @@ class AuthenticatedClient(PublicClient):
             "amount": amount
         }
         r = requests.post(self.url + "/profiles/margin-transfer", data=json.dumps(payload), auth=self.auth)
-        # r.raise_for_status()
+        r.raise_for_status()
         return r.json()
 
     def get_position(self):
         r = requests.get(self.url + "/position", auth=self.auth)
-        # r.raise_for_status()
+        r.raise_for_status()
         return r.json()
 
     def close_position(self, repay_only=""):
@@ -195,7 +195,7 @@ class AuthenticatedClient(PublicClient):
             "repay_only": repay_only or False
         }
         r = requests.post(self.url + "/position/close", data=json.dumps(payload), auth=self.auth)
-        # r.raise_for_status()
+        r.raise_for_status()
         return r.json()
 
     def deposit(self, amount="", currency="", payment_method_id=""):
@@ -205,7 +205,7 @@ class AuthenticatedClient(PublicClient):
             "payment_method_id": payment_method_id
         }
         r = requests.post(self.url + "/deposits/payment-method", data=json.dumps(payload), auth=self.auth)
-        # r.raise_for_status()
+        r.raise_for_status()
         return r.json()
 
     def coinbase_deposit(self, amount="", currency="", coinbase_account_id=""):
@@ -215,7 +215,7 @@ class AuthenticatedClient(PublicClient):
             "coinbase_account_id": coinbase_account_id
         }
         r = requests.post(self.url + "/deposits/coinbase-account", data=json.dumps(payload), auth=self.auth)
-        # r.raise_for_status()
+        r.raise_for_status()
         return r.json()
 
     def withdraw(self, amount="", currency="", payment_method_id=""):
@@ -225,7 +225,7 @@ class AuthenticatedClient(PublicClient):
             "payment_method_id": payment_method_id
         }
         r = requests.post(self.url + "/withdrawals/payment-method", data=json.dumps(payload), auth=self.auth)
-        # r.raise_for_status()
+        r.raise_for_status()
         return r.json()
 
     def coinbase_withdraw(self, amount="", currency="", coinbase_account_id=""):
@@ -235,7 +235,7 @@ class AuthenticatedClient(PublicClient):
             "coinbase_account_id": coinbase_account_id
         }
         r = requests.post(self.url + "/withdrawals/coinbase", data=json.dumps(payload), auth=self.auth)
-        # r.raise_for_status()
+        r.raise_for_status()
         return r.json()
 
     def crypto_withdraw(self, amount="", currency="", crypto_address=""):
@@ -245,17 +245,17 @@ class AuthenticatedClient(PublicClient):
             "crypto_address": crypto_address
         }
         r = requests.post(self.url + "/withdrawals/crypto", data=json.dumps(payload), auth=self.auth)
-        # r.raise_for_status()
+        r.raise_for_status()
         return r.json()
 
     def get_payment_methods(self):
         r = requests.get(self.url + "/payment-methods", auth=self.auth)
-        # r.raise_for_status()
+        r.raise_for_status()
         return r.json()
 
     def get_coinbase_accounts(self):
         r = requests.get(self.url + "/coinbase-accounts", auth=self.auth)
-        # r.raise_for_status()
+        r.raise_for_status()
         return r.json()
 
     def create_report(self, report_type="", start_date="", end_date="", product_id="", account_id="", report_format="",
@@ -270,17 +270,17 @@ class AuthenticatedClient(PublicClient):
             "email": email
         }
         r = requests.post(self.url + "/reports", data=json.dumps(payload), auth=self.auth)
-        # r.raise_for_status()
+        r.raise_for_status()
         return r.json()
 
     def get_report(self, report_id=""):
         r = requests.get(self.url + "/reports/" + report_id, auth=self.auth)
-        # r.raise_for_status()
+        r.raise_for_status()
         return r.json()
 
     def get_trailing_volume(self):
         r = requests.get(self.url + "/users/self/trailing-volume", auth=self.auth)
-        # r.raise_for_status()
+        r.raise_for_status()
         return r.json()
 
 

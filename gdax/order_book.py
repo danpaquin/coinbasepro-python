@@ -35,7 +35,9 @@ class OrderBook(WebsocketClient):
             pickle.dump(message, self._log_to)
 
         sequence = message['sequence']
+
         if self._sequence == -1:
+            # Initialize order book
             self._asks = RBTree()
             self._bids = RBTree()
             res = self._client.get_product_order_book(product_id=self.product_id, level=3)
@@ -135,51 +137,50 @@ class OrderBook(WebsocketClient):
         size = Decimal(order['size'])
         price = Decimal(order['price'])
 
-        if order['side'] == 'buy':
-            bids = self.get_bids(price)
-            if not bids:
-                return
-            assert bids[0]['id'] == order['maker_order_id']
-            if bids[0]['size'] == size:
-                self.set_bids(price, bids[1:])
-            else:
-                bids[0]['size'] -= size
-                self.set_bids(price, bids)
+        side = order['side']
+        if side == 'buy':
+            orders = self.get_bids(price)
+            set_func = self.set_bids
+        elif side == 'sell':
+            orders = self.get_asks(price)
+            set_func = self.set_asks
         else:
-            asks = self.get_asks(price)
-            if not asks:
-                return
-            assert asks[0]['id'] == order['maker_order_id']
-            if asks[0]['size'] == size:
-                self.set_asks(price, asks[1:])
-            else:
-                asks[0]['size'] -= size
-                self.set_asks(price, asks)
+            raise AssertionError('Invalid side. Expected "buy" or "sell". Found: {}.'.format(side))
+
+        if not orders:
+            return
+
+        assert orders[0]['id'] == order['maker_order_id']
+
+        if orders[0]['size'] == size:
+            set_func(price, orders[1:])
+        else:
+            orders[0]['size'] -= size
+            set_func(price, orders)
 
     def change(self, order):
         new_size = Decimal(order['new_size'])
         price = Decimal(order['price'])
+        side = order['side']
 
-        if order['side'] == 'buy':
-            bids = self.get_bids(price)
-            if bids is None or not any(o['id'] == order['order_id'] for o in bids):
-                return
-            index = map(itemgetter('id'), bids).index(order['order_id'])
-            bids[index]['size'] = new_size
-            self.set_bids(price, bids)
+        if side == 'buy':
+            orders = self.get_bids(price)
+            set_func = self.set_bids
+        elif side == 'sell':
+            orders = self.get_asks(price)
+            set_func = self.set_asks
         else:
-            asks = self.get_asks(price)
-            if asks is None or not any(o['id'] == order['order_id'] for o in asks):
-                return
-            index = map(itemgetter('id'), asks).index(order['order_id'])
-            asks[index]['size'] = new_size
-            self.set_asks(price, asks)
+            raise AssertionError('Invalid side. Expected "buy" or "sell". Found: {}.'.format(side))
 
-        tree = self._asks if order['side'] == 'sell' else self._bids
-        node = tree.get(price)
-
-        if node is None or not any(o['id'] == order['order_id'] for o in node):
+        # If the order_id isn't in the order book, no further action to take
+        if orders is None or not any(o['id'] == order['order_id'] for o in orders):
             return
+
+        # If it is in the order book, update the size
+        index = list(map(itemgetter('id'), orders)).index(order['order_id'])
+        orders[index]['size'] = new_size
+
+        set_func(price, orders)
 
     def get_current_ticker(self):
         return self._current_ticker
