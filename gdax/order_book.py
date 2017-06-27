@@ -4,7 +4,6 @@
 #
 # Live order book updated from the gdax Websocket Feed
 
-from operator import itemgetter
 from bintrees import RBTree
 from decimal import Decimal
 import pickle
