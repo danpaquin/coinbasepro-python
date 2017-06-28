@@ -4,7 +4,6 @@
 #
 # Live order book updated from the gdax Websocket Feed
 
-from operator import itemgetter
 from bintrees import RBTree
 from decimal import Decimal
 import pickle
@@ -164,14 +163,14 @@ class OrderBook(WebsocketClient):
             bids = self.get_bids(price)
             if bids is None or not any(o['id'] == order['order_id'] for o in bids):
                 return
-            index = map(itemgetter('id'), bids).index(order['order_id'])
+            index = [b['id'] for b in bids].index(order['order_id'])
             bids[index]['size'] = new_size
             self.set_bids(price, bids)
         else:
             asks = self.get_asks(price)
             if asks is None or not any(o['id'] == order['order_id'] for o in asks):
                 return
-            index = map(itemgetter('id'), asks).index(order['order_id'])
+            index = [a['id'] for a in asks].index(order['order_id'])
             asks[index]['size'] = new_size
             self.set_asks(price, asks)
 
