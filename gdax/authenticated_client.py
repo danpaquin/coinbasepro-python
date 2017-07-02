@@ -128,8 +128,13 @@ class AuthenticatedClient(PublicClient):
         return self._send_paginated_message(endpoint, params=kwargs)
 
     def get_account_holds(self, account_id, **kwargs):
-        """ Holds are placed on an account for active orders or pending
-        withdraw requests.
+        """ Get holds on an account.
+
+        This method returns a generator which may make multiple HTTP requests
+        while iterating through it.
+
+        Holds are placed on an account for active orders or
+        pending withdraw requests.
 
         As an order is filled, the hold amount is updated. If an order
         is canceled, any remaining hold is removed. For a withdraw, once
@@ -147,7 +152,7 @@ class AuthenticatedClient(PublicClient):
             kwargs (dict): Additional HTTP request parameters.
 
         Returns:
-            list: Hold information for the provided account. Example::
+            generator(list): Hold information for the account. Example::
                 [
                     {
                         "id": "82dcd140-c3c7-4507-8de4-2c529cd1a28f",
@@ -162,14 +167,65 @@ class AuthenticatedClient(PublicClient):
                     ...
                     }
                 ]
+
         """
         endpoint = '/accounts/{}/holds'.format(account_id)
         return self._send_paginated_message(endpoint, params=kwargs)
 
     def place_order(self, product_id, side, order_type, **kwargs):
+        """ Place an order.
+
+        The three order types (limit, market, and stop) can be placed using this
+        method. Specific methods are provided for each order type, but if a
+        more generic interface is desired this method is available.
+
+        Args:
+            product_id (str): Product to order (eg. 'BTC-USD')
+            side (str): Order side ('buy' or 'sell)
+            order_type (str): Order type ('limit', 'market', or 'stop')
+            **client_oid (str): Order ID selected by you to identify your order.
+                This should be a UUID, which will be broadcast in the public
+                feed for `received` messages.
+            **stp (str): Self-trade prevention flag. GDAX doesn't allow self-
+                trading. This behavior can be modified with this flag.
+                Options:
+                'dc'	Decrease and Cancel (default)
+                'co'	Cancel oldest
+                'cn'	Cancel newest
+                'cb'	Cancel both
+            **overdraft_enabled (Optional[bool]): If true funding above and
+                beyond the account balance will be provided by margin, as
+                necessary.
+            **funding_amount (Optional[Decimal]): Amount of margin funding to be
+                provided for the order. Mutually exclusive with
+                `overdraft_enabled`.
+            **kwargs: Additional arguments can be specified for different order
+                types. See the limit/market/stop order methods for details.
+
+        Returns:
+            dict: Order details. Example::
+            {
+                "id": "d0c5340b-6d6c-49d9-b567-48c4bfca13d2",
+                "price": "0.10000000",
+                "size": "0.01000000",
+                "product_id": "BTC-USD",
+                "side": "buy",
+                "stp": "dc",
+                "type": "limit",
+                "time_in_force": "GTC",
+                "post_only": false,
+                "created_at": "2016-12-08T20:02:28.53864Z",
+                "fill_fees": "0.0000000000000000",
+                "filled_size": "0.00000000",
+                "executed_value": "0.0000000000000000",
+                "status": "pending",
+                "settled": false
+            }
+
+        """
         # Margin parameter checks
         if kwargs.get('overdraft_enabled') is not None and \
-                        kwargs.get('funding_amount') is not None:
+                kwargs.get('funding_amount') is not None:
             raise ValueError('Margin funding must be specified through use of '
                              'overdraft or by setting a funding amount, but not'
                              ' both')
@@ -177,7 +233,7 @@ class AuthenticatedClient(PublicClient):
         # Limit order checks
         if order_type == 'limit':
             if kwargs.get('cancel_after') is not None and \
-                            kwargs.get('tif') != 'GTT':
+                    kwargs.get('tif') != 'GTT':
                 raise ValueError('May only specify a cancel period when time '
                                  'in_force is `GTT`')
             if kwargs.get('post_only') is not None and kwargs.get('tif') in \
@@ -201,11 +257,43 @@ class AuthenticatedClient(PublicClient):
     def place_limit_order(self, product_id, side, price, size,
                           client_oid=None,
                           stp=None,
-                          tif=None,
+                          time_in_force=None,
                           cancel_after=None,
                           post_only=None,
                           overdraft_enabled=None,
                           funding_amount=None):
+        """Place a limit order.
+
+        Args:
+            product_id (str): Product to order (eg. 'BTC-USD')
+            side (str): Order side ('buy' or 'sell)
+            price (Decimal): Price per cryptocurrency
+            size (Decimal): Amount of cryptocurrency to buy or sell
+            client_oid (Optional[str]): User-specified Order ID
+            stp (Optional[str]): Self-trade prevention flag. See `place_order`
+                for details.
+            time_in_force (Optional[str]): Time in force. Options:
+                'GTC'   Good till canceled
+                'GTT'   Good till time (set by `cancel_after`)
+                'IOC'   Immediate or cancel
+                'FOK'   Fill or kill
+            cancel_after (Optional[str]): Cancel after this period for 'GTT'
+                orders. Options are 'min', 'hour', or 'day'.
+            post_only (Optional[bool]): Indicates that the order should only
+                make liquidity. If any part of the order results in taking
+                liquidity, the order will be rejected and no part of it will
+                execute.
+            overdraft_enabled (Optional[bool]): If true funding above and
+                beyond the account balance will be provided by margin, as
+                necessary.
+            funding_amount (Optional[Decimal]): Amount of margin funding to be
+                provided for the order. Mutually exclusive with
+                `overdraft_enabled`.
+
+        Returns:
+            dict: Order details. See `place_order` for example.
+
+        """
         params = {'product_id': product_id,
                   'side': side,
                   'order_type': 'limit',
@@ -213,7 +301,7 @@ class AuthenticatedClient(PublicClient):
                   'size': size,
                   'client_oid': client_oid,
                   'stp': stp,
-                  'tif': tif,
+                  'time_in_force': time_in_force,
                   'cancel_after': cancel_after,
                   'post_only': post_only,
                   'overdraft_enabled': overdraft_enabled,
@@ -222,11 +310,34 @@ class AuthenticatedClient(PublicClient):
 
         return self.place_order(**params)
 
-    def place_market_order(self, product_id, side, size, funds,
+    def place_market_order(self, product_id, side, size=None, funds=None,
                            client_oid=None,
                            stp=None,
                            overdraft_enabled=None,
                            funding_amount=None):
+        """ Place market order.
+
+        Args:
+            product_id (str): Product to order (eg. 'BTC-USD')
+            side (str): Order side ('buy' or 'sell)
+            size (Optional[Decimal]): Desired amount in crypto. Specify this or
+                `funds`.
+            funds (Optional[Decimal]): Desired amount of quote currency to use.
+                Specify this or `size`.
+            client_oid (Optional[str]): User-specified Order ID
+            stp (Optional[str]): Self-trade prevention flag. See `place_order`
+                for details.
+            overdraft_enabled (Optional[bool]): If true funding above and
+                beyond the account balance will be provided by margin, as
+                necessary.
+            funding_amount (Optional[Decimal]): Amount of margin funding to be
+                provided for the order. Mutually exclusive with
+                `overdraft_enabled`.
+
+        Returns:
+            dict: Order details. See `place_order` for example.
+
+        """
         params = {'product_id': product_id,
                   'side': side,
                   'order_type': 'market',
@@ -240,11 +351,35 @@ class AuthenticatedClient(PublicClient):
 
         return self.place_order(**params)
 
-    def place_stop_order(self, product_id, side, price, size, funds,
+    def place_stop_order(self, product_id, side, price, size=None, funds=None,
                          client_oid=None,
                          stp=None,
                          overdraft_enabled=None,
                          funding_amount=None):
+        """ Place stop order.
+
+        Args:
+            product_id (str): Product to order (eg. 'BTC-USD')
+            side (str): Order side ('buy' or 'sell)
+            price (Decimal): Desired price at which the stop order triggers.
+            size (Optional[Decimal]): Desired amount in crypto. Specify this or
+                `funds`.
+            funds (Optional[Decimal]): Desired amount of quote currency to use.
+                Specify this or `size`.
+            client_oid (Optional[str]): User-specified Order ID
+            stp (Optional[str]): Self-trade prevention flag. See `place_order`
+                for details.
+            overdraft_enabled (Optional[bool]): If true funding above and
+                beyond the account balance will be provided by margin, as
+                necessary.
+            funding_amount (Optional[Decimal]): Amount of margin funding to be
+                provided for the order. Mutually exclusive with
+                `overdraft_enabled`.
+
+        Returns:
+            dict: Order details. See `place_order` for example.
+
+        """
         params = {'product_id': product_id,
                   'side': side,
                   'price': price,
@@ -277,6 +412,7 @@ class AuthenticatedClient(PublicClient):
         Returns:
             list: Containing the order_id of cancelled order. Example::
                 [ "c5ab5eae-76be-480e-8961-00792dc7e138" ]
+
         """
         return self._send_message('delete', '/orders/' + order_id)
 
@@ -296,6 +432,7 @@ class AuthenticatedClient(PublicClient):
                     "dfc5ae27-cadb-4c0c-beef-8994936fde8a",
                     "34fecfbf-de33-4273-b2c6-baf8e8948be4"
                 ]
+
         """
         if product_id is not None:
             params = {'product_id': product_id}
@@ -335,11 +472,15 @@ class AuthenticatedClient(PublicClient):
                     "time_in_force": "GTC",
                     "type": "limit"
                 }
+
         """
         return self._send_message('get', '/orders/' + order_id)
 
     def get_orders(self, product_id=None, status=None, **kwargs):
         """ List your current open orders.
+
+        This method returns a generator which may make multiple HTTP requests
+        while iterating through it.
 
         Only open or un-settled orders are returned. As soon as an
         order is no longer open and settled, it will no longer appear
@@ -391,6 +532,7 @@ class AuthenticatedClient(PublicClient):
                         ...
                     }
                 ]
+
         """
         params = kwargs
         if product_id is not None:
@@ -401,6 +543,9 @@ class AuthenticatedClient(PublicClient):
 
     def get_fills(self, product_id=None, order_id=None, **kwargs):
         """ Get a list of recent fills.
+
+        This method returns a generator which may make multiple HTTP requests
+        while iterating through it.
 
         Fees are recorded in two stages. Immediately after the matching
         engine completes a match, the fill is inserted into our
@@ -437,6 +582,7 @@ class AuthenticatedClient(PublicClient):
                         ...
                     }
                 ]
+
         """
         params = {}
         if product_id:
@@ -450,6 +596,9 @@ class AuthenticatedClient(PublicClient):
     def get_fundings(self, status=None, **kwargs):
         """ Every order placed with a margin profile that draws funding
         will create a funding record.
+
+        This method returns a generator which may make multiple HTTP requests
+        while iterating through it.
 
         Args:
             status (list/str): Limit funding records to these statuses.
@@ -475,6 +624,7 @@ class AuthenticatedClient(PublicClient):
                         ...
                     }
                 ]
+
         """
         params = {}
         if status is not None:
@@ -490,7 +640,8 @@ class AuthenticatedClient(PublicClient):
             currency (str): The currency, example USD
 
         Returns:
-            ???
+            Not specified by GDAX.
+
         """
         params = {
             'amount': amount,
@@ -501,6 +652,34 @@ class AuthenticatedClient(PublicClient):
 
     def margin_transfer(self, margin_profile_id, transfer_type, currency,
                         amount):
+        """ Transfer funds between your standard profile and a margin profile.
+
+        Args:
+            margin_profile_id (str): Margin profile ID to withdraw or deposit
+                from.
+            transfer_type (str): 'deposit' or 'withdraw'
+            currency (str): Currency to transfer (eg. 'USD')
+            amount (Decimal): Amount to transfer
+
+        Returns:
+            dict: Transfer details. Example::
+                {
+                  "created_at": "2017-01-25T19:06:23.415126Z",
+                  "id": "80bc6b74-8b1f-4c60-a089-c61f9810d4ab",
+                  "user_id": "521c20b3d4ab09621f000011",
+                  "profile_id": "cda95996-ac59-45a3-a42e-30daeb061867",
+                  "margin_profile_id": "45fa9e3b-00ba-4631-b907-8a98cbdf21be",
+                  "type": "deposit",
+                  "amount": "2",
+                  "currency": "USD",
+                  "account_id": "23035fc7-0707-4b59-b0d2-95d0c035f8f5",
+                  "margin_account_id": "e1d9862c-a259-4e83-96cd-376352a9d24d",
+                  "margin_product_id": "BTC-USD",
+                  "status": "completed",
+                  "nonce": 25
+                }
+
+        """
         params = {'margin_profile_id': margin_profile_id,
                   'type': transfer_type,
                   'currency': currency,  # example: USD
@@ -509,9 +688,24 @@ class AuthenticatedClient(PublicClient):
                                   data=json.dumps(params))
 
     def get_position(self):
+        """ Get An overview of your margin profile.
+
+        Returns:
+            dict: Details about funding, accounts, and margin call.
+
+        """
         return self._send_message('get', '/position')
 
     def close_position(self, repay_only):
+        """ Close position.
+
+        Args:
+            repay_only (bool): Undocumented by GDAX.
+
+        Returns:
+            Undocumented
+
+        """
         params = {'repay_only': repay_only}
         return self._send_message('post', '/position/close',
                                   data=json.dumps(params))
@@ -523,7 +717,7 @@ class AuthenticatedClient(PublicClient):
         information regarding payment methods.
 
         Args:
-            amount (int): The amount to deposit.
+            amount (Decmial): The amount to deposit.
             currency (str): The type of currency.
             payment_method_id (str): ID of the payment method.
 
@@ -535,6 +729,7 @@ class AuthenticatedClient(PublicClient):
                     "currency": "USD",
                     "payout_at": "2016-08-20T00:31:09Z"
                 }
+
         """
         params = {'amount': amount,
                   'currency': currency,
@@ -553,7 +748,7 @@ class AuthenticatedClient(PublicClient):
         information regarding your coinbase_accounts.
 
         Args:
-            amount (int): The amount to deposit.
+            amount (Decimal): The amount to deposit.
             currency (str): The type of currency.
             coinbase_account_id (str): ID of the coinbase account.
 
@@ -564,6 +759,7 @@ class AuthenticatedClient(PublicClient):
                     "amount": "10.00",
                     "currency": "BTC",
                 }
+
         """
         params = {'amount': amount,
                   'currency': currency,
@@ -572,6 +768,26 @@ class AuthenticatedClient(PublicClient):
                                   data=json.dumps(params))
 
     def withdraw(self, amount, currency, payment_method_id):
+        """ Withdraw funds to a payment method.
+
+        See AuthenticatedClient.get_payment_methods() to receive
+        information regarding payment methods.
+
+        Args:
+            amount (Decimal): The amount to withdraw.
+            currency (str): Currency type (eg. 'BTC')
+            payment_method_id (str): ID of the payment method.
+
+        Returns:
+            dict: Withdraw details. Example::
+                {
+                    "id":"593533d2-ff31-46e0-b22e-ca754147a96a",
+                    "amount": "10.00",
+                    "currency": "USD",
+                    "payout_at": "2016-08-20T00:31:09Z"
+                }
+
+        """
         params = {'amount': amount,
                   'currency': currency,
                   'payment_method_id': payment_method_id}
@@ -579,6 +795,29 @@ class AuthenticatedClient(PublicClient):
                                   data=json.dumps(params))
 
     def coinbase_withdraw(self, amount, currency, coinbase_account_id):
+        """ Withdraw funds to a coinbase account.
+
+        You can move funds between your Coinbase accounts and your GDAX
+        trading accounts within your daily limits. Moving funds between
+        Coinbase and GDAX is instant and free.
+
+        See AuthenticatedClient.get_coinbase_accounts() to receive
+        information regarding your coinbase_accounts.
+
+        Args:
+            amount (Decimal): The amount to withdraw.
+            currency (str): The type of currency (eg. 'BTC')
+            coinbase_account_id (str): ID of the coinbase account.
+
+        Returns:
+            dict: Information about the deposit. Example::
+                {
+                    "id":"593533d2-ff31-46e0-b22e-ca754147a96a",
+                    "amount":"10.00",
+                    "currency": "BTC",
+                }
+
+        """
         params = {'amount': amount,
                   'currency': currency,
                   'coinbase_account_id': coinbase_account_id}
@@ -586,6 +825,22 @@ class AuthenticatedClient(PublicClient):
                                   data=json.dumps(params))
 
     def crypto_withdraw(self, amount, currency, crypto_address):
+        """ Withdraw funds to a crypto address.
+
+        Args:
+            amount (Decimal): The amount to withdraw
+            currency (str): The type of currency (eg. 'BTC')
+            crypto_address (str): Crypto address to withdraw to.
+
+        Returns:
+            dict: Withdraw details. Example::
+                {
+                    "id":"593533d2-ff31-46e0-b22e-ca754147a96a",
+                    "amount":"10.00",
+                    "currency": "BTC",
+                }
+
+        """
         params = {'amount': amount,
                   'currency': currency,
                   'crypto_address': crypto_address}
@@ -593,13 +848,58 @@ class AuthenticatedClient(PublicClient):
                                   data=json.dumps(params))
 
     def get_payment_methods(self):
+        """ Get a list of your payment methods.
+
+        Returns:
+            list: Payment method details.
+
+        """
         return self._send_message('get', '/payment-methods')
 
     def get_coinbase_accounts(self):
+        """ Get a list of your coinbase accounts.
+
+        Returns:
+            list: Coinbase account details.
+
+        """
         return self._send_message('get', '/coinbase-accounts')
 
     def create_report(self, report_type, start_date, end_date, product_id=None,
                       account_id=None, report_format='pdf', email=None):
+        """ Create report of historic information about your account.
+
+        The report will be generated when resources are available. Report status
+        can be queried via `get_report(report_id)`.
+
+        Args:
+            report_type (str): 'fills' or 'account'
+            start_date (str): Starting date for the report in ISO 8601
+            end_date (str): Ending date for the report in ISO 8601
+            product_id (Optional[str]): ID of the product to generate a fills
+                report for. Required if account_type is 'fills'
+            account_id (Optional[str]): ID of the account to generate an account
+                report for. Required if report_type is 'account'.
+            report_format (Optional[str]): 'pdf' or 'csv'. Default is 'pdf'.
+            email (Optional[str]): Email address to send the report to.
+
+        Returns:
+            dict: Report details. Example::
+                {
+                    "id": "0428b97b-bec1-429e-a94c-59232926778d",
+                    "type": "fills",
+                    "status": "pending",
+                    "created_at": "2015-01-06T10:34:47.000Z",
+                    "completed_at": undefined,
+                    "expires_at": "2015-01-13T10:35:47.000Z",
+                    "file_url": undefined,
+                    "params": {
+                        "start_date": "2014-11-01T00:00:00.000Z",
+                        "end_date": "2014-11-30T23:59:59.000Z"
+                    }
+                }
+
+        """
         params = {'type': report_type,
                   'start_date': start_date,
                   'end_date': end_date,
@@ -615,9 +915,39 @@ class AuthenticatedClient(PublicClient):
                                   data=json.dumps(params))
 
     def get_report(self, report_id):
+        """ Get report status.
+
+        Use to query a specific report once it has been requested.
+
+        Args:
+            report_id (str): Report ID
+
+        Returns:
+            dict: Report details, including file url once it is created.
+
+        """
         return self._send_message('get', '/reports/' + report_id)
 
     def get_trailing_volume(self):
+        """  Get your 30-day trailing volume for all products.
+
+        This is a cached value that’s calculated every day at midnight UTC.
+
+        Returns:
+            list: 30-day trailing volumes. Example::
+                [
+                    {
+                        "product_id": "BTC-USD",
+                        "exchange_volume": "11800.00000000",
+                        "volume": "100.00000000",
+                        "recorded_at": "1973-11-29T00:05:01.123456Z"
+                    },
+                    {
+                        ...
+                    }
+                ]
+
+        """
         return self._send_message('get', '/users/self/trailing-volume')
 
     def _send_message(self, method, endpoint, params=None, data=None):
@@ -639,6 +969,19 @@ class AuthenticatedClient(PublicClient):
         return r.json()
 
     def _send_paginated_message(self, endpoint, params=None):
+        """ Send API message that results in a paginated response.
+
+        The paginated responses are abstracted away by making API requests on
+        demand as the response is iterated over.
+
+        Args:
+            endpoint (str): Endpoint (to be added to base URL)
+            params (Optional[dict]): HTTP request parameters
+
+        Yields:
+            dict: API response objects
+
+        """
         url = self.url + endpoint
         while True:
             r = self.session.get(url, params=params, auth=self.auth)
@@ -646,8 +989,11 @@ class AuthenticatedClient(PublicClient):
             for result in results:
                 yield result
             # If there are no more pages, we're done. Otherwise update `after`
-            # param to get next page
-            if not r.headers.get('cb-after'):
+            # param to get next page.
+            # If this request included `before` don't get any more pages - the
+            # GDAX API doesn't support multiple pages in that case.
+            if not r.headers.get('cb-after') or \
+                    params.get('before') is not None:
                 break
             else:
                 params['after'] = r.headers['cb-after']
