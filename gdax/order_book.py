@@ -1,31 +1,43 @@
 #
-# GDAX/OrderBook.py
+# gdax/order_book.py
 # David Caseria
 #
-# Live order book updated from the GDAX Websocket Feed
+# Live order book updated from the gdax Websocket Feed
 
-from operator import itemgetter
 from bintrees import RBTree
 from decimal import Decimal
+import pickle
 
 from gdax.public_client import PublicClient
 from gdax.websocket_client import WebsocketClient
 
 
 class OrderBook(WebsocketClient):
-    def __init__(self, product_id='BTC-USD'):
-        super(self.__class__, self).__init__(products=product_id)
+    def __init__(self, product_id='BTC-USD', log_to=None):
+        super(OrderBook, self).__init__(products=product_id)
         self._asks = RBTree()
         self._bids = RBTree()
-        self._client = PublicClient(product_id=product_id)
+        self._client = PublicClient()
         self._sequence = -1
+        self._log_to = log_to
+        if self._log_to:
+            assert hasattr(self._log_to, 'write')
+        self._current_ticker = None
+
+    @property
+    def product_id(self):
+        ''' Currently OrderBook only supports a single product even though it is stored as a list of products. '''
+        return self.products[0]
 
     def on_message(self, message):
+        if self._log_to:
+            pickle.dump(message, self._log_to)
+
         sequence = message['sequence']
         if self._sequence == -1:
             self._asks = RBTree()
             self._bids = RBTree()
-            res = self._client.get_product_order_book(level=3)
+            res = self._client.get_product_order_book(product_id=self.product_id, level=3)
             for bid in res['bids']:
                 self.add({
                     'id': bid[2],
@@ -51,7 +63,6 @@ class OrderBook(WebsocketClient):
             self.start()
             return
 
-        # print(message)
         msg_type = message['type']
         if msg_type == 'open':
             self.add(message)
@@ -59,6 +70,7 @@ class OrderBook(WebsocketClient):
             self.remove(message)
         elif msg_type == 'match':
             self.match(message)
+            self._current_ticker = message
         elif msg_type == 'change':
             self.change(message)
 
@@ -71,6 +83,11 @@ class OrderBook(WebsocketClient):
         # asks = self.get_asks(ask)
         # ask_depth = sum([a['size'] for a in asks])
         # print('bid: %f @ %f - ask: %f @ %f' % (bid_depth, bid, ask_depth, ask))
+
+    def on_error(self, e):
+        self._sequence = -1
+        self.close()
+        self.start()
 
     def add(self, order):
         order = {
@@ -146,14 +163,14 @@ class OrderBook(WebsocketClient):
             bids = self.get_bids(price)
             if bids is None or not any(o['id'] == order['order_id'] for o in bids):
                 return
-            index = map(itemgetter('id'), bids).index(order['order_id'])
+            index = [b['id'] for b in bids].index(order['order_id'])
             bids[index]['size'] = new_size
             self.set_bids(price, bids)
         else:
             asks = self.get_asks(price)
             if asks is None or not any(o['id'] == order['order_id'] for o in asks):
                 return
-            index = map(itemgetter('id'), asks).index(order['order_id'])
+            index = [a['id'] for a in asks].index(order['order_id'])
             asks[index]['size'] = new_size
             self.set_asks(price, asks)
 
@@ -162,6 +179,9 @@ class OrderBook(WebsocketClient):
 
         if node is None or not any(o['id'] == order['order_id'] for o in node):
             return
+
+    def get_current_ticker(self):
+        return self._current_ticker
 
     def get_current_book(self):
         result = {
@@ -217,8 +237,45 @@ class OrderBook(WebsocketClient):
 
 if __name__ == '__main__':
     import time
+    import datetime as dt
 
-    order_book = OrderBook()
+
+    class OrderBookConsole(OrderBook):
+        ''' Logs real-time changes to the bid-ask spread to the console '''
+
+        def __init__(self, product_id=None):
+            super(OrderBookConsole, self).__init__(product_id=product_id)
+
+            # latest values of bid-ask spread
+            self._bid = None
+            self._ask = None
+            self._bid_depth = None
+            self._ask_depth = None
+
+        def on_message(self, message):
+            super(OrderBookConsole, self).on_message(message)
+
+            # Calculate newest bid-ask spread
+            bid = self.get_bid()
+            bids = self.get_bids(bid)
+            bid_depth = sum([b['size'] for b in bids])
+            ask = self.get_ask()
+            asks = self.get_asks(ask)
+            ask_depth = sum([a['size'] for a in asks])
+
+            if self._bid == bid and self._ask == ask and self._bid_depth == bid_depth and self._ask_depth == ask_depth:
+                # If there are no changes to the bid-ask spread since the last update, no need to print
+                pass
+            else:
+                # If there are differences, update the cache
+                self._bid = bid
+                self._ask = ask
+                self._bid_depth = bid_depth
+                self._ask_depth = ask_depth
+                print('{}\tbid: {:.3f} @ {:.2f}\task: {:.3f} @ {:.2f}'.format(dt.datetime.now(), bid_depth, bid,
+                                                                              ask_depth, ask))
+
+    order_book = OrderBookConsole()
     order_book.start()
     time.sleep(10)
     order_book.close()

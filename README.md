@@ -1,5 +1,6 @@
 # GDAX-Python
-The Python client for the [GDAX API](https://docs.gdax.com/) (formerly known as the Coinbase Exchange API)
+The Python client for the [GDAX API](https://docs.gdax.com/) (formerly known as 
+the Coinbase Exchange API)
 
 ##### Provided under MIT License by Daniel Paquin.
 *Note: this library may be subtly broken or buggy. The code is released under 
@@ -21,15 +22,16 @@ for every API endpoint.
 what and who is *really* behind every tick.
 
 ## Under Development
-- Unit testing
-- Additional Functionality for *WebsocketClient*, including a real-time order 
-book
-- FIX API Client **Looking for support**
+- Test Scripts
+- Additional Functionality for the real-time order book
+- FIX API Client **Looking for assistance**
 
 ## Getting Started
 This README is documentation on the syntax of the python client presented in 
-this repository.  **In order to use this wrapper to its full potential, you must 
-familiarize yourself with the official GDAX documentation.**
+this repository. See function docstrings for full syntax details.  
+**This API attempts to present a clean interface to GDAX, but n order to use it 
+to its full potential, you must familiarize yourself with the official GDAX 
+documentation.**
 
 - https://docs.gdax.com/
 
@@ -48,73 +50,52 @@ public_client = gdax.PublicClient()
 ```
 
 ### PublicClient Methods
-- [getProducts](https://docs.gdax.com/#get-products)
+- [get_products](https://docs.gdax.com/#get-products)
 ```python
 public_client.get_products()
 ```
 
-- [getProductOrderBook](https://docs.gdax.com/#get-product-order-book)
+- [get_product_order_book](https://docs.gdax.com/#get-product-order-book)
 ```python
 # Get the order book at the default level.
-public_client.get_product_order_book(product_id='BTC-USD')
+public_client.get_product_order_book('BTC-USD')
 # Get the order book at a specific level.
-public_client.get_product_order_book(product_id='BTC-USD', level=3)
+public_client.get_product_order_book('BTC-USD', level=1)
 ```
 
-- [getProductTicker](https://docs.gdax.com/#get-product-ticker)
+- [get_product_ticker](https://docs.gdax.com/#get-product-ticker)
 ```python
 # Get the product ticker for a specific product.
 public_client.get_product_ticker(product_id='ETH-USD')
 ```
 
-- [getProductTrades](https://docs.gdax.com/#get-trades)
+- [get_product_trades](https://docs.gdax.com/#get-trades)
 ```python
 # Get the product trades for a specific product.
 public_client.get_product_trades(product_id='ETH-USD')
 ```
 
-- [getProductHistoricRates](https://docs.gdax.com/#get-historic-rates)
+- [get_product_historic_rates](https://docs.gdax.com/#get-historic-rates)
 ```python
-public_client.get_product_historic_rates(product_id='ETH-USD')
-# To include other parameters, see official documentation:
+public_client.get_product_historic_rates('ETH-USD')
+# To include other parameters, see function docstring:
 public_client.get_product_historic_rates('ETH-USD', granularity=3000)
 ```
 
-- [getProduct24HrStates](https://docs.gdax.com/#get-24hr-stats)
+- [get_product_24hr_stats](https://docs.gdax.com/#get-24hr-stats)
 ```python
 public_client.get_product_24hr_stats('ETH-USD')
 ```
 
-- [getCurrencies](https://docs.gdax.com/#get-currencies)
+- [get_currencies](https://docs.gdax.com/#get-currencies)
 ```python
 public_client.get_currencies()
 ```
 
-- [getTime](https://docs.gdax.com/#time)
+- [get_time](https://docs.gdax.com/#time)
 ```python
 public_client.get_time()
 ```
-
-#### Function Call Methods
-The API presents a consistent interface for parameters, which may be specified 
-in different ways.
-
-- Both of these calls send the same request:
-```python
-import gdax
-public_client = gdax.PublicClient()
-
-method1 = public_client.get_product_historic_rates(granularity='3000')
-
-params = {'granularity': '3000'}
-method2 = public_client.get_product_historic_rates(**params)
-
-# Both methods will send the same request, but not always return the same data 
-# if run in series because of real-time data changes from GDAX.
-print (method1, method2)
-```
-
-
 
 ### Authenticated Client
 
@@ -130,11 +111,11 @@ integrate both into your script.
 import gdax
 auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase)
 # Set a default product
-auth_client = gdax.AuthenticatedClient(key, b64secret, 
-                                       passphrase, product_id="ETH-USD")
+auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase, 
+                                       product_id="ETH-USD")
 # Use the sandbox API (requires a different set of API access credentials)
-auth_client = gdax.AuthenticatedClient(key, b64secret, 
-                                       passphrase, api_url="https://api-public.sandbox.gdax.com")
+auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase, 
+                                  api_url="https://api-public.sandbox.gdax.com")
 ```
 
 ### Pagination
@@ -155,22 +136,22 @@ additional pages will not be returned.  This is to ensure speedy response times
 when less data is preferred.
 
 ### AuthenticatedClient Methods
-- [getAccounts](https://docs.gdax.com/#list-accounts)
+- [get_accounts](https://docs.gdax.com/#list-accounts)
 ```python
 auth_client.get_accounts()
 ```
 
-- [getAccount](https://docs.gdax.com/#get-an-account)
+- [get_account](https://docs.gdax.com/#get-an-account)
 ```python
 auth_client.get_account("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 ```
 
-- [getAccountHistory](https://docs.gdax.com/#get-account-history) (paginated)
+- [get_account_history](https://docs.gdax.com/#get-account-history) (paginated)
 ```python
 auth_client.get_account_history("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 ```
 
-- [getAccountHolds](https://docs.gdax.com/#get-holds) (paginated)
+- [get_account_holds](https://docs.gdax.com/#get-holds) (paginated)
 ```python
 auth_client.get_account_holds("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 ```
@@ -189,26 +170,26 @@ auth_client.sell(price='200.00', #USD
                 product_id='BTC-USD')
 ```
 
-- [cancelOrder](https://docs.gdax.com/#cancel-an-order)
+- [cancel_order](https://docs.gdax.com/#cancel-an-order)
 ```python
 auth_client.cancel_order("d50ec984-77a8-460a-b958-66f114b0de9b")
 ```
-- [cancelAll](https://docs.gdax.com/#cancel-all)
+- [cancel_all](https://docs.gdax.com/#cancel-all)
 ```python
 auth_client.cancel_all(product='BTC-USD')
 ```
 
-- [getOrders](https://docs.gdax.com/#list-orders) (paginated)
+- [get_orders](https://docs.gdax.com/#list-orders) (paginated)
 ```python
 auth_client.get_orders()
 ```
 
-- [getOrder](https://docs.gdax.com/#get-an-order)
+- [get_order](https://docs.gdax.com/#get-an-order)
 ```python
 auth_client.get_order("d50ec984-77a8-460a-b958-66f114b0de9b")
 ```
 
-- [getFills](https://docs.gdax.com/#list-fills) (paginated)
+- [get_fills](https://docs.gdax.com/#list-fills) (paginated)
 ```python
 auth_client.get_fills()
 # Get fills for a specific order
@@ -219,7 +200,7 @@ auth_client.get_fills(product_id="ETH-BTC")
 
 - [deposit & withdraw](https://docs.gdax.com/#depositwithdraw)
 ```python
-# Deposit into GDAX from Coinbase Wallet
+gdax
 depositParams = {
         'amount': '25.00', # Currency determined by account specified
         'coinbase_account_id': '60680c98bfe96c2601f27e9c'
@@ -236,7 +217,8 @@ auth_client.withdraw(withdrawParams)
 ```
 
 ### WebsocketClient
-If you would like to receive real-time market updates, you must subscribe to the [websocket feed](https://docs.gdax.com/#websocket-feed).
+If you would like to receive real-time market updates, you must subscribe to the 
+[websocket feed](https://docs.gdax.com/#websocket-feed).
 
 #### Subscribe to a single product
 ```python
@@ -250,8 +232,9 @@ wsClient.close()
 #### Subscribe to multiple products
 ```python
 import gdax
-# Paramters are optional
-wsClient = gdax.WebsocketClient(url="wss://ws-feed.gdax.com", products=["BTC-USD", "ETH-USD"])
+# Paramaters are optional
+wsClient = gdax.WebsocketClient(url="wss://ws-feed.gdax.com", 
+                                products=["BTC-USD", "ETH-USD"])
 # Do other stuff...
 wsClient.close()
 ```
@@ -277,9 +260,10 @@ class myWebsocketClient(gdax.WebsocketClient):
         self.message_count = 0
         print("Lets count the messages!")
     def on_message(self, msg):
-        self.Message_count += 1
+        self.message_count += 1
         if 'price' in msg and 'type' in msg:
-            print ("Message type:", msg["type"], "\t@ {}.3f".format(float(msg["price"])))
+            print ("Message type:", msg["type"], 
+                   "\t@ {}.3f".format(float(msg["price"])))
     def on_close(self):
         print("-- Goodbye! --")
 
@@ -287,15 +271,21 @@ wsClient = myWebsocketClient()
 wsClient.start()
 print(wsClient.url, wsClient.products)
 while (wsClient.message_count < 500):
-    print ("\nMessageCount =", "{} \n".format(wsClient.message_count))
+    print ("\nmessage_count =", "{} \n".format(wsClient.message_count))
     time.sleep(1)
 wsClient.close()
+```
+## Testing
+A test suite is under development. To run the tests, start in the project 
+directory and run
+```
+python -m pytest
 ```
 
 ### Real-time OrderBook
 The ```OrderBook``` subscribes to a websocket and keeps a real-time record of 
-the orderbook for the product_id input.  Please provide your feedback for 
-future improvements.
+the orderbook for the product_id input.  Please provide your feedback for future 
+improvements.
 
 ```python
 import gdax, time
@@ -316,7 +306,12 @@ python -m pytest
 ```
 
 ## Change Log
-*0.3* **Current PyPI release**
+*1.0* **Current PyPI release**
+- The first release that is not backwards compatible 
+- Refactored to follow PEP 8 Standards
+- Improved Documentation
+
+*0.3*
 - Added crypto and LTC deposit & withdraw (undocumented).
 - Added support for Margin trading (undocumented).
 - Enhanced functionality of the WebsocketClient.
@@ -327,8 +322,8 @@ python -m pytest
 - Added additional API functionality such as cancelAll() and ETH withdrawal.
 
 *0.2.1*
-- Allowed ```WebsocketClient``` to operate intuitively and restructured 
-example workflow.
+- Allowed ```WebsocketClient``` to operate intuitively and restructured example 
+workflow.
 
 *0.2.0*
 - Renamed project to GDAX-Python

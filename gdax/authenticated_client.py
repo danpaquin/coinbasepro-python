@@ -1,8 +1,8 @@
 #
-# GDAX/AuthenticatedClient.py
+# gdax/AuthenticatedClient.py
 # Daniel Paquin
 #
-# For authenticated requests to the GDAX exchange
+# For authenticated requests to the gdax exchange
 
 import hmac
 import hashlib
@@ -1000,7 +1000,7 @@ class AuthenticatedClient(PublicClient):
 
 
 class GdaxAuth(AuthBase):
-    # Provided by GDAX: https://docs.gdax.com/#signing-a-message
+    # Provided by gdax: https://docs.gdax.com/#signing-a-message
     def __init__(self, api_key, secret_key, passphrase):
         self.api_key = api_key
         self.secret_key = secret_key
