@@ -974,6 +974,15 @@ class AuthenticatedClient(PublicClient):
         The paginated responses are abstracted away by making API requests on
         demand as the response is iterated over.
 
+        Paginated API messages support 3 additional parameters: `before`,
+        `after`, and `limit`. `before` and `after` are mutually exclusive. To
+        use them, supply an index value for that endpoint (the field used for
+        indexing varies by endpoint - get_fills() uses 'trade_id', for example).
+            `before`: Only get data that occurs more recently than index
+            `after`: Only get data that occurs further in the past than index
+            `limit`: Set amount of data per HTTP response. Default (and
+                maximum) of 100.
+
         Args:
             endpoint (str): Endpoint (to be added to base URL)
             params (Optional[dict]): HTTP request parameters

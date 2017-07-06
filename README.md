@@ -110,9 +110,6 @@ integrate both into your script.
 ```python
 import gdax
 auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase)
-# Set a default product
-auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase, 
-                                       product_id="ETH-USD")
 # Use the sandbox API (requires a different set of API access credentials)
 auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase, 
                                   api_url="https://api-public.sandbox.gdax.com")
@@ -120,20 +117,29 @@ auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase,
 
 ### Pagination
 Some calls are [paginated](https://docs.gdax.com/#pagination), meaning multiple 
-calls must be made to receive the full set of data.  Each page/request is a list 
-of dict objects that are then appended to a master list, making it easy to 
-navigate pages (e.g. ```request[0]``` would return the first page of data in the 
-example below). *This feature is under consideration for redesign.  Please 
-provide feedback if you have issues or suggestions*
+calls must be made to receive the full set of data. The GDAX Python API provides
+an abstraction for paginated endpoints in the form of generators which provide a
+clean interface for iteration but may make multiple HTTP requests behind the 
+scenes. The pagination options `before`, `after`, and `limit` may be supplied as
+keyword arguments if desired, but aren't necessary for typical use cases.
 ```python
-request = auth_client.get_fills(limit=100)
-request[0] # Page 1 always present
-request[1] # Page 2+ present only if the data exists
+fills_gen = auth_client.get_fills()
+# Get all fills (will possibly make multiple HTTP requests)
+all_fills = list(fills_gen)
 ```
-It should be noted that limit does not behave exactly as the official 
-documentation specifies.  If you request a limit and that limit is met, 
-additional pages will not be returned.  This is to ensure speedy response times 
-when less data is preferred.
+One use case for pagination parameters worth pointing out is retrieving only 
+new data since the previous request. For the case of `get_fills()`, the 
+`trade_id` is the parameter used for indexing. By passing 
+`before=some_trade_id`, only fills more recent than that `trade_id` will be 
+returned. Note that when using `before`, a maximum of 100 entries will be 
+returned - this is a limitation of GDAX.
+```python
+from itertools import islice
+# Get 5 most recent fills
+recent_fills = islice(auth_client.get_fills(), 5)
+# Only fetch new fills since last call by utilizing `before` parameter.
+new_fills = auth_client.get_fills(before=recent_fills[0]['trade_id'])
+```
 
 ### AuthenticatedClient Methods
 - [get_accounts](https://docs.gdax.com/#list-accounts)
@@ -148,11 +154,13 @@ auth_client.get_account("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 
 - [get_account_history](https://docs.gdax.com/#get-account-history) (paginated)
 ```python
+# Returns generator:
 auth_client.get_account_history("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 ```
 
 - [get_account_holds](https://docs.gdax.com/#get-holds) (paginated)
 ```python
+# Returns generator:
 auth_client.get_account_holds("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 ```
 
@@ -181,6 +189,7 @@ auth_client.cancel_all(product='BTC-USD')
 
 - [get_orders](https://docs.gdax.com/#list-orders) (paginated)
 ```python
+# Returns generator:
 auth_client.get_orders()
 ```
 
@@ -191,6 +200,7 @@ auth_client.get_order("d50ec984-77a8-460a-b958-66f114b0de9b")
 
 - [get_fills](https://docs.gdax.com/#list-fills) (paginated)
 ```python
+# All return generators
 auth_client.get_fills()
 # Get fills for a specific order
 auth_client.get_fills(order_id="d50ec984-77a8-460a-b958-66f114b0de9b")
@@ -276,8 +286,10 @@ while (wsClient.message_count < 500):
 wsClient.close()
 ```
 ## Testing
-A test suite is under development. To run the tests, start in the project 
-directory and run
+A test suite is under development. Tests for the authenticated client require a 
+set of sandbox API credentials. To provide them, rename 
+`api_config.json.example` in the tests folder to `api_config.json` and edit the 
+file accordingly. To run the tests, start in the project directory and run
 ```
 python -m pytest
 ```
