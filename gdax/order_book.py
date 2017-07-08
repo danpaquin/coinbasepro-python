@@ -14,14 +14,11 @@ from gdax.book_builder import BookBuilder
 
 
 class OrderBook(WebsocketClient):
-    def __init__(self, product_id='BTC-USD', log_to=None):
+    def __init__(self, product_id='BTC-USD'):
         super(OrderBook, self).__init__(products=product_id)
         self.book_builder = BookBuilder()
         self._client = PublicClient()
-        self._sequence = -1
-        self._log_to = log_to
-        if self._log_to:
-            assert hasattr(self._log_to, 'write')
+        self._sequence = None
         self._current_ticker = None
 
     @property
@@ -30,22 +27,20 @@ class OrderBook(WebsocketClient):
         return self.products[0]
 
     def on_message(self, message):
-        if self._log_to:
-            pickle.dump(message, self._log_to)
-
         sequence = message['sequence']
-        if self._sequence == -1:
-            self.book_builder = BookBuilder()
+        if self._sequence is None:
             res = self._client.get_product_order_book(product_id=self.product_id, level=3)
             for bid in res['bids']:
-                self.book_builder.add({
+                self.book_builder.handle({
+                    'type': 'open',
                     'id': bid[2],
                     'side': 'buy',
                     'price': Decimal(bid[0]),
                     'size': Decimal(bid[1])
                 })
             for ask in res['asks']:
-                self.book_builder.add({
+                self.book_builder.handle({
+                    'type': 'open',
                     'id': ask[2],
                     'side': 'sell',
                     'price': Decimal(ask[0]),
@@ -70,7 +65,7 @@ class OrderBook(WebsocketClient):
         self._sequence = sequence
 
     def on_error(self, e):
-        self._sequence = -1
+        self._sequence = None
         self.close()
         self.start()
 

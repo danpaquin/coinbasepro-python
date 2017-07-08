@@ -9,15 +9,15 @@ class BookBuilder:
     def handle(self, order):
         msg_type = order['type']
         if msg_type == 'open':
-            self.add(order)
+            self._add(order)
         elif msg_type == 'done' and 'price' in order:
-            self.remove(order)
+            self._remove(order)
         elif msg_type == 'match':
-            self.match(order)
+            self._match(order)
         elif msg_type == 'change':
-            self.change(order)
+            self._change(order)
 
-    def add(self, order):
+    def _add(self, order):
         order = {
             'id': order.get('order_id') or order['id'],
             'side': order['side'],
@@ -30,35 +30,35 @@ class BookBuilder:
                 bids = [order]
             else:
                 bids.append(order)
-            self.set_bids(order['price'], bids)
+            self._set_bids(order['price'], bids)
         else:
             asks = self.get_asks(order['price'])
             if asks is None:
                 asks = [order]
             else:
                 asks.append(order)
-            self.set_asks(order['price'], asks)
+            self._set_asks(order['price'], asks)
 
-    def remove(self, order):
+    def _remove(self, order):
         price = Decimal(order['price'])
         if order['side'] == 'buy':
             bids = self.get_bids(price)
             if bids is not None:
                 bids = [o for o in bids if o['id'] != order['order_id']]
                 if len(bids) > 0:
-                    self.set_bids(price, bids)
+                    self._set_bids(price, bids)
                 else:
-                    self.remove_bids(price)
+                    self._remove_bids(price)
         else:
             asks = self.get_asks(price)
             if asks is not None:
                 asks = [o for o in asks if o['id'] != order['order_id']]
                 if len(asks) > 0:
-                    self.set_asks(price, asks)
+                    self._set_asks(price, asks)
                 else:
-                    self.remove_asks(price)
+                    self._remove_asks(price)
 
-    def match(self, order):
+    def _match(self, order):
         size = Decimal(order['size'])
         price = Decimal(order['price'])
 
@@ -68,22 +68,22 @@ class BookBuilder:
                 return
             assert bids[0]['id'] == order['maker_order_id']
             if bids[0]['size'] == size:
-                self.set_bids(price, bids[1:])
+                self._set_bids(price, bids[1:])
             else:
                 bids[0]['size'] -= size
-                self.set_bids(price, bids)
+                self._set_bids(price, bids)
         else:
             asks = self.get_asks(price)
             if not asks:
                 return
             assert asks[0]['id'] == order['maker_order_id']
             if asks[0]['size'] == size:
-                self.set_asks(price, asks[1:])
+                self._set_asks(price, asks[1:])
             else:
                 asks[0]['size'] -= size
-                self.set_asks(price, asks)
+                self._set_asks(price, asks)
 
-    def change(self, order):
+    def _change(self, order):
         new_size = Decimal(order['new_size'])
         price = Decimal(order['price'])
 
@@ -93,14 +93,14 @@ class BookBuilder:
                 return
             index = [b['id'] for b in bids].index(order['order_id'])
             bids[index]['size'] = new_size
-            self.set_bids(price, bids)
+            self._set_bids(price, bids)
         else:
             asks = self.get_asks(price)
             if asks is None or not any(o['id'] == order['order_id'] for o in asks):
                 return
             index = [a['id'] for a in asks].index(order['order_id'])
             asks[index]['size'] = new_size
-            self.set_asks(price, asks)
+            self._set_asks(price, asks)
 
         tree = self._asks if order['side'] == 'sell' else self._bids
         node = tree.get(price)
@@ -140,10 +140,10 @@ class BookBuilder:
     def get_asks(self, price):
         return self._asks.get(price)
 
-    def remove_asks(self, price):
+    def _remove_asks(self, price):
         self._asks.remove(price)
 
-    def set_asks(self, price, asks):
+    def _set_asks(self, price, asks):
         self._asks.insert(price, asks)
 
     def get_bid(self):
@@ -152,8 +152,8 @@ class BookBuilder:
     def get_bids(self, price):
         return self._bids.get(price)
 
-    def remove_bids(self, price):
+    def _remove_bids(self, price):
         self._bids.remove(price)
 
-    def set_bids(self, price, bids):
+    def _set_bids(self, price, bids):
         self._bids.insert(price, bids)
