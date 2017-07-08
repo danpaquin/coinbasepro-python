@@ -1,7 +1,7 @@
 from bintrees import RBTree
 from decimal import Decimal
 
-class BookBuilder:
+class BookBuilder(object):
     def __init__(self):
         self._asks = RBTree()
         self._bids = RBTree()

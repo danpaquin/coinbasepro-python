@@ -19,7 +19,6 @@ class OrderBook(WebsocketClient):
         self.book_builder = BookBuilder()
         self._client = PublicClient()
         self._sequence = None
-        self._current_ticker = None
 
     @property
     def product_id(self):
@@ -59,18 +58,12 @@ class OrderBook(WebsocketClient):
         
         self.book_builder.handle(message)
 
-        if message['type'] == 'match':
-            self._current_ticker = message
-
         self._sequence = sequence
 
     def on_error(self, e):
         self._sequence = None
         self.close()
         self.start()
-
-    def get_current_ticker(self):
-        return self._current_ticker
 
 
 if __name__ == '__main__':
