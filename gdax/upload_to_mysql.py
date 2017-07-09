@@ -2,8 +2,8 @@ from gdax.order_book import OrderBook
 from gdax.websocket_client import WebsocketClient
 from gdax.book_recovery import BookRecovery
 from gdax import translations
-from mysql import mysql_dbi
-from mysql import sql_defs
+from gdax import mysql_dbi
+from gdax import sql_defs
 
 if __name__ == '__main__':
     db = mysql_dbi.Database()

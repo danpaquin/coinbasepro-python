@@ -14,6 +14,7 @@ class BookRecovery():
                 order = {
                     'sequence': res['sequence'],
                     'type': 'open',
+                    'product_id': message['product_id'],
                     'id': bid[2],
                     'side': 'buy',
                     'price': bid[0],

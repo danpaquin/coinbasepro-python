@@ -2,6 +2,7 @@ import time
 import datetime
 
 def gdax_to_sqlevent(d):
+    print(d)
 
     if 'order_type' in d:
         d['type'] = d.pop('order_type')
