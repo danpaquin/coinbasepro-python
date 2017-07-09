@@ -2,11 +2,11 @@ from gdax.order_book import OrderBook
 from gdax.websocket_client import WebsocketClient
 from gdax.book_recovery import BookRecovery
 from gdax import translations
-from gdax import mysql_dbi
+from gdax import mysql_client
 from gdax import sql_defs
 
 if __name__ == '__main__':
-    db = mysql_dbi.Database()
+    db = mysql_client.Database()
     create_query = sql_defs.ORDER_BOOK_TABLE_DEF
     db.write(create_query)
 

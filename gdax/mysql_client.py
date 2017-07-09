@@ -3,11 +3,11 @@ import sqlite3
 
 class Database:
 
-    def __init__(self, testing=False):
+    def __init__(self, db="guestbook", testing=False):
         if testing: # Note: this isn't working
             self.connection = sqlite3.connect('polo.db')
         else:
-            self.connection = MySQLdb.connect(host="35.185.193.153", user="root", passwd="", db="guestbook") 
+            self.connection = MySQLdb.connect(host="35.185.193.153", user="root", passwd="", db=db) 
 
     def write(self, query, parameters=None):
         self.cursor = self.connection.cursor(MySQLdb.cursors.SSDictCursor)
