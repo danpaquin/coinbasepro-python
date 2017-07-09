@@ -1,4 +1,4 @@
-from gdax.public_client import PublicClient
+from public_client import PublicClient
 
 class BookRecovery():
     def __init__(self):
@@ -47,8 +47,8 @@ class BookRecovery():
 if __name__ == '__main__':
     import time
     import datetime as dt
-    from gdax.book_builder import BookBuilder
-    from gdax.websocket_client import WebsocketClient
+    from book_builder import BookBuilder
+    from websocket_client import WebsocketClient
 
     # latest values of bid-ask spread
 

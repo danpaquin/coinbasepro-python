@@ -1,9 +1,9 @@
-from gdax.order_book import OrderBook
-from gdax.websocket_client import WebsocketClient
-from gdax.book_recovery import BookRecovery
-from gdax import translations
-from gdax import mysql_client
-from gdax import sql_defs
+from order_book import OrderBook
+from websocket_client import WebsocketClient
+from book_recovery import BookRecovery
+import translations
+import mysql_client
+import sql_defs
 
 if __name__ == '__main__':
     db = mysql_client.Database()

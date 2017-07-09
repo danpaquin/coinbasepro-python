@@ -81,10 +81,10 @@ class WebsocketClient(object):
         return
 
 if __name__ == "__main__":
-    import gdax
+    import websocket_client
     import time
 
-    class MyWebsocketClient(gdax.WebsocketClient):
+    class MyWebsocketClient(websocket_client.WebsocketClient):
         def on_open(self):
             self.url = "wss://ws-feed.gdax.com/"
             self.products = ["BTC-USD", "ETH-USD"]

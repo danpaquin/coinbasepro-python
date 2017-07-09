@@ -8,9 +8,9 @@ from bintrees import RBTree
 from decimal import Decimal
 import pickle
 
-from gdax.public_client import PublicClient
-from gdax.websocket_client import WebsocketClient
-from gdax.book_builder import BookBuilder
+from public_client import PublicClient
+from websocket_client import WebsocketClient
+from book_builder import BookBuilder
 
 
 class OrderBook(WebsocketClient):
