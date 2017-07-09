@@ -1,10 +1,10 @@
 import pytest
-import gdax
+import public_client
 
 
 @pytest.fixture(scope='module')
 def client():
-    return gdax.PublicClient()
+    return public_client.PublicClient()
 
 
 @pytest.mark.usefixtures('client')

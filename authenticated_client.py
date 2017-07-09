@@ -11,7 +11,7 @@ import requests
 import base64
 import json
 from requests.auth import AuthBase
-from gdax.public_client import PublicClient
+from public_client import PublicClient
 
 
 class AuthenticatedClient(PublicClient):
