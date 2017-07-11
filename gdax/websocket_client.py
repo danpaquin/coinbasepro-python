@@ -40,7 +40,6 @@ class WebsocketClient(object):
 
         self.ws = create_connection(self.url)
 
-        self.stop = False
         sub_params = {'type': 'subscribe', 'product_ids': self.products}
         self.ws.send(json.dumps(sub_params))
         if self.type == "heartbeat":
