@@ -6,19 +6,31 @@
 
 from __future__ import print_function
 import json
-
+import base64
+import hmac
+import hashlib
+import time
 from threading import Thread
 from websocket import create_connection, WebSocketConnectionClosedException
 
 
 class WebsocketClient(object):
-    def __init__(self, url="wss://ws-feed.gdax.com", products=None, message_type="subscribe"):
+    def __init__(self, url="wss://ws-feed.gdax.com", products=None, message_type="subscribe", auth=False, api_key="", api_secret="", api_passphrase=""):
         self.url = url
         self.products = products
         self.type = message_type
         self.stop = False
         self.ws = None
         self.thread = None
+        self.auth = auth
+        self.api_key = api_key
+        self.api_secret = api_secret
+        self.api_passphrase = api_passphrase
+
+    def _auth_message(self, method, path, options=None):
+
+
+        return auth
 
     def start(self):
         def _go():
@@ -38,10 +50,22 @@ class WebsocketClient(object):
         if self.url[-1] == "/":
             self.url = self.url[:-1]
 
-        self.ws = create_connection(self.url)
-
         sub_params = {'type': 'subscribe', 'product_ids': self.products}
+        if self.auth:
+            timestamp = str(time.time())
+            message = timestamp + 'GET' + '/users/self'
+            message = message.encode('ascii')
+            hmac_key = base64.b64decode(self.api_secret)
+            signature = hmac.new(hmac_key, message, hashlib.sha256)
+            signature_b64 = base64.b64encode(signature.digest())
+            sub_params['signature'] = signature_b64
+            sub_params['key'] = self.api_key
+            sub_params['passphrase'] = self.api_passphrase
+            sub_params['timestamp'] = timestamp
+
+        self.ws = create_connection(self.url)
         self.ws.send(json.dumps(sub_params))
+
         if self.type == "heartbeat":
             sub_params = {"type": "heartbeat", "on": True}
             self.ws.send(json.dumps(sub_params))
