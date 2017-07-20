@@ -27,11 +27,6 @@ class WebsocketClient(object):
         self.api_secret = api_secret
         self.api_passphrase = api_passphrase
 
-    def _auth_message(self, method, path, options=None):
-
-
-        return auth
-
     def start(self):
         def _go():
             self._connect()
@@ -73,6 +68,9 @@ class WebsocketClient(object):
     def _listen(self):
         while not self.stop:
             try:
+                if int(time.time() % 30) == 0:
+                    # Set a 30 second ping to keep connection alive
+                    self.ws.ping("keepalive")
                 msg = json.loads(self.ws.recv())
             except Exception as e:
                 self.on_error(e)
@@ -101,7 +99,7 @@ class WebsocketClient(object):
         print(msg)
 
     def on_error(self, e):
-        return
+        print(e)
 
 if __name__ == "__main__":
     import gdax
@@ -126,7 +124,7 @@ if __name__ == "__main__":
     wsClient.start()
     print(wsClient.url, wsClient.products)
     # Do some logic with the data
-    while wsClient.message_count < 500:
+    while wsClient.message_count < 10000:
         print("\nMessageCount =", "%i \n" % wsClient.message_count)
         time.sleep(1)
 
