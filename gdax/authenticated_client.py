@@ -15,9 +15,10 @@ from gdax.public_client import PublicClient
 
 
 class AuthenticatedClient(PublicClient):
-    def __init__(self, key, b64secret, passphrase, api_url="https://api.gdax.com"):
+    def __init__(self, key, b64secret, passphrase, api_url="https://api.gdax.com", product_id="BTC-USD"):
         super(AuthenticatedClient, self).__init__(api_url)
         self.auth = GdaxAuth(key, b64secret, passphrase)
+        self.product_id = product_id
 
     def get_account(self, account_id):
         r = requests.get(self.url + '/accounts/' + account_id, auth=self.auth)

@@ -110,7 +110,7 @@ integrate both into your script.
 ```python
 import gdax
 auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase)
-# Set a default product
+# Set a default product for subsequent calls. If not specified, "BTC-USD" is used.
 auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase, 
                                        product_id="ETH-USD")
 # Use the sandbox API (requires a different set of API access credentials)
