@@ -83,6 +83,7 @@ class WebsocketClient(object):
                 self.ws.send(json.dumps({"type": "heartbeat", "on": False}))
             self.on_close()
             self.stop = True
+            self.thread.join()
             try:
                 if self.ws:
                     self.ws.close()
