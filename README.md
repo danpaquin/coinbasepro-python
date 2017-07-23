@@ -29,7 +29,7 @@ what and who is *really* behind every tick.
 ## Getting Started
 This README is documentation on the syntax of the python client presented in 
 this repository. See function docstrings for full syntax details.  
-**This API attempts to present a clean interface to GDAX, but n order to use it 
+**This API attempts to present a clean interface to GDAX, but in order to use it 
 to its full potential, you must familiarize yourself with the official GDAX 
 documentation.**
 
@@ -321,7 +321,7 @@ workflow.
 
 *0.1.2*
 - Updated JSON handling for increased compatibility among some users.
-- Added support for payment methods, reports, and coinbase user accounts.
+- Added support for payment methods, reports, and Coinbase user accounts.
 - Other compatibility updates.
 
 *0.1.1b2*
