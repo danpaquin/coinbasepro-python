@@ -63,7 +63,10 @@ class WebsocketClient(object):
 
         if self.type == "heartbeat":
             sub_params = {"type": "heartbeat", "on": True}
-            self.ws.send(json.dumps(sub_params))
+        else:
+            sub_params = {"type": "heartbeat", "on": False}
+        self.ws.send(json.dumps(sub_params))
+
 
     def _listen(self):
         while not self.stop:
@@ -79,8 +82,6 @@ class WebsocketClient(object):
 
     def close(self):
         if not self.stop:
-            if self.type == "heartbeat":
-                self.ws.send(json.dumps({"type": "heartbeat", "on": False}))
             self.on_close()
             self.stop = True
             try:
