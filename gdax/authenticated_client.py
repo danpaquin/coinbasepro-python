@@ -965,7 +965,7 @@ class AuthenticatedClient(PublicClient):
         """
         url = self.url + endpoint
         r = self.session.request(method, url, params=params, data=data,
-                                 auth=self.auth)
+                                 auth=self.auth, timeout=30)
         return r.json()
 
     def _send_paginated_message(self, endpoint, params=None):
@@ -993,7 +993,7 @@ class AuthenticatedClient(PublicClient):
         """
         url = self.url + endpoint
         while True:
-            r = self.session.get(url, params=params, auth=self.auth)
+            r = self.session.get(url, params=params, auth=self.auth, timeout=30)
             results = r.json()
             for result in results:
                 yield result
@@ -1006,7 +1006,7 @@ class AuthenticatedClient(PublicClient):
                 break
             else:
                 params['after'] = r.headers['cb-after']
-
+                
 
 class GdaxAuth(AuthBase):
     # Provided by gdax: https://docs.gdax.com/#signing-a-message

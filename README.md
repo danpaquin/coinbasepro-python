@@ -1,4 +1,4 @@
-# GDAX-Python
+# gdax-python
 The Python client for the [GDAX API](https://docs.gdax.com/) (formerly known as 
 the Coinbase Exchange API)
 

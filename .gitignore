@@ -6,3 +6,5 @@ dist/
 *.egg-info/
 *.rst
 venv/
+*log.txt
+gdax/__pycache__/

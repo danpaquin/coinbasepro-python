@@ -45,7 +45,7 @@ class PublicClient(object):
                 ]
 
         """
-        r = requests.get(self.url + '/products')
+        r = requests.get(self.url + '/products', timeout=30)
         # r.raise_for_status()
         return r.json()
 
@@ -86,7 +86,7 @@ class PublicClient(object):
         """
         params = {'level': level}
         r = requests.get(self.url + '/products/{}/book'
-                         .format(product_id), params=params)
+                         .format(product_id), params=params, timeout=30)
         # r.raise_for_status()
         return r.json()
 
@@ -113,7 +113,7 @@ class PublicClient(object):
 
         """
         r = requests.get(self.url + '/products/{}/ticker'
-                         .format(product_id))
+                         .format(product_id), timeout=30)
         # r.raise_for_status()
         return r.json()
 
@@ -140,7 +140,7 @@ class PublicClient(object):
                 }]
 
         """
-        r = requests.get(self.url + '/products/{}/trades'.format(product_id))
+        r = requests.get(self.url + '/products/{}/trades'.format(product_id), timeout=30)
         # r.raise_for_status()
         return r.json()
 
@@ -189,7 +189,7 @@ class PublicClient(object):
         if granularity is not None:
             params['granularity'] = granularity
         r = requests.get(self.url + '/products/{}/candles'
-                         .format(product_id), params=params)
+                         .format(product_id), params=params, timeout=30)
         # r.raise_for_status()
         return r.json()
 
@@ -210,7 +210,7 @@ class PublicClient(object):
                     }
 
         """
-        r = requests.get(self.url + '/products/{}/stats'.format(product_id))
+        r = requests.get(self.url + '/products/{}/stats'.format(product_id), timeout=30)
         # r.raise_for_status()
         return r.json()
 
@@ -230,7 +230,7 @@ class PublicClient(object):
                 }]
 
         """
-        r = requests.get(self.url + '/currencies')
+        r = requests.get(self.url + '/currencies', timeout=30)
         # r.raise_for_status()
         return r.json()
 
@@ -246,6 +246,6 @@ class PublicClient(object):
                     }
 
         """
-        r = requests.get(self.url + '/time')
+        r = requests.get(self.url + '/time', timeout=30)
         # r.raise_for_status()
         return r.json()
