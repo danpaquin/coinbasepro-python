@@ -263,7 +263,7 @@ class myWebsocketClient(gdax.WebsocketClient):
         self.message_count += 1
         if 'price' in msg and 'type' in msg:
             print ("Message type:", msg["type"], 
-                   "\t@ {}.3f".format(float(msg["price"])))
+                   "\t@ {:.3f}".format(float(msg["price"])))
     def on_close(self):
         print("-- Goodbye! --")
 
