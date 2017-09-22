@@ -32,6 +32,7 @@ class WebsocketClient(object):
             self._connect()
             self._listen()
 
+        self.stop = False
         self.on_open()
         self.thread = Thread(target=_go)
         self.thread.start()
