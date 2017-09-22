@@ -29,7 +29,7 @@ what and who is *really* behind every tick.
 ## Getting Started
 This README is documentation on the syntax of the python client presented in 
 this repository. See function docstrings for full syntax details.  
-**This API attempts to present a clean interface to GDAX, but n order to use it 
+**This API attempts to present a clean interface to GDAX, but in order to use it 
 to its full potential, you must familiarize yourself with the official GDAX 
 documentation.**
 
