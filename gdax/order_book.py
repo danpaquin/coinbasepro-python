@@ -160,8 +160,11 @@ class OrderBook(WebsocketClient):
             new_size = Decimal(order['new_size'])
         except KeyError:
             return
-            
-        price = Decimal(order['price'])
+
+        try:
+            price = Decimal(order['price'])
+        except KeyError:
+            return
 
         if order['side'] == 'buy':
             bids = self.get_bids(price)
