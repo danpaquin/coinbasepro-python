@@ -321,7 +321,7 @@ workflow.
 
 *0.1.2*
 - Updated JSON handling for increased compatibility among some users.
-- Added support for payment methods, reports, and coinbase user accounts.
+- Added support for payment methods, reports, and Coinbase user accounts.
 - Other compatibility updates.
 
 *0.1.1b2*
