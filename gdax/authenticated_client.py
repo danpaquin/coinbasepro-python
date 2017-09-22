@@ -254,6 +254,46 @@ class AuthenticatedClient(PublicClient):
         params.update(kwargs)
         return self._send_message('post', '/orders', data=json.dumps(params))
 
+    def buy(self, product_id, order_type, **kwargs):
+        """Place a buy order.
+
+        This is included to maintain backwards compatibility with older versions
+        of GDAX-Python. For maximum support from docstrings and function
+        signatures see the order type-specific functions place_limit_order,
+        place_market_order, and place_stop_order.
+
+        Args:
+            product_id (str): Product to order (eg. 'BTC-USD')
+            order_type (str): Order type ('limit', 'market', or 'stop')
+            **kwargs: Additional arguments can be specified for different order
+                types.
+
+        Returns:
+            dict: Order details. See `place_order` for example.
+
+        """
+        return self.place_order(product_id, 'buy', order_type, **kwargs)
+
+    def sell(self, product_id, order_type, **kwargs):
+        """Place a sell order.
+
+        This is included to maintain backwards compatibility with older versions
+        of GDAX-Python. For maximum support from docstrings and function
+        signatures see the order type-specific functions place_limit_order,
+        place_market_order, and place_stop_order.
+
+        Args:
+            product_id (str): Product to order (eg. 'BTC-USD')
+            order_type (str): Order type ('limit', 'market', or 'stop')
+            **kwargs: Additional arguments can be specified for different order
+                types.
+
+        Returns:
+            dict: Order details. See `place_order` for example.
+
+        """
+        return self.place_order(product_id, 'sell', order_type, **kwargs)
+
     def place_limit_order(self, product_id, side, price, size,
                           client_oid=None,
                           stp=None,
@@ -931,7 +971,7 @@ class AuthenticatedClient(PublicClient):
     def get_trailing_volume(self):
         """  Get your 30-day trailing volume for all products.
 
-        This is a cached value that’s calculated every day at midnight UTC.
+        This is a cached value that's calculated every day at midnight UTC.
 
         Returns:
             list: 30-day trailing volumes. Example::
@@ -1006,7 +1046,7 @@ class AuthenticatedClient(PublicClient):
                 break
             else:
                 params['after'] = r.headers['cb-after']
-                
+
 
 class GdaxAuth(AuthBase):
     # Provided by gdax: https://docs.gdax.com/#signing-a-message
