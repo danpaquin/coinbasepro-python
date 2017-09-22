@@ -990,63 +990,6 @@ class AuthenticatedClient(PublicClient):
         """
         return self._send_message('get', '/users/self/trailing-volume')
 
-    def _send_message(self, method, endpoint, params=None, data=None):
-        """Send API request.
-
-        Args:
-            method (str): HTTP method (get, post, delete, etc.)
-            endpoint (str): Endpoint (to be added to base URL)
-            params (Optional[dict]): HTTP request parameters
-            data (Optional[str]): JSON-encoded string payload for POST
-
-        Returns:
-            dict/list: JSON response
-
-        """
-        url = self.url + endpoint
-        r = self.session.request(method, url, params=params, data=data,
-                                 auth=self.auth, timeout=30)
-        return r.json()
-
-    def _send_paginated_message(self, endpoint, params=None):
-        """ Send API message that results in a paginated response.
-
-        The paginated responses are abstracted away by making API requests on
-        demand as the response is iterated over.
-
-        Paginated API messages support 3 additional parameters: `before`,
-        `after`, and `limit`. `before` and `after` are mutually exclusive. To
-        use them, supply an index value for that endpoint (the field used for
-        indexing varies by endpoint - get_fills() uses 'trade_id', for example).
-            `before`: Only get data that occurs more recently than index
-            `after`: Only get data that occurs further in the past than index
-            `limit`: Set amount of data per HTTP response. Default (and
-                maximum) of 100.
-
-        Args:
-            endpoint (str): Endpoint (to be added to base URL)
-            params (Optional[dict]): HTTP request parameters
-
-        Yields:
-            dict: API response objects
-
-        """
-        url = self.url + endpoint
-        while True:
-            r = self.session.get(url, params=params, auth=self.auth, timeout=30)
-            results = r.json()
-            for result in results:
-                yield result
-            # If there are no more pages, we're done. Otherwise update `after`
-            # param to get next page.
-            # If this request included `before` don't get any more pages - the
-            # GDAX API doesn't support multiple pages in that case.
-            if not r.headers.get('cb-after') or \
-                    params.get('before') is not None:
-                break
-            else:
-                params['after'] = r.headers['cb-after']
-
 
 class GdaxAuth(AuthBase):
     # Provided by gdax: https://docs.gdax.com/#signing-a-message

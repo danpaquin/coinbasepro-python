@@ -69,9 +69,10 @@ public_client.get_product_order_book('BTC-USD', level=1)
 public_client.get_product_ticker(product_id='ETH-USD')
 ```
 
-- [get_product_trades](https://docs.gdax.com/#get-trades)
+- [get_product_trades](https://docs.gdax.com/#get-trades) (paginated)
 ```python
 # Get the product trades for a specific product.
+# Returns a generator
 public_client.get_product_trades(product_id='ETH-USD')
 ```
 
@@ -169,13 +170,36 @@ auth_client.get_account_holds("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 # Buy 0.01 BTC @ 100 USD
 auth_client.buy(price='100.00', #USD
                size='0.01', #BTC
+               order_type='limit',
                product_id='BTC-USD')
 ```
 ```python
 # Sell 0.01 BTC @ 200 USD
 auth_client.sell(price='200.00', #USD
                 size='0.01', #BTC
+                order_type='limit',
                 product_id='BTC-USD')
+```
+```python
+# Limit order-specific method
+auth_client.place_limit_order(product_id='BTC-USD', 
+                              side='buy', 
+                              price='200.00', 
+                              size='0.01')
+```
+```python
+# Place a market order by specifying amount of USD to use. 
+# Alternatively, `size` could be used to specify quantity in BTC amount.
+auth_client.place_market_order(product_id='BTC-USD', 
+                               side='buy', 
+                               funds='100.00')
+```
+```python
+# Stop order. `funds` can be used instead of `size` here.
+auth_client.place_stop_order(product_id='BTC-USD', 
+                              side='buy', 
+                              price='200.00', 
+                              size='0.01')
 ```
 
 - [cancel_order](https://docs.gdax.com/#cancel-an-order)
