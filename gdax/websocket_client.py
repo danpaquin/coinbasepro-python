@@ -20,6 +20,7 @@ class WebsocketClient(object):
         self.products = products
         self.type = message_type
         self.stop = False
+        self.error = None
         self.ws = None
         self.thread = None
         self.auth = auth
@@ -31,6 +32,7 @@ class WebsocketClient(object):
         def _go():
             self._connect()
             self._listen()
+            self._disconnect()
 
         self.stop = False
         self.on_open()
@@ -75,22 +77,29 @@ class WebsocketClient(object):
                 if int(time.time() % 30) == 0:
                     # Set a 30 second ping to keep connection alive
                     self.ws.ping("keepalive")
-                msg = json.loads(self.ws.recv())
+                data = self.ws.recv()
+                msg = json.loads(data)
+            except ValueError as e:
+                self.on_error(e)
             except Exception as e:
                 self.on_error(e)
             else:
                 self.on_message(msg)
 
+    def _disconnect(self):
+        if self.type == "heartbeat":
+            self.ws.send(json.dumps({"type": "heartbeat", "on": False}))
+        try:
+            if self.ws:
+                self.ws.close()
+        except WebSocketConnectionClosedException as e:
+            pass
+
+        self.on_close()
+
     def close(self):
-        if not self.stop:
-            self.on_close()
-            self.stop = True
-            self.thread.join()
-            try:
-                if self.ws:
-                    self.ws.close()
-            except WebSocketConnectionClosedException as e:
-                pass
+        self.stop = True
+        self.thread.join()
 
     def on_open(self):
         print("-- Subscribed! --\n")
@@ -101,10 +110,13 @@ class WebsocketClient(object):
     def on_message(self, msg):
         print(msg)
 
-    def on_error(self, e):
-        print(e)
+    def on_error(self, e, data=None):
+        self.error = e
+        self.stop
+        print('{} - data: {}'.format(e, data))
 
 if __name__ == "__main__":
+    import sys
     import gdax
     import time
 
@@ -116,8 +128,7 @@ if __name__ == "__main__":
             print("Let's count the messages!")
 
         def on_message(self, msg):
-            if 'price' in msg and 'type' in msg:
-                print("Message type:", msg["type"], "\t@ %.3f" % float(msg["price"]))
+            print(json.dumps(msg, indent=4, sort_keys=True))
             self.message_count += 1
 
         def on_close(self):
@@ -126,9 +137,14 @@ if __name__ == "__main__":
     wsClient = MyWebsocketClient()
     wsClient.start()
     print(wsClient.url, wsClient.products)
-    # Do some logic with the data
-    while wsClient.message_count < 10000:
-        print("\nMessageCount =", "%i \n" % wsClient.message_count)
-        time.sleep(1)
+    try:
+        while True:
+            print("\nMessageCount =", "%i \n" % wsClient.message_count)
+            time.sleep(1)
+    except KeyboardInterrupt:
+        wsClient.close()
 
-    wsClient.close()
+    if wsClient.error:
+        sys.exit(1)
+    else:
+        sys.exit(0)

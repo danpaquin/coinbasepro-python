@@ -36,38 +36,39 @@ class OrderBook(WebsocketClient):
     def on_close(self):
         print("\n-- OrderBook Socket Closed! --")
 
+    def reset_book(self):
+        self._asks = RBTree()
+        self._bids = RBTree()
+        res = self._client.get_product_order_book(product_id=self.product_id, level=3)
+        for bid in res['bids']:
+            self.add({
+                'id': bid[2],
+                'side': 'buy',
+                'price': Decimal(bid[0]),
+                'size': Decimal(bid[1])
+            })
+        for ask in res['asks']:
+            self.add({
+                'id': ask[2],
+                'side': 'sell',
+                'price': Decimal(ask[0]),
+                'size': Decimal(ask[1])
+            })
+        self._sequence = res['sequence']
+
     def on_message(self, message):
         if self._log_to:
             pickle.dump(message, self._log_to)
 
         sequence = message['sequence']
         if self._sequence == -1:
-            self._asks = RBTree()
-            self._bids = RBTree()
-            res = self._client.get_product_order_book(product_id=self.product_id, level=3)
-            for bid in res['bids']:
-                self.add({
-                    'id': bid[2],
-                    'side': 'buy',
-                    'price': Decimal(bid[0]),
-                    'size': Decimal(bid[1])
-                })
-            for ask in res['asks']:
-                self.add({
-                    'id': ask[2],
-                    'side': 'sell',
-                    'price': Decimal(ask[0]),
-                    'size': Decimal(ask[1])
-                })
-            self._sequence = res['sequence']
-
+            self.reset_book()
+            return
         if sequence <= self._sequence:
             # ignore older messages (e.g. before order book initialization from getProductOrderBook)
             return
         elif sequence > self._sequence + 1:
-            print('Error: messages missing ({} - {}). Re-initializing websocket.'.format(sequence, self._sequence))
-            self.close()
-            self.start()
+            self.on_sequence_gap(self._sequence, sequence)
             return
 
         msg_type = message['type']
@@ -83,18 +84,11 @@ class OrderBook(WebsocketClient):
 
         self._sequence = sequence
 
-        # bid = self.get_bid()
-        # bids = self.get_bids(bid)
-        # bid_depth = sum([b['size'] for b in bids])
-        # ask = self.get_ask()
-        # asks = self.get_asks(ask)
-        # ask_depth = sum([a['size'] for a in asks])
-        # print('bid: %f @ %f - ask: %f @ %f' % (bid_depth, bid, ask_depth, ask))
+    def on_sequence_gap(self, gap_start, gap_end):
+        self.reset_book()
+        print('Error: messages missing ({} - {}). Re-initializing  book at sequence.'.format(
+            gap_start, gap_end, self._sequence))
 
-    def on_error(self, e):
-        self._sequence = -1
-        self.close()
-        self.start()
 
     def add(self, order):
         order = {
@@ -250,6 +244,7 @@ class OrderBook(WebsocketClient):
 
 
 if __name__ == '__main__':
+    import sys
     import time
     import datetime as dt
 
@@ -286,10 +281,18 @@ if __name__ == '__main__':
                 self._ask = ask
                 self._bid_depth = bid_depth
                 self._ask_depth = ask_depth
-                print('{}\tbid: {:.3f} @ {:.2f}\task: {:.3f} @ {:.2f}'.format(dt.datetime.now(), bid_depth, bid,
-                                                                              ask_depth, ask))
+                print('{} {} bid: {:.3f} @ {:.2f}\task: {:.3f} @ {:.2f}'.format(
+                    dt.datetime.now(), self.product_id, bid_depth, bid, ask_depth, ask))
 
     order_book = OrderBookConsole()
     order_book.start()
-    time.sleep(10)
-    order_book.close()
+    try:
+        while True:
+            time.sleep(10)
+    except KeyboardInterrupt:
+        order_book.close()
+
+    if order_book.error:
+        sys.exit(1)
+    else:
+        sys.exit(0)
