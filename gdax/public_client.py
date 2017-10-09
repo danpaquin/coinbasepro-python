@@ -5,7 +5,8 @@
 # For public requests to the GDAX exchange
 
 import requests
-
+from pandas import to_datetime, to_timedelta
+from time import sleep
 
 class PublicClient(object):
     """GDAX public client API.
@@ -192,6 +193,33 @@ class PublicClient(object):
                          .format(product_id), params=params, timeout=30)
         # r.raise_for_status()
         return r.json()
+
+    def get_extended_product_historic_rates(self, product_id, start, end,
+                                            granularity):
+        """ Helper function for requesting longer term product histories.
+        """
+        max_data_points = 200
+        public_rate_limit_seconds = 3
+
+        start = to_datetime(start)
+        end = to_datetime(end)
+        history = []
+
+        request_start = start
+        request_end = request_start + to_timedelta(granularity*max_data_points, 's')
+
+        while request_end < end:
+            prices = self.get_product_historic_rates(product_id, start=request_start.isoformat(),
+                                                              end=request_end.isoformat(), granularity=granularity)
+            history.extend(prices[::-1])
+            request_start = request_end
+            request_end = request_start + to_timedelta(granularity*max_data_points, 's')
+            sleep((1/public_rate_limit_seconds)+0.01)
+
+        if end - request_end > to_timedelta(0, 's'):
+            history.extend(self.get_product_historic_rates(product_id, start=request_start.isoformat(),
+                                                              end=request_end.isoformat(), granularity=granularity))
+        return history
 
     def get_product_24hr_stats(self, product_id):
         """Get 24 hr stats for the product.
