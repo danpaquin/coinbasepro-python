@@ -1,6 +1,7 @@
-#
 # gdax/WebsocketClient.py
-# Daniel Paquin
+# original author: Daniel Paquin
+# mongo "support" added by Drew Rice
+#
 #
 # Template object to receive messages from the gdax Websocket Feed
 
