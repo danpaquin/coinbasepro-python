@@ -110,9 +110,7 @@ integrate both into your script.
 ```python
 import gdax
 auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase)
-# Set a default product
-auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase,
-                                       product_id="ETH-USD")
+
 # Use the sandbox API (requires a different set of API access credentials)
 auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase,
                                   api_url="https://api-public.sandbox.gdax.com")
@@ -262,9 +260,10 @@ There are three methods which you could overwrite (before initialization) so it
 can react to the data streaming in.  The current client is a template used for
 illustration purposes only.
 
-- onOpen - called once, *immediately before* the socket connection is made, this
-is where you want to add inital parameters.
-- onMessage - called once for every message that arrives and accepts one
+
+- onOpen - called once, *immediately before* the socket connection is made, this 
+is where you want to add initial parameters.
+- onMessage - called once for every message that arrives and accepts one 
 argument that contains the message of dict type.
 - onClose - called once after the websocket has been closed.
 - close - call this method to close the websocket connection (do not overwrite).
