@@ -28,6 +28,7 @@ class WebsocketClient(object):
         self.api_key = api_key
         self.api_secret = api_secret
         self.api_passphrase = api_passphrase
+        self.should_print = should_print
         self.mongo_collection = mongo_collection
 
     def start(self):
@@ -96,13 +97,15 @@ class WebsocketClient(object):
                 pass
 
     def on_open(self):
-        print("-- Subscribed! --\n")
+        if self.should_print:
+            print("-- Subscribed! --\n")
 
     def on_close(self):
-        print("\n-- Socket Closed --")
+        if self.should_print:
+            print("\n-- Socket Closed --")
 
     def on_message(self, msg):
-        if should_print:
+        if self.should_print:
             print(msg)
         if self.mongo_collection: # dump JSON to given mongo collection
             self.mongo_collection.insert_one(msg)
