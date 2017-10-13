@@ -17,9 +17,10 @@ from pymongo import MongoClient
 
 class WebsocketClient(object):
     def __init__(self, url="wss://ws-feed.gdax.com", products=None, message_type="subscribe",
-            mongo_collection=None, should_print=True, auth=False, api_key="", api_secret="", api_passphrase=""):
+            mongo_collection=None, should_print=True, auth=False, api_key="", api_secret="", api_passphrase="", channels=None):
         self.url = url
         self.products = products
+        self.channels = channels
         self.type = message_type
         self.stop = False
         self.ws = None
@@ -50,7 +51,12 @@ class WebsocketClient(object):
         if self.url[-1] == "/":
             self.url = self.url[:-1]
 
-        sub_params = {'type': 'subscribe', 'product_ids': self.products}
+        if self.channels is None:
+          sub_params = {'type': 'subscribe', 'product_ids': self.products}
+        else:
+          sub_params = {'type': 'subscribe', 'product_ids': self.products, 'channels': self.channels}
+
+
         if self.auth:
             timestamp = str(time.time())
             message = timestamp + 'GET' + '/users/self'
