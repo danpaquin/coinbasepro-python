@@ -102,7 +102,17 @@ public_client.get_time()
 Not all API endpoints are available to everyone.
 Those requiring user authentication can be reached using `AuthenticatedClient`.
 You must setup API access within your
-[account settings](https://www.gdax.com/settings/api).
+[account settings](https://www.gdax.com/settings/api). You can add your API
+credentials to `credentials.json`, which will load your credentials as
+environment variables at runtime.
+
+```python
+key = os.environ.get('sandbox_key')
+b64secret = os.environ.get('sandbox_secret')
+passphrase = os.environ.get('sandbox_password')
+```
+
+
 The `AuthenticatedClient` inherits all methods from the `PublicClient`
 class, so you will only need to initialize one if you are planning to
 integrate both into your script.
@@ -115,6 +125,8 @@ auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase)
 auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase,
                                   api_url="https://api-public.sandbox.gdax.com")
 ```
+
+You can
 
 ### Pagination
 Some calls are [paginated](https://docs.gdax.com/#pagination), meaning multiple
@@ -240,7 +252,7 @@ wsClient.close()
 ### WebsocketClient + Mongodb
 The ```WebsocketClient``` now supports data gathering via MongoDB. Given a
 MongoDB collection, the ```WebsocketClient``` will stream results directly into
-the database collection. 
+the database collection.
 ```python
 # import PyMongo and connect to a local, running Mongo instance
 from pymongo import MongoClient
@@ -261,9 +273,9 @@ can react to the data streaming in.  The current client is a template used for
 illustration purposes only.
 
 
-- onOpen - called once, *immediately before* the socket connection is made, this 
+- onOpen - called once, *immediately before* the socket connection is made, this
 is where you want to add initial parameters.
-- onMessage - called once for every message that arrives and accepts one 
+- onMessage - called once for every message that arrives and accepts one
 argument that contains the message of dict type.
 - onClose - called once after the websocket has been closed.
 - close - call this method to close the websocket connection (do not overwrite).

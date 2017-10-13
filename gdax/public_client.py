@@ -140,7 +140,8 @@ class PublicClient(object):
                 }]
 
         """
-        r = requests.get(self.url + '/products/{}/trades'.format(product_id), timeout=30)
+        r = requests.get(self.url + '/products/{}/trades'.format(product_id),
+                         timeout=30)
         # r.raise_for_status()
         return r.json()
 
@@ -210,7 +211,8 @@ class PublicClient(object):
                     }
 
         """
-        r = requests.get(self.url + '/products/{}/stats'.format(product_id), timeout=30)
+        r = requests.get(self.url + '/products/{}/stats'.format(product_id),
+                         timeout=30)
         # r.raise_for_status()
         return r.json()
 
