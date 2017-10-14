@@ -1,24 +1,24 @@
 # gdax-python
-The Python client for the [GDAX API](https://docs.gdax.com/) (formerly known as 
+The Python client for the [GDAX API](https://docs.gdax.com/) (formerly known as
 the Coinbase Exchange API)
 
 ##### Provided under MIT License by Daniel Paquin.
-*Note: this library may be subtly broken or buggy. The code is released under 
+*Note: this library may be subtly broken or buggy. The code is released under
 the MIT License – please take the following message to heart:*
-> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS 
-FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR 
-COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER 
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
+> THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 ## Benefits
 - A simple to use python wrapper for both public and authenticated endpoints.
-- In about 10 minutes, you could be programmatically trading on one of the 
+- In about 10 minutes, you could be programmatically trading on one of the
 largest Bitcoin exchanges in the *world*!
-- Do not worry about handling the nuances of the API with easy-to-use methods 
+- Do not worry about handling the nuances of the API with easy-to-use methods
 for every API endpoint.
-- Gain an advantage in the market by getting under the hood of GDAX to learn 
+- Gain an advantage in the market by getting under the hood of GDAX to learn
 what and who is *really* behind every tick.
 
 ## Under Development
@@ -27,10 +27,10 @@ what and who is *really* behind every tick.
 - FIX API Client **Looking for assistance**
 
 ## Getting Started
-This README is documentation on the syntax of the python client presented in 
+This README is documentation on the syntax of the python client presented in
 this repository. See function docstrings for full syntax details.  
-**This API attempts to present a clean interface to GDAX, but n order to use it 
-to its full potential, you must familiarize yourself with the official GDAX 
+**This API attempts to present a clean interface to GDAX, but in order to use it
+to its full potential, you must familiarize yourself with the official GDAX
 documentation.**
 
 - https://docs.gdax.com/
@@ -41,7 +41,7 @@ pip install gdax
 ```
 
 ### Public Client
-Only some endpoints in the API are available to everyone.  The public endpoints 
+Only some endpoints in the API are available to everyone.  The public endpoints
 can be reached using ```PublicClient```
 
 ```python
@@ -112,7 +112,7 @@ integrate both into your script.
 import gdax
 auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase)
 # Use the sandbox API (requires a different set of API access credentials)
-auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase, 
+auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase,
                                   api_url="https://api-public.sandbox.gdax.com")
 ```
 
@@ -251,7 +251,7 @@ auth_client.withdraw(withdrawParams)
 ```
 
 ### WebsocketClient
-If you would like to receive real-time market updates, you must subscribe to the 
+If you would like to receive real-time market updates, you must subscribe to the
 [websocket feed](https://docs.gdax.com/#websocket-feed).
 
 #### Subscribe to a single product
@@ -267,21 +267,38 @@ wsClient.close()
 ```python
 import gdax
 # Paramaters are optional
-wsClient = gdax.WebsocketClient(url="wss://ws-feed.gdax.com", 
+wsClient = gdax.WebsocketClient(url="wss://ws-feed.gdax.com",
                                 products=["BTC-USD", "ETH-USD"])
 # Do other stuff...
 wsClient.close()
 ```
 
+### WebsocketClient + Mongodb
+The ```WebsocketClient``` now supports data gathering via MongoDB. Given a
+MongoDB collection, the ```WebsocketClient``` will stream results directly into
+the database collection. 
+```python
+# import PyMongo and connect to a local, running Mongo instance
+from pymongo import MongoClient
+mongo_client = MongoClient('mongodb://localhost:27017/')
+# specify the database and collection
+db = mongo_client.cryptocurrency_database
+BTC_collection = db.BTC_collection
+# instantiate a WebsocketClient instance, with a Mongo collection as a parameter
+wsClient = WebsocketClient(url="wss://ws-feed.gdax.com", products="BTC-USD",
+    mongo_collection=BTC_collection, should_print=False)
+wsClient.start()
+```
+
 ### WebsocketClient Methods
-The ```WebsocketClient``` subscribes in a separate thread upon initialization. 
-There are three methods which you could overwrite (before initialization) so it 
-can react to the data streaming in.  The current client is a template used for 
+The ```WebsocketClient``` subscribes in a separate thread upon initialization.
+There are three methods which you could overwrite (before initialization) so it
+can react to the data streaming in.  The current client is a template used for
 illustration purposes only.
 
-- on_open - called once, *immediately before* the socket connection is made, this 
-is where you want to add inital parameters.
-- on_message - called once for every message that arrives and accepts one 
+- onOpen - called once, *immediately before* the socket connection is made, this 
+is where you want to add initial parameters.
+- onMessage - called once for every message that arrives and accepts one 
 argument that contains the message of dict type.
 - on_close - called once after the websocket has been closed.
 - close - call this method to close the websocket connection (do not overwrite).
@@ -296,8 +313,8 @@ class myWebsocketClient(gdax.WebsocketClient):
     def on_message(self, msg):
         self.message_count += 1
         if 'price' in msg and 'type' in msg:
-            print ("Message type:", msg["type"], 
-                   "\t@ {}.3f".format(float(msg["price"])))
+            print ("Message type:", msg["type"],
+                   "\t@ {:.3f}".format(float(msg["price"])))
     def on_close(self):
         print("-- Goodbye! --")
 
@@ -319,8 +336,8 @@ python -m pytest
 ```
 
 ### Real-time OrderBook
-The ```OrderBook``` subscribes to a websocket and keeps a real-time record of 
-the orderbook for the product_id input.  Please provide your feedback for future 
+The ```OrderBook``` subscribes to a websocket and keeps a real-time record of
+the orderbook for the product_id input.  Please provide your feedback for future
 improvements.
 
 ```python
@@ -343,7 +360,7 @@ python -m pytest
 
 ## Change Log
 *1.0* **Current PyPI release**
-- The first release that is not backwards compatible 
+- The first release that is not backwards compatible
 - Refactored to follow PEP 8 Standards
 - Improved Documentation
 
@@ -358,7 +375,7 @@ python -m pytest
 - Added additional API functionality such as cancelAll() and ETH withdrawal.
 
 *0.2.1*
-- Allowed ```WebsocketClient``` to operate intuitively and restructured example 
+- Allowed ```WebsocketClient``` to operate intuitively and restructured example
 workflow.
 
 *0.2.0*
@@ -367,7 +384,7 @@ workflow.
 
 *0.1.2*
 - Updated JSON handling for increased compatibility among some users.
-- Added support for payment methods, reports, and coinbase user accounts.
+- Added support for payment methods, reports, and Coinbase user accounts.
 - Other compatibility updates.
 
 *0.1.1b2*

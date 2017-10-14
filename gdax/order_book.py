@@ -29,6 +29,13 @@ class OrderBook(WebsocketClient):
         ''' Currently OrderBook only supports a single product even though it is stored as a list of products. '''
         return self.products[0]
 
+    def on_open(self):
+        self._sequence = -1
+        print("-- Subscribed to OrderBook! --\n")
+
+    def on_close(self):
+        print("\n-- OrderBook Socket Closed! --")
+
     def on_message(self, message):
         if self._log_to:
             pickle.dump(message, self._log_to)
@@ -160,8 +167,11 @@ class OrderBook(WebsocketClient):
             new_size = Decimal(order['new_size'])
         except KeyError:
             return
-            
-        price = Decimal(order['price'])
+
+        try:
+            price = Decimal(order['price'])
+        except KeyError:
+            return
 
         if order['side'] == 'buy':
             bids = self.get_bids(price)
