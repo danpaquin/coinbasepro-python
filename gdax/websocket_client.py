@@ -16,8 +16,9 @@ from websocket import create_connection, WebSocketConnectionClosedException
 from pymongo import MongoClient
 
 class WebsocketClient(object):
-    def __init__(self, url="wss://ws-feed.gdax.com", products=None, message_type="subscribe",
-            mongo_collection=None, should_print=True, auth=False, api_key="", api_secret="", api_passphrase=""):
+    def __init__(self, url="wss://ws-feed.gdax.com", products=None,
+            message_type="subscribe", mongo_collection=None, should_print=True,
+            auth=False, api_key="", api_secret="", api_passphrase=""):
         self.url = url
         self.products = products
         self.type = message_type

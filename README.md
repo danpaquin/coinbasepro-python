@@ -240,14 +240,16 @@ wsClient.close()
 ### WebsocketClient + Mongodb
 The ```WebsocketClient``` now supports data gathering via MongoDB. Given a
 MongoDB collection, the ```WebsocketClient``` will stream results directly into
-the database collection. 
+the database collection.
 ```python
 # import PyMongo and connect to a local, running Mongo instance
 from pymongo import MongoClient
 mongo_client = MongoClient('mongodb://localhost:27017/')
+
 # specify the database and collection
 db = mongo_client.cryptocurrency_database
 BTC_collection = db.BTC_collection
+
 # instantiate a WebsocketClient instance, with a Mongo collection as a parameter
 wsClient = WebsocketClient(url="wss://ws-feed.gdax.com", products="BTC-USD",
     mongo_collection=BTC_collection, should_print=False)
@@ -261,9 +263,9 @@ can react to the data streaming in.  The current client is a template used for
 illustration purposes only.
 
 
-- onOpen - called once, *immediately before* the socket connection is made, this 
+- onOpen - called once, *immediately before* the socket connection is made, this
 is where you want to add initial parameters.
-- onMessage - called once for every message that arrives and accepts one 
+- onMessage - called once for every message that arrives and accepts one
 argument that contains the message of dict type.
 - onClose - called once after the websocket has been closed.
 - close - call this method to close the websocket connection (do not overwrite).
