@@ -14,11 +14,12 @@ import time
 from threading import Thread
 from websocket import create_connection, WebSocketConnectionClosedException
 from pymongo import MongoClient
+from gdax.gdax_auth import get_auth_headers
+
 
 class WebsocketClient(object):
-    def __init__(self, url="wss://ws-feed.gdax.com", products=None, message_type="subscribe", mongo_collection=None, 
-        should_print=True, auth=False, api_key="", api_secret="", api_passphrase="", channels=None):
-
+    def __init__(self, url="wss://ws-feed.gdax.com", products=None, message_type="subscribe", mongo_collection=None,
+                 should_print=True, auth=False, api_key="", api_secret="", api_passphrase="", channels=None):
         self.url = url
         self.products = products
         self.channels = channels
@@ -55,22 +56,14 @@ class WebsocketClient(object):
             self.url = self.url[:-1]
 
         if self.channels is None:
-          sub_params = {'type': 'subscribe', 'product_ids': self.products}
+            sub_params = {'type': 'subscribe', 'product_ids': self.products}
         else:
-          sub_params = {'type': 'subscribe', 'product_ids': self.products, 'channels': self.channels}
-
+            sub_params = {'type': 'subscribe', 'product_ids': self.products, 'channels': self.channels}
 
         if self.auth:
             timestamp = str(time.time())
             message = timestamp + 'GET' + '/users/self'
-            message = message.encode('ascii')
-            hmac_key = base64.b64decode(self.api_secret)
-            signature = hmac.new(hmac_key, message, hashlib.sha256)
-            signature_b64 = base64.b64encode(signature.digest())
-            sub_params['signature'] = signature_b64
-            sub_params['key'] = self.api_key
-            sub_params['passphrase'] = self.api_passphrase
-            sub_params['timestamp'] = timestamp
+            sub_params.update(get_auth_headers(timestamp, message, self.api_key,  self.api_secret, self.api_passphrase))
 
         self.ws = create_connection(self.url)
         self.ws.send(json.dumps(sub_params))
@@ -80,7 +73,6 @@ class WebsocketClient(object):
         else:
             sub_params = {"type": "heartbeat", "on": False}
         self.ws.send(json.dumps(sub_params))
-
 
     def _listen(self):
         while not self.stop:
@@ -123,7 +115,7 @@ class WebsocketClient(object):
     def on_message(self, msg):
         if self.should_print:
             print(msg)
-        if self.mongo_collection: # dump JSON to given mongo collection
+        if self.mongo_collection:  # dump JSON to given mongo collection
             self.mongo_collection.insert_one(msg)
 
     def on_error(self, e, data=None):
@@ -131,10 +123,12 @@ class WebsocketClient(object):
         self.stop
         print('{} - data: {}'.format(e, data))
 
+
 if __name__ == "__main__":
     import sys
     import gdax
     import time
+
 
     class MyWebsocketClient(gdax.WebsocketClient):
         def on_open(self):
@@ -149,6 +143,7 @@ if __name__ == "__main__":
 
         def on_close(self):
             print("-- Goodbye! --")
+
 
     wsClient = MyWebsocketClient()
     wsClient.start()
