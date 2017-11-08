@@ -69,9 +69,10 @@ public_client.get_product_order_book('BTC-USD', level=1)
 public_client.get_product_ticker(product_id='ETH-USD')
 ```
 
-- [get_product_trades](https://docs.gdax.com/#get-trades)
+- [get_product_trades](https://docs.gdax.com/#get-trades) (paginated)
 ```python
 # Get the product trades for a specific product.
+# Returns a generator
 public_client.get_product_trades(product_id='ETH-USD')
 ```
 
@@ -110,28 +111,36 @@ integrate both into your script.
 ```python
 import gdax
 auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase)
-
 # Use the sandbox API (requires a different set of API access credentials)
 auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase,
                                   api_url="https://api-public.sandbox.gdax.com")
 ```
 
 ### Pagination
-Some calls are [paginated](https://docs.gdax.com/#pagination), meaning multiple
-calls must be made to receive the full set of data.  Each page/request is a list
-of dict objects that are then appended to a master list, making it easy to
-navigate pages (e.g. ```request[0]``` would return the first page of data in the
-example below). *This feature is under consideration for redesign.  Please
-provide feedback if you have issues or suggestions*
+Some calls are [paginated](https://docs.gdax.com/#pagination), meaning multiple 
+calls must be made to receive the full set of data. The GDAX Python API provides
+an abstraction for paginated endpoints in the form of generators which provide a
+clean interface for iteration but may make multiple HTTP requests behind the 
+scenes. The pagination options `before`, `after`, and `limit` may be supplied as
+keyword arguments if desired, but aren't necessary for typical use cases.
 ```python
-request = auth_client.get_fills(limit=100)
-request[0] # Page 1 always present
-request[1] # Page 2+ present only if the data exists
+fills_gen = auth_client.get_fills()
+# Get all fills (will possibly make multiple HTTP requests)
+all_fills = list(fills_gen)
 ```
-It should be noted that limit does not behave exactly as the official
-documentation specifies.  If you request a limit and that limit is met,
-additional pages will not be returned.  This is to ensure speedy response times
-when less data is preferred.
+One use case for pagination parameters worth pointing out is retrieving only 
+new data since the previous request. For the case of `get_fills()`, the 
+`trade_id` is the parameter used for indexing. By passing 
+`before=some_trade_id`, only fills more recent than that `trade_id` will be 
+returned. Note that when using `before`, a maximum of 100 entries will be 
+returned - this is a limitation of GDAX.
+```python
+from itertools import islice
+# Get 5 most recent fills
+recent_fills = islice(auth_client.get_fills(), 5)
+# Only fetch new fills since last call by utilizing `before` parameter.
+new_fills = auth_client.get_fills(before=recent_fills[0]['trade_id'])
+```
 
 ### AuthenticatedClient Methods
 - [get_accounts](https://docs.gdax.com/#list-accounts)
@@ -146,11 +155,13 @@ auth_client.get_account("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 
 - [get_account_history](https://docs.gdax.com/#get-account-history) (paginated)
 ```python
+# Returns generator:
 auth_client.get_account_history("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 ```
 
 - [get_account_holds](https://docs.gdax.com/#get-holds) (paginated)
 ```python
+# Returns generator:
 auth_client.get_account_holds("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 ```
 
@@ -159,13 +170,36 @@ auth_client.get_account_holds("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 # Buy 0.01 BTC @ 100 USD
 auth_client.buy(price='100.00', #USD
                size='0.01', #BTC
+               order_type='limit',
                product_id='BTC-USD')
 ```
 ```python
 # Sell 0.01 BTC @ 200 USD
 auth_client.sell(price='200.00', #USD
                 size='0.01', #BTC
+                order_type='limit',
                 product_id='BTC-USD')
+```
+```python
+# Limit order-specific method
+auth_client.place_limit_order(product_id='BTC-USD', 
+                              side='buy', 
+                              price='200.00', 
+                              size='0.01')
+```
+```python
+# Place a market order by specifying amount of USD to use. 
+# Alternatively, `size` could be used to specify quantity in BTC amount.
+auth_client.place_market_order(product_id='BTC-USD', 
+                               side='buy', 
+                               funds='100.00')
+```
+```python
+# Stop order. `funds` can be used instead of `size` here.
+auth_client.place_stop_order(product_id='BTC-USD', 
+                              side='buy', 
+                              price='200.00', 
+                              size='0.01')
 ```
 
 - [cancel_order](https://docs.gdax.com/#cancel-an-order)
@@ -179,6 +213,7 @@ auth_client.cancel_all(product='BTC-USD')
 
 - [get_orders](https://docs.gdax.com/#list-orders) (paginated)
 ```python
+# Returns generator:
 auth_client.get_orders()
 ```
 
@@ -189,6 +224,7 @@ auth_client.get_order("d50ec984-77a8-460a-b958-66f114b0de9b")
 
 - [get_fills](https://docs.gdax.com/#list-fills) (paginated)
 ```python
+# All return generators
 auth_client.get_fills()
 # Get fills for a specific order
 auth_client.get_fills(order_id="d50ec984-77a8-460a-b958-66f114b0de9b")
@@ -263,12 +299,11 @@ There are three methods which you could overwrite (before initialization) so it
 can react to the data streaming in.  The current client is a template used for
 illustration purposes only.
 
-
 - onOpen - called once, *immediately before* the socket connection is made, this
 is where you want to add initial parameters.
 - onMessage - called once for every message that arrives and accepts one
 argument that contains the message of dict type.
-- onClose - called once after the websocket has been closed.
+- on_close - called once after the websocket has been closed.
 - close - call this method to close the websocket connection (do not overwrite).
 ```python
 import gdax, time
@@ -294,10 +329,11 @@ while (wsClient.message_count < 500):
     time.sleep(1)
 wsClient.close()
 ```
-
 ## Testing
-A test suite is under development. To run the tests, start in the project
-directory and run
+A test suite is under development. Tests for the authenticated client require a 
+set of sandbox API credentials. To provide them, rename 
+`api_config.json.example` in the tests folder to `api_config.json` and edit the 
+file accordingly. To run the tests, start in the project directory and run
 ```
 python -m pytest
 ```
@@ -313,6 +349,16 @@ order_book = gdax.OrderBook(product_id='BTC-USD')
 order_book.start()
 time.sleep(10)
 order_book.close()
+```
+
+### Testing
+Unit tests are under development using the pytest framework. Contributions are 
+welcome!
+
+To run the full test suite, in the project 
+directory run:
+```bash
+python -m pytest
 ```
 
 ## Change Log

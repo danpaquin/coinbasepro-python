@@ -1,4 +1,5 @@
 import pytest
+from itertools import islice
 import gdax
 
 
@@ -28,7 +29,7 @@ class TestPublicClient(object):
         assert 'trade_id' in r
 
     def test_get_product_trades(self, client):
-        r = client.get_product_trades('BTC-USD')
+        r = list(islice(client.get_product_trades('BTC-USD'), 200))
         assert type(r) is list
         assert 'trade_id' in r[0]
 

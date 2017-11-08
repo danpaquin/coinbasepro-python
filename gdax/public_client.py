@@ -26,6 +26,8 @@ class PublicClient(object):
 
         """
         self.url = api_url.rstrip('/')
+        self.auth = None
+        self.session = requests.Session()
 
     def get_products(self):
         """Get a list of available currency pairs for trading.
@@ -45,9 +47,7 @@ class PublicClient(object):
                 ]
 
         """
-        r = requests.get(self.url + '/products', timeout=30)
-        # r.raise_for_status()
-        return r.json()
+        return self._send_message('get', '/products')
 
     def get_product_order_book(self, product_id, level=1):
         """Get a list of open orders for a product.
@@ -85,10 +85,9 @@ class PublicClient(object):
 
         """
         params = {'level': level}
-        r = requests.get(self.url + '/products/{}/book'
-                         .format(product_id), params=params, timeout=30)
-        # r.raise_for_status()
-        return r.json()
+        return self._send_message('get',
+                                  '/products/{}/book'.format(product_id),
+                                  params=params)
 
     def get_product_ticker(self, product_id):
         """Snapshot about the last trade (tick), best bid/ask and 24h volume.
@@ -112,13 +111,14 @@ class PublicClient(object):
                 }
 
         """
-        r = requests.get(self.url + '/products/{}/ticker'
-                         .format(product_id), timeout=30)
-        # r.raise_for_status()
-        return r.json()
+        return self._send_message('get',
+                                  '/products/{}/ticker'.format(product_id))
 
     def get_product_trades(self, product_id):
         """List the latest trades for a product.
+
+        This method returns a generator which may make multiple HTTP requests
+        while iterating through it.
 
         Args:
             product_id (str): Product
@@ -140,9 +140,8 @@ class PublicClient(object):
                 }]
 
         """
-        r = requests.get(self.url + '/products/{}/trades'.format(product_id), timeout=30)
-        # r.raise_for_status()
-        return r.json()
+        return self._send_paginated_message('/products/{}/trades'
+                                            .format(product_id))
 
     def get_product_historic_rates(self, product_id, start=None, end=None,
                                    granularity=None):
@@ -188,10 +187,8 @@ class PublicClient(object):
             params['end'] = end
         if granularity is not None:
             params['granularity'] = granularity
-        r = requests.get(self.url + '/products/{}/candles'
-                         .format(product_id), params=params, timeout=30)
-        # r.raise_for_status()
-        return r.json()
+        return self._send_message('get',
+                                  '/products/{}/candles'.format(product_id))
 
     def get_product_24hr_stats(self, product_id):
         """Get 24 hr stats for the product.
@@ -210,9 +207,8 @@ class PublicClient(object):
                     }
 
         """
-        r = requests.get(self.url + '/products/{}/stats'.format(product_id), timeout=30)
-        # r.raise_for_status()
-        return r.json()
+        return self._send_message('get',
+                                  '/products/{}/stats'.format(product_id))
 
     def get_currencies(self):
         """List known currencies.
@@ -230,9 +226,7 @@ class PublicClient(object):
                 }]
 
         """
-        r = requests.get(self.url + '/currencies', timeout=30)
-        # r.raise_for_status()
-        return r.json()
+        return self._send_message('get', '/currencies')
 
     def get_time(self):
         """Get the API server time.
@@ -246,6 +240,63 @@ class PublicClient(object):
                     }
 
         """
-        r = requests.get(self.url + '/time', timeout=30)
-        # r.raise_for_status()
+        return self._send_message('get', '/time')
+
+    def _send_message(self, method, endpoint, params=None, data=None):
+        """Send API request.
+
+        Args:
+            method (str): HTTP method (get, post, delete, etc.)
+            endpoint (str): Endpoint (to be added to base URL)
+            params (Optional[dict]): HTTP request parameters
+            data (Optional[str]): JSON-encoded string payload for POST
+
+        Returns:
+            dict/list: JSON response
+
+        """
+        url = self.url + endpoint
+        r = self.session.request(method, url, params=params, data=data,
+                                 auth=self.auth, timeout=30)
         return r.json()
+
+    def _send_paginated_message(self, endpoint, params=None):
+        """ Send API message that results in a paginated response.
+
+        The paginated responses are abstracted away by making API requests on
+        demand as the response is iterated over.
+
+        Paginated API messages support 3 additional parameters: `before`,
+        `after`, and `limit`. `before` and `after` are mutually exclusive. To
+        use them, supply an index value for that endpoint (the field used for
+        indexing varies by endpoint - get_fills() uses 'trade_id', for example).
+            `before`: Only get data that occurs more recently than index
+            `after`: Only get data that occurs further in the past than index
+            `limit`: Set amount of data per HTTP response. Default (and
+                maximum) of 100.
+
+        Args:
+            endpoint (str): Endpoint (to be added to base URL)
+            params (Optional[dict]): HTTP request parameters
+
+        Yields:
+            dict: API response objects
+
+        """
+        if params is None:
+            params = dict()
+        url = self.url + endpoint
+        while True:
+            r = self.session.get(url, params=params, auth=self.auth, timeout=30)
+            results = r.json()
+            for result in results:
+                yield result
+            # If there are no more pages, we're done. Otherwise update `after`
+            # param to get next page.
+            # If this request included `before` don't get any more pages - the
+            # GDAX API doesn't support multiple pages in that case.
+            if not r.headers.get('cb-after') or \
+                    params.get('before') is not None:
+                break
+            else:
+                params['after'] = r.headers['cb-after']
