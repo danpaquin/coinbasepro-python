@@ -107,7 +107,7 @@ class AuthenticatedClient(PublicClient):
             url += "?status={}&".format(status)
         if product_id:
             if status:
-                url += "&product_id={}&".format(product_id)
+                url += "product_id={}&".format(product_id)
             else:
                 url += "?product_id={}&".format(product_id)
 
