@@ -106,7 +106,7 @@ class AuthenticatedClient(PublicClient):
             "product_id": product_id
         }
         result = []
-        r = requests.get(self.url + '/orders', data=payload, auth=self.auth, timeout=30)
+        r = requests.get(self.url + '/orders', data=json.dumps(payload), auth=self.auth, timeout=30)
         # r.raise_for_status()
         result.append(r.json())
         if 'cb-after' in r.headers:
