@@ -100,12 +100,13 @@ class AuthenticatedClient(PublicClient):
         # r.raise_for_status()
         return r.json()
 
-    def get_orders(self, product_id=''):
+    def get_orders(self, status='', product_id=''):
+        params = {
+            "status": status,
+            "product_id": product_id
+        }
         result = []
-        url = self.url + '/orders/'
-        if product_id:
-            url += "?product_id={}&".format(product_id)
-        r = requests.get(url, auth=self.auth, timeout=30)
+        r = requests.get(self.url + '/orders', params=params, auth=self.auth, timeout=30)
         # r.raise_for_status()
         result.append(r.json())
         if 'cb-after' in r.headers:
