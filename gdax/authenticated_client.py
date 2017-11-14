@@ -102,15 +102,11 @@ class AuthenticatedClient(PublicClient):
 
     def get_orders(self, status='', product_id=''):
         result = []
-        url = self.url + '/orders/'
+        url = self.url + '/orders?'
         if status:
-            url += "?status={}&".format(status)
+            url += "status={}&".format(status)
         if product_id:
-            if status:
-                url += "product_id={}&".format(product_id)
-            else:
-                url += "?product_id={}&".format(product_id)
-
+            url += "product_id={}&".format(product_id)
         r = requests.get(url, auth=self.auth, timeout=30)
         # r.raise_for_status()
         result.append(r.json())
