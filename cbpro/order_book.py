@@ -76,9 +76,6 @@ class OrderBook(object):
 
     def on_sequence_gap(self, gap_start, gap_end):
         self.reset_book()
-        print('Error: messages missing ({} - {}). Re-initializing  book at sequence.'.format(
-            gap_start, gap_end, self._sequence))
-
 
     def add(self, order):
         order = {
