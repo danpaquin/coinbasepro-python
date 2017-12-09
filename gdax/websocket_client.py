@@ -66,7 +66,6 @@ class WebsocketClient(object):
             sub_params.update(get_auth_headers(timestamp, message, self.api_key,  self.api_secret, self.api_passphrase))
 
         self.ws = create_connection(self.url)
-        self.ws.send(json.dumps(sub_params))
 
         if self.type == "heartbeat":
             sub_params = {"type": "heartbeat", "on": True}
