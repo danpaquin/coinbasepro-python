@@ -6,7 +6,6 @@
 
 from sortedcontainers import SortedDict
 from decimal import Decimal
-import Queue
 import pickle
 
 from cbpro.public_client import PublicClient
@@ -277,22 +276,19 @@ if __name__ == '__main__':
     class WebsocketConsole(WebsocketClient):
         def on_open(self):
             self.products = ['BTC-USD', 'ETH-USD']
-            self.websocket_queue = Queue.Queue()
+            self.order_book_btc = OrderBookConsole(product_id='BTC-USD')
+            self.order_book_eth = OrderBookConsole(product_id='ETH-USD')
 
         def on_message(self, msg):
-            self.websocket_queue.put(msg)
-
-    order_book_btc = OrderBookConsole(product_id='BTC-USD')
-    order_book_eth = OrderBookConsole(product_id='ETH-USD')
+            self.order_book_btc.process_message(msg)
+            self.order_book_eth.process_message(msg)
 
     wsClient = WebsocketConsole()
     wsClient.start()
     time.sleep(10)
     try:
         while True:
-            msg = wsClient.websocket_queue.get(timeout=15)
-            order_book_btc.process_message(msg)
-            order_book_eth.process_message(msg)
+            pass
     except KeyboardInterrupt:
         wsClient.close()
     except Exception:
