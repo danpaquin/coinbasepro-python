@@ -356,20 +356,19 @@ import cbpro, time, Queue
 class myWebsocketClient(cbpro.WebsocketClient):
     def on_open(self):
         self.products = ['BTC-USD', 'ETH-USD']
-        self.websocket_queue = Queue.Queue()
+        self.order_book_btc = OrderBookConsole(product_id='BTC-USD')
+        self.order_book_eth = OrderBookConsole(product_id='ETH-USD')
     def on_message(self, msg):
-        self.websocket_queue.put(msg)
+        self.order_book_btc.process_message(msg)
+        self.order_book_eth.process_message(msg)
 
-order_book_btc = cbpro.OrderBook(product_id='BTC-USD')
-order_book_eth = cbpro.OrderBook(product_id='ETH-USD')
 wsClient = myWebsocketClient()
 wsClient.start()
 time.sleep(10)
 while True:
-    msg = wsClient.websocket_queue.get(timeout=15)
-    order_book.process_message(msg)
-    print(order_book_btc.get_ask())
-    print(order_book_eth.get_bid())
+    print(wsClient.order_book_btc.get_ask())
+    print(wsClient.order_book_eth.get_bid())
+    time.sleep(1)
 ```
 
 ### Testing
