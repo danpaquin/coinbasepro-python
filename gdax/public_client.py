@@ -27,6 +27,13 @@ class PublicClient(object):
         """
         self.url = api_url.rstrip('/')
 
+    def _get(self, path, params=None):
+        """Perform get request"""
+
+        r = requests.get(self.url + path, params=params, timeout=30)
+        # r.raise_for_status()
+        return r.json()
+
     def get_products(self):
         """Get a list of available currency pairs for trading.
 
@@ -45,9 +52,7 @@ class PublicClient(object):
                 ]
 
         """
-        r = requests.get(self.url + '/products', timeout=30)
-        # r.raise_for_status()
-        return r.json()
+        return self._get('/products')
 
     def get_product_order_book(self, product_id, level=1):
         """Get a list of open orders for a product.
@@ -84,11 +89,10 @@ class PublicClient(object):
                 }
 
         """
-        params = {'level': level}
-        r = requests.get(self.url + '/products/{}/book'
-                         .format(product_id), params=params, timeout=30)
-        # r.raise_for_status()
-        return r.json()
+
+        # Supported levels are 1, 2 or 3
+        level = level if level in range(1, 4) else 1
+        return self._get('/products/{}/book'.format(str(product_id)), params={'level': level})
 
     def get_product_ticker(self, product_id):
         """Snapshot about the last trade (tick), best bid/ask and 24h volume.
@@ -112,10 +116,7 @@ class PublicClient(object):
                 }
 
         """
-        r = requests.get(self.url + '/products/{}/ticker'
-                         .format(product_id), timeout=30)
-        # r.raise_for_status()
-        return r.json()
+        return self._get('/products/{}/ticker'.format(str(product_id)))
 
     def get_product_trades(self, product_id):
         """List the latest trades for a product.
@@ -140,9 +141,7 @@ class PublicClient(object):
                 }]
 
         """
-        r = requests.get(self.url + '/products/{}/trades'.format(product_id), timeout=30)
-        # r.raise_for_status()
-        return r.json()
+        return self._get('/products/{}/trades'.format(str(product_id)))
 
     def get_product_historic_rates(self, product_id, start=None, end=None,
                                    granularity=None):
@@ -188,10 +187,8 @@ class PublicClient(object):
             params['end'] = end
         if granularity is not None:
             params['granularity'] = granularity
-        r = requests.get(self.url + '/products/{}/candles'
-                         .format(product_id), params=params, timeout=30)
-        # r.raise_for_status()
-        return r.json()
+
+        return self._get('/products/{}/candles'.format(str(product_id)), params=params)
 
     def get_product_24hr_stats(self, product_id):
         """Get 24 hr stats for the product.
@@ -210,9 +207,7 @@ class PublicClient(object):
                     }
 
         """
-        r = requests.get(self.url + '/products/{}/stats'.format(product_id), timeout=30)
-        # r.raise_for_status()
-        return r.json()
+        return self._get('/products/{}/stats'.format(str(product_id)))
 
     def get_currencies(self):
         """List known currencies.
@@ -230,9 +225,7 @@ class PublicClient(object):
                 }]
 
         """
-        r = requests.get(self.url + '/currencies', timeout=30)
-        # r.raise_for_status()
-        return r.json()
+        return self._get('/currencies')
 
     def get_time(self):
         """Get the API server time.
@@ -246,6 +239,4 @@ class PublicClient(object):
                     }
 
         """
-        r = requests.get(self.url + '/time', timeout=30)
-        # r.raise_for_status()
-        return r.json()
+        return self._get('/time')
