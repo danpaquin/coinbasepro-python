@@ -130,7 +130,7 @@ class AuthenticatedClient(PublicClient):
         if r.json():
             result.append(r.json())
         if 'cb-after' in r.headers:
-            self.paginate_orders(product_id, result, r.headers['cb-after'])
+            self.paginate_orders(product_id, status, result, r.headers['cb-after'])
         return result
 
     def get_fills(self, order_id='', product_id='', before='', after='', limit=''):
