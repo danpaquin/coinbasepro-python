@@ -62,8 +62,15 @@ class WebsocketClient(object):
 
         if self.auth:
             timestamp = str(time.time())
-            message = timestamp + 'GET' + '/users/self'
-            sub_params.update(get_auth_headers(timestamp, message, self.api_key,  self.api_secret, self.api_passphrase))
+            message = timestamp + 'GET' + '/users/self/verify'
+            message = message.encode('ascii')
+            hmac_key = base64.b64decode(self.api_secret)
+            signature = hmac.new(hmac_key, message, hashlib.sha256)
+            signature_b64 = signature.digest().encode('base64').rstrip('\n')
+            sub_params['signature'] = signature_b64
+            sub_params['key'] = self.api_key
+            sub_params['passphrase'] = self.api_passphrase
+            sub_params['timestamp'] = timestamp
 
         self.ws = create_connection(self.url)
         self.ws.send(json.dumps(sub_params))
