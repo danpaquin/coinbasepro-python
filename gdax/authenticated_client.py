@@ -100,28 +100,37 @@ class AuthenticatedClient(PublicClient):
         # r.raise_for_status()
         return r.json()
 
-    def get_orders(self, product_id=''):
+    def get_orders(self, product_id='', status=[]):
         result = []
         url = self.url + '/orders/'
+        params = {}
         if product_id:
-            url += "?product_id={}&".format(product_id)
-        r = requests.get(url, auth=self.auth, timeout=30)
+            params["product_id"] = product_id
+        if status:
+            params["status"] = status
+        r = requests.get(url, auth=self.auth, params=params, timeout=30)
         # r.raise_for_status()
         result.append(r.json())
         if 'cb-after' in r.headers:
-            self.paginate_orders(product_id, result, r.headers['cb-after'])
+            self.paginate_orders(product_id, status, result, r.headers['cb-after'])
         return result
 
-    def paginate_orders(self, product_id, result, after):
-        url = self.url + '/orders?after={}&'.format(str(after))
+    def paginate_orders(self, product_id, status, result, after):
+        url = self.url + '/orders'
+
+        params = {
+            "after": str(after),
+        }
         if product_id:
-            url += "product_id={}&".format(product_id)
-        r = requests.get(url, auth=self.auth, timeout=30)
+            params["product_id"] = product_id
+        if status:
+            params["status"] = status
+        r = requests.get(url, auth=self.auth, params=params, timeout=30)
         # r.raise_for_status()
         if r.json():
             result.append(r.json())
         if 'cb-after' in r.headers:
-            self.paginate_orders(product_id, result, r.headers['cb-after'])
+            self.paginate_orders(product_id, status, result, r.headers['cb-after'])
         return result
 
     def get_fills(self, order_id='', product_id='', before='', after='', limit=''):
