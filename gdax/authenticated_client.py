@@ -252,7 +252,7 @@ class AuthenticatedClient(PublicClient):
             "currency": currency,
             "coinbase_account_id": coinbase_account_id
         }
-        r = requests.post(self.url + "/withdrawals/coinbase", data=json.dumps(payload), auth=self.auth, timeout=self.timeout)
+        r = requests.post(self.url + "/withdrawals/coinbase-account", data=json.dumps(payload), auth=self.auth, timeout=self.timeout)
         # r.raise_for_status()
         return r.json()
 
