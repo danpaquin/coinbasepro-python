@@ -300,3 +300,8 @@ class AuthenticatedClient(PublicClient):
         r = requests.get(self.url + "/users/self/trailing-volume", auth=self.auth, timeout=self.timeout)
         # r.raise_for_status()
         return r.json()
+
+    def get_deposit_address(self, account_id):
+        r = requests.post(self.url + '/coinbase-accounts/{}/addresses'.format(account_id), auth=self.auth, timeout=self.timeout)
+        # r.raise_for_status()
+        return r.json()
