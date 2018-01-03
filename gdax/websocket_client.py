@@ -66,7 +66,7 @@ class WebsocketClient(object):
             message = message.encode('ascii')
             hmac_key = base64.b64decode(self.api_secret)
             signature = hmac.new(hmac_key, message, hashlib.sha256)
-            signature_b64 = signature.digest().encode('base64').rstrip('\n')
+            signature_b64 = base64.b64encode(signature.digest()).decode('utf-8').rstrip('\n')
             sub_params['signature'] = signature_b64
             sub_params['key'] = self.api_key
             sub_params['passphrase'] = self.api_passphrase
