@@ -174,7 +174,7 @@ auth_client.cancel_order("d50ec984-77a8-460a-b958-66f114b0de9b")
 ```
 - [cancel_all](https://docs.gdax.com/#cancel-all)
 ```python
-auth_client.cancel_all(product='BTC-USD')
+auth_client.cancel_all(product_id='BTC-USD')
 ```
 
 - [get_orders](https://docs.gdax.com/#list-orders) (paginated)
