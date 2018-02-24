@@ -156,14 +156,14 @@ auth_client.get_account_holds("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 
 - [buy & sell](https://docs.gdax.com/#place-a-new-order)
 ```python
-# Buy 0.01 BTC @ 100 USD
-auth_client.buy(price='100.00', #USD
+# Buy 0.01 BTC @ 100 USD per BTC
+auth_client.buy(price='100.00', #USD per BTC
                size='0.01', #BTC
                product_id='BTC-USD')
 ```
 ```python
-# Sell 0.01 BTC @ 200 USD
-auth_client.sell(price='200.00', #USD
+# Sell 0.01 BTC @ 200 USD per BTC
+auth_client.sell(price='200.00', #USD per BTC
                 size='0.01', #BTC
                 product_id='BTC-USD')
 ```
