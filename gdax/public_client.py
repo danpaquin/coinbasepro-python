@@ -187,6 +187,11 @@ class PublicClient(object):
         if end is not None:
             params['end'] = end
         if granularity is not None:
+            acceptedGrans = [60, 300, 900, 3600, 21600, 86400]
+            if granularity not in acceptedGrans:
+                newGranularity = min(acceptedGrans, key=lambda x:abs(x-granularity))
+                print(granularity,' is not a valid granularity level, using',newGranularity,' instead.')
+                granularity = newGranularity
             params['granularity'] = granularity
 
         return self._get('/products/{}/candles'.format(str(product_id)), params=params)
