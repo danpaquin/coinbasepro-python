@@ -90,9 +90,10 @@ class AuthenticatedClient(PublicClient):
 
     def cancel_all(self, product_id=''):
         url = self.url + '/orders/'
+        params = {}
         if product_id:
-            url += "?product_id={}&".format(str(product_id))
-        r = requests.delete(url, auth=self.auth, timeout=self.timeout)
+            params["product_id"] = product_id
+        r = requests.delete(url, auth=self.auth, params=params, timeout=self.timeout)
         # r.raise_for_status()
         return r.json()
 
