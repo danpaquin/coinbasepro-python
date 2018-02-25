@@ -56,7 +56,7 @@ class PublicClient(object):
         """
         Determines if GDAX response is success or error
         If success, returns response json
-        If error, raises appropiate GdaxException
+        If error, raises appropriate GdaxException
         """
         if self._is_http_success(response.status_code):
             return response.json()

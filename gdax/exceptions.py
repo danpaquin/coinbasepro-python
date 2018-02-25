@@ -23,7 +23,6 @@ class GdaxException(Exception):
     def message(self, message):
         self._message = message
 
-
     @property
     def code(self):
         return self._code
