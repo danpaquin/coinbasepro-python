@@ -376,12 +376,12 @@ python -m pytest
 Error handling has been added in version 2.0. Currently, the only HTTP error codes that
 are handled are the ones documented on the GDAX API error section: [here](https://docs.gdax.com/?python#errors)
 
-HTTP STATUS CODE 400: Raises InvalidGdaxRequest
-HTTP STATUS CODE 401: Raises UnauthorizedGdaxRequest
-HTTP STATUS CODE 403: Raises ForbiddenGdaxRequest
-HTTP STATUS CODE 404: Raises NotFoundGdaxRequest
-HTTP STATUS CODE 4XX: Raises UnknownGDAXClientRequest
-HTTP STATUS CODE 5XX: Raises InternalErrorGdaxRequest
+- HTTP STATUS CODE 400: Raises InvalidGdaxRequest
+- HTTP STATUS CODE 401: Raises UnauthorizedGdaxRequest
+- HTTP STATUS CODE 403: Raises ForbiddenGdaxRequest
+- HTTP STATUS CODE 404: Raises NotFoundGdaxRequest
+- HTTP STATUS CODE 4XX: Raises UnknownGDAXClientRequest
+- HTTP STATUS CODE 5XX: Raises InternalErrorGdaxRequest
 
 All HTTP requests from both the public client and authenticated client run through `_determine_response`, which
 either returns the JSON body or raises the appropriate error.
@@ -391,7 +391,7 @@ Please consider creating new Exception classes and mapping as Gdax error states 
 
 ## Change Log
 *2.0*
-- Added error handling to all HTTP requests [Error Handling Docs](#Error Handling)
+- Added error handling to all HTTP requests [Error Handling Docs](#error-handling)
 
 *1.0* **Current PyPI release**
 >>>>>>> Added README info, added self to contributors, bumped version
