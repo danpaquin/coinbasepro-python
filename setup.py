@@ -19,8 +19,13 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
+<<<<<<< HEAD
     name='cbpro',
     version='1.1.4',
+=======
+    name='gdax',
+    version='2.0.0',
+>>>>>>> Added README info, added self to contributors, bumped version
     author='Daniel Paquin',
     author_email='dpaq34@gmail.com',
     license='MIT',
