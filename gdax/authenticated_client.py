@@ -112,7 +112,7 @@ class AuthenticatedClient(PublicClient):
             params["status"] = status
         r = requests.get(url, auth=self.auth, params=params, timeout=self.timeout)
         # r.raise_for_status()
-        result.append(r.json())
+        result.extend(r.json())
         if 'cb-after' in r.headers:
             self.paginate_orders(product_id, status, result, r.headers['cb-after'])
         return result
