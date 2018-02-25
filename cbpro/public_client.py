@@ -5,6 +5,16 @@
 # For public requests to the Coinbase exchange
 
 import requests
+from gdax import exceptions
+
+
+HTTP_200_OK = 200
+HTTP_300_MULTIPLE_CHOICES = 300
+HTTP_400_BAD_REQUEST = 400
+HTTP_401_UNAUTHORIZED = 401
+HTTP_403_FORBIDDEN = 403
+HTTP_404_NOT_FOUND = 404
+HTTP_500_INTERNAL_SERVER_ERROR = 500
 
 
 class PublicClient(object):
@@ -28,6 +38,57 @@ class PublicClient(object):
         self.url = api_url.rstrip('/')
         self.auth = None
         self.session = requests.Session()
+        self.timeout = timeout
+
+    def _is_http_success(self, code):
+        # type: (int) -> bool
+        return code >= HTTP_200_OK and code < HTTP_300_MULTIPLE_CHOICES
+
+    def _is_http_client_error(self, code):
+        # type: (int) -> bool
+        return code >= HTTP_400_BAD_REQUEST and code < HTTP_500_INTERNAL_SERVER_ERROR
+
+    def _is_http_server_error(self, code):
+        # type: (int) -> bool
+        return code >= HTTP_500_INTERNAL_SERVER_ERROR
+
+    def _determine_response(self, response):
+        """
+        Determines if GDAX response is success or error
+        If success, returns response json
+        If error, raises appropiate GdaxException
+        """
+        if self._is_http_success(response.status_code):
+            return response.json()
+        elif self._is_http_client_error(response.status_code):
+            body = response.json()
+            message = body.get('message')
+            if response.status_code == HTTP_400_BAD_REQUEST:
+                raise exceptions.InvalidGdaxRequest(message,
+                                                    HTTP_400_BAD_REQUEST)
+            elif response.status_code == HTTP_401_UNAUTHORIZED:
+                raise exceptions.UnauthorizedGdaxRequest(message,
+                                                         HTTP_401_UNAUTHORIZED)
+            elif response.status_code == HTTP_403_FORBIDDEN:
+                raise exceptions.ForbiddenGdaxRequest(message,
+                                                      HTTP_403_FORBIDDEN)
+            elif response.status_code == HTTP_404_NOT_FOUND:
+                raise exceptions.NotFoundGdaxRequest(message,
+                                                     HTTP_404_NOT_FOUND)
+            else:  # Other 4XX response not yet mapped
+                raise exceptions.UnknownGdaxClientRequest(message,
+                                                          response.status_code)
+
+        elif self._is_http_server_error(response.status_code):
+            body = response.json()
+            raise exceptions.InternalErrorGdaxRequest(body.get('message'),
+                                                      HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def _get(self, path, params=None):
+        """Perform get request"""
+
+        r = requests.get(self.url + path, params=params, timeout=self.timeout)
+        return self._determine_response(r)
 
     def get_products(self):
         """Get a list of available currency pairs for trading.
