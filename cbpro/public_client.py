@@ -4,17 +4,10 @@
 #
 # For public requests to the Coinbase exchange
 
+from http import HTTPStatus
 import requests
 from gdax import exceptions
 
-
-HTTP_200_OK = 200
-HTTP_300_MULTIPLE_CHOICES = 300
-HTTP_400_BAD_REQUEST = 400
-HTTP_401_UNAUTHORIZED = 401
-HTTP_403_FORBIDDEN = 403
-HTTP_404_NOT_FOUND = 404
-HTTP_500_INTERNAL_SERVER_ERROR = 500
 
 
 class PublicClient(object):
@@ -42,15 +35,15 @@ class PublicClient(object):
 
     def _is_http_success(self, code):
         # type: (int) -> bool
-        return code >= HTTP_200_OK and code < HTTP_300_MULTIPLE_CHOICES
+        return code >= HTTPStatus.OK and code < HTTPStatus.MULTIPLE_CHOICES
 
     def _is_http_client_error(self, code):
         # type: (int) -> bool
-        return code >= HTTP_400_BAD_REQUEST and code < HTTP_500_INTERNAL_SERVER_ERROR
+        return code >= HTTPStatus.BAD_REQUEST and code < HTTPStatus.INTERNAL_SERVER_ERROR
 
     def _is_http_server_error(self, code):
         # type: (int) -> bool
-        return code >= HTTP_500_INTERNAL_SERVER_ERROR
+        return code >= HTTPStatus.INTERNAL_SERVER_ERROR
 
     def _determine_response(self, response):
         """
@@ -63,18 +56,18 @@ class PublicClient(object):
         elif self._is_http_client_error(response.status_code):
             body = response.json()
             message = body.get('message')
-            if response.status_code == HTTP_400_BAD_REQUEST:
+            if response.status_code == HTTPStatus.BAD_REQUEST:
                 raise exceptions.InvalidGdaxRequest(message,
-                                                    HTTP_400_BAD_REQUEST)
-            elif response.status_code == HTTP_401_UNAUTHORIZED:
+                                                    HTTPStatus.BAD_REQUEST)
+            elif response.status_code == HTTPStatus.UNAUTHORIZED:
                 raise exceptions.UnauthorizedGdaxRequest(message,
-                                                         HTTP_401_UNAUTHORIZED)
-            elif response.status_code == HTTP_403_FORBIDDEN:
+                                                         HTTPStatus.UNAUTHORIZED)
+            elif response.status_code == HTTPStatus.FORBIDDEN:
                 raise exceptions.ForbiddenGdaxRequest(message,
-                                                      HTTP_403_FORBIDDEN)
-            elif response.status_code == HTTP_404_NOT_FOUND:
+                                                      HTTPStatus.FORBIDDEN)
+            elif response.status_code == HTTPStatus.NOT_FOUND:
                 raise exceptions.NotFoundGdaxRequest(message,
-                                                     HTTP_404_NOT_FOUND)
+                                                     HTTPStatus.NOT_FOUND)
             else:  # Other 4XX response not yet mapped
                 raise exceptions.UnknownGdaxClientRequest(message,
                                                           response.status_code)
@@ -82,7 +75,7 @@ class PublicClient(object):
         elif self._is_http_server_error(response.status_code):
             body = response.json()
             raise exceptions.InternalErrorGdaxRequest(body.get('message'),
-                                                      HTTP_500_INTERNAL_SERVER_ERROR)
+                                                      HTTPStatus.INTERNAL_SERVER_ERROR)
 
     def _get(self, path, params=None):
         """Perform get request"""
