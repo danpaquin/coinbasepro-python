@@ -39,6 +39,15 @@ documentation.**
 ```python
 pip install gdax
 ```
+### For Developer
+Please install the package in developer mode if you want to contribute or modify the code. Therefore your changes take effect immediately with no need to re-install the package. 
+
+Enter the **gdax-python** directory
+
+```bash
+pip install -e .
+```
+
 
 ### Public Client
 Only some endpoints in the API are available to everyone.  The public endpoints
