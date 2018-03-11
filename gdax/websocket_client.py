@@ -73,11 +73,6 @@ class WebsocketClient(object):
             sub_params['timestamp'] = timestamp
 
         self.ws = create_connection(self.url)
-
-        if self.type == "heartbeat":
-            sub_params = {"type": "heartbeat", "on": True}
-        else:
-            sub_params = {"type": "heartbeat", "on": False}
         self.ws.send(json.dumps(sub_params))
 
     def _listen(self):
