@@ -93,7 +93,7 @@ class WebsocketClient(object):
                 data = self.ws.recv()
                 msg = json.loads(data)
             except WebSocketConnectionClosedException as e:
-                self.reconnect()
+                self._reconnect()
             except ValueError as e:
                 self.on_error(e, data=data)
             except Exception as e:
