@@ -74,10 +74,6 @@ class WebsocketClient(object):
 
         self.ws = create_connection(self.url)
 
-        if self.type == "heartbeat":
-            sub_params = {"type": "heartbeat", "on": True}
-        else:
-            sub_params = {"type": "heartbeat", "on": False}
         self.ws.send(json.dumps(sub_params))
 
     def _listen(self):
@@ -98,8 +94,6 @@ class WebsocketClient(object):
                 self.on_message(msg)
 
     def _disconnect(self):
-        if self.type == "heartbeat":
-            self.ws.send(json.dumps({"type": "heartbeat", "on": False}))
         try:
             if self.ws:
                 self.ws.close()
