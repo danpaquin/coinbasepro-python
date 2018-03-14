@@ -219,7 +219,7 @@ class OrderBook(WebsocketClient):
         return result
 
     def get_ask(self):
-        return self._asks.peekitem(0)
+        return self._asks.peekitem(0)[0]
 
     def get_asks(self, price):
         return self._asks.get(price)
@@ -231,7 +231,7 @@ class OrderBook(WebsocketClient):
         self._asks[price] = asks
 
     def get_bid(self):
-        return self._bids.peekitem(-1)
+        return self._bids.peekitem(-1)[0]
 
     def get_bids(self, price):
         return self._bids.get(price)
