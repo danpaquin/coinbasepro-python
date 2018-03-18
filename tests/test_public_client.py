@@ -9,7 +9,7 @@ from dateutil.relativedelta import relativedelta
 def client():
     return gdax.PublicClient()
 
-
+# test
 @pytest.mark.usefixtures('client')
 class TestPublicClient(object):
 
