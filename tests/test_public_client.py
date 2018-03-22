@@ -34,7 +34,7 @@ class TestPublicClient(object):
         if level is 2 and (len(r['asks']) > 50 or len(r['bids']) > 50):
             pytest.fail('Fail: Level 2 should only return the top 50 asks and bids')
 
-        if level is 2 and (len(r['asks']) < 50 or len(r['bids']) < 50):
+        if level is 3 and (len(r['asks']) < 50 or len(r['bids']) < 50):
             pytest.fail('Fail: Level 3 should return the full order book')
 
     def test_get_product_ticker(self, client):
