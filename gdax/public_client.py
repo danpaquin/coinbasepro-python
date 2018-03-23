@@ -120,6 +120,30 @@ class PublicClient(object):
         return self._get('/products/{}/ticker'.format(str(product_id)))
 
     def get_product_trades(self, product_id, before='', after='', limit='', result=[]):
+        """List the latest trades for a product.
+        Args:
+             product_id (str): Product
+             before (Optional[str]): start time in ISO 8601
+             after (Optional[str]): end time in ISO 8601
+             limit (Optional[int]): the desired number of trades (can be more than 100,
+                          automatically paginated)
+             results (Optional[list]): list of results that is used for the pagination
+        Returns:
+             list: Latest trades. Example::
+                 [{
+                     "time": "2014-11-07T22:19:28.578544Z",
+                     "trade_id": 74,
+                     "price": "10.00000000",
+                     "size": "0.01000000",
+                     "side": "buy"
+                 }, {
+                     "time": "2014-11-07T01:08:43.642366Z",
+                     "trade_id": 73,
+                     "price": "100.00000000",
+                     "size": "0.01000000",
+                     "side": "sell"
+         }]
+        """"
         url = self.url + '/products/{}/trades'.format(str(product_id))
         params = {}
 
