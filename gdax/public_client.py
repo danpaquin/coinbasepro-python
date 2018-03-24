@@ -157,7 +157,7 @@ class PublicClient(object):
             params['limit'] = limit
 
         r = requests.get(url, params=params)
-        r.raise_for_status()
+        # r.raise_for_status()
 
         result.extend(r.json())
 
@@ -167,8 +167,8 @@ class PublicClient(object):
             if limit <= 0:
                 return result
 
-            # ensure that we don't get rate-limited/blocked
-            time.sleep(0.4)
+            # TODO: need a way to ensure that we don't get rate-limited/blocked
+            # time.sleep(0.4)
             return self.get_product_trades(product_id=product_id, after=r.headers['cb-after'], limit=limit, result=result)
 
         return result
