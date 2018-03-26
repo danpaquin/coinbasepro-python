@@ -9,7 +9,6 @@ import requests
 from gdax import exceptions
 
 
-
 class PublicClient(object):
     """cbpro public client API.
 
