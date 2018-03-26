@@ -380,6 +380,7 @@ are handled are the ones documented on the GDAX API error section: [here](https:
 - HTTP STATUS CODE 401: Raises UnauthorizedGdaxRequest
 - HTTP STATUS CODE 403: Raises ForbiddenGdaxRequest
 - HTTP STATUS CODE 404: Raises NotFoundGdaxRequest
+- HTTP STATUS CODE 429: Raises GdaxRateLimitRequest
 - HTTP STATUS CODE 4XX: Raises UnknownGdaxClientRequest
 - HTTP STATUS CODE 5XX: Raises InternalErrorGdaxRequest
 
