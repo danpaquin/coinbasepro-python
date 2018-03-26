@@ -68,6 +68,9 @@ class PublicClient(object):
             elif response.status_code == HTTPStatus.NOT_FOUND:
                 raise exceptions.NotFoundGdaxRequest(message,
                                                      HTTPStatus.NOT_FOUND)
+            elif response.status_code == HTTPStatus.TOO_MANY_REQUESTS:
+                raise exceptions.GdaxRateLimitRequest(message,
+                                                      HTTPStatus.TOO_MANY_REQUESTS)
             else:  # Other 4XX response not yet mapped
                 raise exceptions.UnknownGdaxClientRequest(message,
                                                           response.status_code)

@@ -28,7 +28,7 @@ class GdaxException(Exception):
         return self._code
 
     @message.setter
-    def message(self, code):
+    def code(self, code):
         self._code = code
 
 
@@ -56,6 +56,13 @@ class ForbiddenGdaxRequest(GdaxException):
 class NotFoundGdaxRequest(GdaxException):
     """
     Raised on 404 response from GDAX
+    """
+    pass
+
+
+class GdaxRateLimitRequest(GdaxException):
+    """
+    Raised on 429 response from GDAX
     """
     pass
 

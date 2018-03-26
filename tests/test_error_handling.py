@@ -14,6 +14,7 @@ def client():
                          (403, gdax.exceptions.ForbiddenGdaxRequest),
                          (404, gdax.exceptions.NotFoundGdaxRequest),
                          (422, gdax.exceptions.UnknownGdaxClientRequest),
+                         (429, gdax.exceptions.GdaxRateLimitRequest),
                          (500, gdax.exceptions.InternalErrorGdaxRequest)])
 @patch('requests.get')
 def test_gdax_exceptions(mock_request, client, code, exception):
