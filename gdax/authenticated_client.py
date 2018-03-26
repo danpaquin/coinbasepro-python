@@ -31,7 +31,6 @@ class AuthenticatedClient(PublicClient):
     def get_account_history(self, account_id):
         result = []
         r = requests.get(self.url + '/accounts/{}/ledger'.format(account_id), auth=self.auth, timeout=self.timeout)
-        # r.raise_for_status()
         r_json = self._determine_response(r)
         result.append(r_json)
         if "cb-after" in r.headers:
