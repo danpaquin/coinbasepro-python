@@ -143,7 +143,7 @@ class PublicClient(object):
                      "size": "0.01000000",
                      "side": "sell"
          }]
-        """"
+        """
         url = self.url + '/products/{}/trades'.format(str(product_id))
         params = {}
 
