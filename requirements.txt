@@ -5,3 +5,4 @@ websocket-client>=0.40,<1.0
 pymongo>=3.5,<4.0
 pytest>=3.3,<4.0
 pytest-cov>=2.5,<3.0
+dateutil>=2.6,<3.0

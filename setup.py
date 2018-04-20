@@ -7,7 +7,8 @@ install_requires = [
     'requests>=2.13,<3.0',
     'six>=1.10,<2.0',
     'websocket-client>=0.40',
-    'pymongo>=3.5,<4.0'
+    'pymongo>=3.5,<4.0',
+    'dateutil>=2.6,<3.0'
 ]
 
 tests_require = [
