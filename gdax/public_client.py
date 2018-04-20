@@ -161,7 +161,7 @@ class PublicClient(object):
 
         result.extend(r.json())
 
-        if 'cb-after' in r.headers and limit is not len(result):
+        if 'cb-after' in r.headers and limit != len(result):
             # update limit
             limit -= len(result)
             if limit <= 0:
