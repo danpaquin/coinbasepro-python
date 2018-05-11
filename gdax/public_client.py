@@ -32,7 +32,7 @@ class PublicClient(object):
         """Perform get request"""
 
         r = requests.get(self.url + path, params=params, timeout=self.timeout)
-        # r.raise_for_status()
+        r.raise_for_status()
         return r.json()
 
     def get_products(self):
@@ -119,59 +119,30 @@ class PublicClient(object):
         """
         return self._get('/products/{}/ticker'.format(str(product_id)))
 
-    def get_product_trades(self, product_id, before='', after='', limit='', result=[]):
+    def get_product_trades(self, product_id):
         """List the latest trades for a product.
+
         Args:
-             product_id (str): Product
-             before (Optional[str]): start time in ISO 8601
-             after (Optional[str]): end time in ISO 8601
-             limit (Optional[int]): the desired number of trades (can be more than 100,
-                          automatically paginated)
-             results (Optional[list]): list of results that is used for the pagination
+            product_id (str): Product
+
         Returns:
-             list: Latest trades. Example::
-                 [{
-                     "time": "2014-11-07T22:19:28.578544Z",
-                     "trade_id": 74,
-                     "price": "10.00000000",
-                     "size": "0.01000000",
-                     "side": "buy"
-                 }, {
-                     "time": "2014-11-07T01:08:43.642366Z",
-                     "trade_id": 73,
-                     "price": "100.00000000",
-                     "size": "0.01000000",
-                     "side": "sell"
-         }]
-        """"
-        url = self.url + '/products/{}/trades'.format(str(product_id))
-        params = {}
+            list: Latest trades. Example::
+                [{
+                    "time": "2014-11-07T22:19:28.578544Z",
+                    "trade_id": 74,
+                    "price": "10.00000000",
+                    "size": "0.01000000",
+                    "side": "buy"
+                }, {
+                    "time": "2014-11-07T01:08:43.642366Z",
+                    "trade_id": 73,
+                    "price": "100.00000000",
+                    "size": "0.01000000",
+                    "side": "sell"
+                }]
 
-        if before:
-            params['before'] = str(before)
-        if after:
-            params['after'] = str(after)
-        if limit and limit < 100:
-            # the default limit is 100
-            # we only add it if the limit is less than 100
-            params['limit'] = limit
-
-        r = requests.get(url, params=params)
-        # r.raise_for_status()
-
-        result.extend(r.json())
-
-        if 'cb-after' in r.headers and limit is not len(result):
-            # update limit
-            limit -= len(result)
-            if limit <= 0:
-                return result
-
-            # TODO: need a way to ensure that we don't get rate-limited/blocked
-            # time.sleep(0.4)
-            return self.get_product_trades(product_id=product_id, after=r.headers['cb-after'], limit=limit, result=result)
-
-        return result
+        """
+        return self._get('/products/{}/trades'.format(str(product_id)))
 
     def get_product_historic_rates(self, product_id, start=None, end=None,
                                    granularity=None):

@@ -4,7 +4,7 @@
 #
 # Live order book updated from the gdax Websocket Feed
 
-from sortedcontainers import SortedDict
+from bintrees import RBTree
 from decimal import Decimal
 import pickle
 
@@ -15,8 +15,8 @@ from gdax.websocket_client import WebsocketClient
 class OrderBook(WebsocketClient):
     def __init__(self, product_id='BTC-USD', log_to=None):
         super(OrderBook, self).__init__(products=product_id)
-        self._asks = SortedDict()
-        self._bids = SortedDict()
+        self._asks = RBTree()
+        self._bids = RBTree()
         self._client = PublicClient()
         self._sequence = -1
         self._log_to = log_to
@@ -37,8 +37,8 @@ class OrderBook(WebsocketClient):
         print("\n-- OrderBook Socket Closed! --")
 
     def reset_book(self):
-        self._asks = SortedDict()
-        self._bids = SortedDict()
+        self._asks = RBTree()
+        self._bids = RBTree()
         res = self._client.get_product_order_book(product_id=self.product_id, level=3)
         for bid in res['bids']:
             self.add({
@@ -86,7 +86,7 @@ class OrderBook(WebsocketClient):
 
     def on_sequence_gap(self, gap_start, gap_end):
         self.reset_book()
-        print('Error: messages missing ({} - {}). Re-initializing  book at sequence.'.format(
+        print('Error: messages missing ({} - {}). Re-initializing book at sequence {}.'.format(
             gap_start, gap_end, self._sequence))
 
 
@@ -219,28 +219,28 @@ class OrderBook(WebsocketClient):
         return result
 
     def get_ask(self):
-        return self._asks.peekitem(0)[0]
+        return self._asks.min_key()
 
     def get_asks(self, price):
         return self._asks.get(price)
 
     def remove_asks(self, price):
-        del self._asks[price]
+        self._asks.remove(price)
 
     def set_asks(self, price, asks):
-        self._asks[price] = asks
+        self._asks.insert(price, asks)
 
     def get_bid(self):
-        return self._bids.peekitem(-1)[0]
+        return self._bids.max_key()
 
     def get_bids(self, price):
         return self._bids.get(price)
 
     def remove_bids(self, price):
-        del self._bids[price]
+        self._bids.remove(price)
 
     def set_bids(self, price, bids):
-        self._bids[price] = bids
+        self._bids.insert(price, bids)
 
 
 if __name__ == '__main__':

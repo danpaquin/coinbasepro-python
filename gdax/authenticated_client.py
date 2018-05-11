@@ -7,17 +7,18 @@
 import hmac
 import hashlib
 import time
+import datetime
 import requests
 import base64
 import json
 from requests.auth import AuthBase
-from gdax.public_client import PublicClient
-from gdax.gdax_auth import GdaxAuth
+from Connections.gdax.public_client import PublicClient
+from Connections.gdax.gdax_auth import GdaxAuth
 
 
 class AuthenticatedClient(PublicClient):
-    def __init__(self, key, b64secret, passphrase, api_url="https://api.gdax.com", timeout=30):
-        super(AuthenticatedClient, self).__init__(api_url)
+    def __init__(self, key, b64secret, passphrase, url="https://api.gdax.com", timeout=30):
+        super(AuthenticatedClient, self).__init__(url)
         self.auth = GdaxAuth(key, b64secret, passphrase)
         self.timeout = timeout
 
@@ -65,22 +66,36 @@ class AuthenticatedClient(PublicClient):
             self.holds_pagination(account_id, result, r.headers["cb-after"])
         return result
 
-    def buy(self, **kwargs):
+    def buy(self, product_id, **kwargs):
         kwargs["side"] = "buy"
         if "product_id" not in kwargs:
-            kwargs["product_id"] = self.product_id
+            kwargs["product_id"] = product_id
         r = requests.post(self.url + '/orders',
                           data=json.dumps(kwargs),
                           auth=self.auth,
                           timeout=self.timeout)
+        if r.status_code is not 200:
+            print("{}: buy: Server HTTP response code {}".format(datetime.datetime.now(),r.status_code))   
+            # print(r.json())
+            if r.status_code == 429:
+                time.sleep(1)
+            # print(kwargs)
         return r.json()
 
-    def sell(self, **kwargs):
+    def sell(self, product_id, **kwargs):
         kwargs["side"] = "sell"
+        if "product_id" not in kwargs:
+            kwargs["product_id"] = product_id
         r = requests.post(self.url + '/orders',
                           data=json.dumps(kwargs),
                           auth=self.auth,
                           timeout=self.timeout)
+        if r.status_code is not 200:
+            print("{}: sell: Server HTTP response code {}".format(datetime.datetime.now(),r.status_code))
+            # print(r.json())
+            if r.status_code == 429:
+                time.sleep(1)
+            # print(kwargs)         
         return r.json()
 
     def cancel_order(self, order_id):
@@ -170,139 +185,155 @@ class AuthenticatedClient(PublicClient):
         return result
 
     def get_fundings(self, result='', status='', after=''):
-        if not result:
-            result = []
-        url = self.url + '/funding?'
-        if status:
-            url += "status={}&".format(str(status))
-        if after:
-            url += 'after={}&'.format(str(after))
-        r = requests.get(url, auth=self.auth, timeout=self.timeout)
-        # r.raise_for_status()
-        result.append(r.json())
-        if 'cb-after' in r.headers:
-            return self.get_fundings(result, status=status, after=r.headers['cb-after'])
-        return result
+        pass
+        # if not result:
+        #     result = []
+        # url = self.url + '/funding?'
+        # if status:
+        #     url += "status={}&".format(str(status))
+        # if after:
+        #     url += 'after={}&'.format(str(after))
+        # r = requests.get(url, auth=self.auth, timeout=self.timeout)
+        # # r.raise_for_status()
+        # result.append(r.json())
+        # if 'cb-after' in r.headers:
+        #     return self.get_fundings(result, status=status, after=r.headers['cb-after'])
+        # return result
 
     def repay_funding(self, amount='', currency=''):
-        payload = {
-            "amount": amount,
-            "currency": currency  # example: USD
-        }
-        r = requests.post(self.url + "/funding/repay", data=json.dumps(payload), auth=self.auth, timeout=self.timeout)
-        # r.raise_for_status()
-        return r.json()
+        pass
+        # payload = {
+        #     "amount": amount,
+        #     "currency": currency  # example: USD
+        # }
+        # r = requests.post(self.url + "/funding/repay", data=json.dumps(payload), auth=self.auth, timeout=self.timeout)
+        # # r.raise_for_status()
+        # return r.json()
 
     def margin_transfer(self, margin_profile_id="", transfer_type="", currency="", amount=""):
-        payload = {
-            "margin_profile_id": margin_profile_id,
-            "type": transfer_type,
-            "currency": currency,  # example: USD
-            "amount": amount
-        }
-        r = requests.post(self.url + "/profiles/margin-transfer", data=json.dumps(payload), auth=self.auth, timeout=self.timeout)
-        # r.raise_for_status()
-        return r.json()
+        pass
+        # payload = {
+        #     "margin_profile_id": margin_profile_id,
+        #     "type": transfer_type,
+        #     "currency": currency,  # example: USD
+        #     "amount": amount
+        # }
+        # r = requests.post(self.url + "/profiles/margin-transfer", data=json.dumps(payload), auth=self.auth, timeout=self.timeout)
+        # # r.raise_for_status()
+        # return r.json()
 
     def get_position(self):
-        r = requests.get(self.url + "/position", auth=self.auth, timeout=self.timeout)
-        # r.raise_for_status()
-        return r.json()
+        pass
+        # r = requests.get(self.url + "/position", auth=self.auth, timeout=self.timeout)
+        # # r.raise_for_status()
+        # return r.json()
 
     def close_position(self, repay_only=""):
-        payload = {
-            "repay_only": repay_only or False
-        }
-        r = requests.post(self.url + "/position/close", data=json.dumps(payload), auth=self.auth, timeout=self.timeout)
-        # r.raise_for_status()
-        return r.json()
+        pass
+        # payload = {
+        #     "repay_only": repay_only or False
+        # }
+        # r = requests.post(self.url + "/position/close", data=json.dumps(payload), auth=self.auth, timeout=self.timeout)
+        # # r.raise_for_status()
+        # return r.json()
 
     def deposit(self, amount="", currency="", payment_method_id=""):
-        payload = {
-            "amount": amount,
-            "currency": currency,
-            "payment_method_id": payment_method_id
-        }
-        r = requests.post(self.url + "/deposits/payment-method", data=json.dumps(payload), auth=self.auth, timeout=self.timeout)
-        # r.raise_for_status()
-        return r.json()
+        pass
+        # payload = {
+        #     "amount": amount,
+        #     "currency": currency,
+        #     "payment_method_id": payment_method_id
+        # }
+        # r = requests.post(self.url + "/deposits/payment-method", data=json.dumps(payload), auth=self.auth, timeout=self.timeout)
+        # # r.raise_for_status()
+        # return r.json()
 
     def coinbase_deposit(self, amount="", currency="", coinbase_account_id=""):
-        payload = {
-            "amount": amount,
-            "currency": currency,
-            "coinbase_account_id": coinbase_account_id
-        }
-        r = requests.post(self.url + "/deposits/coinbase-account", data=json.dumps(payload), auth=self.auth, timeout=self.timeout)
-        # r.raise_for_status()
-        return r.json()
+        pass
+        # payload = {
+        #     "amount": amount,
+        #     "currency": currency,
+        #     "coinbase_account_id": coinbase_account_id
+        # }
+        # r = requests.post(self.url + "/deposits/coinbase-account", data=json.dumps(payload), auth=self.auth, timeout=self.timeout)
+        # # r.raise_for_status()
+        # return r.json()
 
     def withdraw(self, amount="", currency="", payment_method_id=""):
-        payload = {
-            "amount": amount,
-            "currency": currency,
-            "payment_method_id": payment_method_id
-        }
-        r = requests.post(self.url + "/withdrawals/payment-method", data=json.dumps(payload), auth=self.auth, timeout=self.timeout)
-        # r.raise_for_status()
-        return r.json()
+        pass
+        # payload = {
+        #     "amount": amount,
+        #     "currency": currency,
+        #     "payment_method_id": payment_method_id
+        # }
+        # r = requests.post(self.url + "/withdrawals/payment-method", data=json.dumps(payload), auth=self.auth, timeout=self.timeout)
+        # # r.raise_for_status()
+        # return r.json()
 
     def coinbase_withdraw(self, amount="", currency="", coinbase_account_id=""):
-        payload = {
-            "amount": amount,
-            "currency": currency,
-            "coinbase_account_id": coinbase_account_id
-        }
-        r = requests.post(self.url + "/withdrawals/coinbase-account", data=json.dumps(payload), auth=self.auth, timeout=self.timeout)
-        # r.raise_for_status()
-        return r.json()
+        pass
+        # payload = {
+        #     "amount": amount,
+        #     "currency": currency,
+        #     "coinbase_account_id": coinbase_account_id
+        # }
+        # r = requests.post(self.url + "/withdrawals/coinbase-account", data=json.dumps(payload), auth=self.auth, timeout=self.timeout)
+        # # r.raise_for_status()
+        # return r.json()
 
     def crypto_withdraw(self, amount="", currency="", crypto_address=""):
-        payload = {
-            "amount": amount,
-            "currency": currency,
-            "crypto_address": crypto_address
-        }
-        r = requests.post(self.url + "/withdrawals/crypto", data=json.dumps(payload), auth=self.auth, timeout=self.timeout)
-        # r.raise_for_status()
-        return r.json()
+        pass
+        # payload = {
+        #     "amount": amount,
+        #     "currency": currency,
+        #     "crypto_address": crypto_address
+        # }
+        # r = requests.post(self.url + "/withdrawals/crypto", data=json.dumps(payload), auth=self.auth, timeout=self.timeout)
+        # # r.raise_for_status()
+        # return r.json()
 
     def get_payment_methods(self):
-        r = requests.get(self.url + "/payment-methods", auth=self.auth, timeout=self.timeout)
-        # r.raise_for_status()
-        return r.json()
+        pass
+        # r = requests.get(self.url + "/payment-methods", auth=self.auth, timeout=self.timeout)
+        # # r.raise_for_status()
+        # return r.json()
 
     def get_coinbase_accounts(self):
-        r = requests.get(self.url + "/coinbase-accounts", auth=self.auth, timeout=self.timeout)
-        # r.raise_for_status()
-        return r.json()
+        pass
+        # r = requests.get(self.url + "/coinbase-accounts", auth=self.auth, timeout=self.timeout)
+        # # r.raise_for_status()
+        # return r.json()
 
     def create_report(self, report_type="", start_date="", end_date="", product_id="", account_id="", report_format="",
                       email=""):
-        payload = {
-            "type": report_type,
-            "start_date": start_date,
-            "end_date": end_date,
-            "product_id": product_id,
-            "account_id": account_id,
-            "format": report_format,
-            "email": email
-        }
-        r = requests.post(self.url + "/reports", data=json.dumps(payload), auth=self.auth, timeout=self.timeout)
-        # r.raise_for_status()
-        return r.json()
+        pass
+        # payload = {
+        #     "type": report_type,
+        #     "start_date": start_date,
+        #     "end_date": end_date,
+        #     "product_id": product_id,
+        #     "account_id": account_id,
+        #     "format": report_format,
+        #     "email": email
+        # }
+        # r = requests.post(self.url + "/reports", data=json.dumps(payload), auth=self.auth, timeout=self.timeout)
+        # # r.raise_for_status()
+        # return r.json()
 
     def get_report(self, report_id=""):
-        r = requests.get(self.url + "/reports/" + report_id, auth=self.auth, timeout=self.timeout)
-        # r.raise_for_status()
-        return r.json()
+        pass
+        # r = requests.get(self.url + "/reports/" + report_id, auth=self.auth, timeout=self.timeout)
+        # # r.raise_for_status()
+        # return r.json()
 
     def get_trailing_volume(self):
-        r = requests.get(self.url + "/users/self/trailing-volume", auth=self.auth, timeout=self.timeout)
-        # r.raise_for_status()
-        return r.json()
+        pass
+        # r = requests.get(self.url + "/users/self/trailing-volume", auth=self.auth, timeout=self.timeout)
+        # # r.raise_for_status()
+        # return r.json()
 
     def get_deposit_address(self, account_id):
-        r = requests.post(self.url + '/coinbase-accounts/{}/addresses'.format(account_id), auth=self.auth, timeout=self.timeout)
-        # r.raise_for_status()
-        return r.json()
+        pass
+        # r = requests.post(self.url + '/coinbase-accounts/{}/addresses'.format(account_id), auth=self.auth, timeout=self.timeout)
+        # # r.raise_for_status()
+        # return r.json()
