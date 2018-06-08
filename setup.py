@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 
 install_requires = [
-    'bintrees==2.0.7',
+    'sortedcontainers>=1.5.9',
     'requests==2.13.0',
     'six==1.10.0',
     'websocket-client==0.40.0',
@@ -12,6 +12,7 @@ install_requires = [
 
 tests_require = [
     'pytest',
+    'pytest-cov'
     ]
 
 setup(
