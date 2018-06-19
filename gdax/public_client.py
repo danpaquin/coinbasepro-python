@@ -119,7 +119,7 @@ class PublicClient(object):
         """
         return self._get('/products/{}/ticker'.format(str(product_id)))
 
-    def get_product_trades(self, product_id, before='', after='', limit='', result=[]):
+    def get_product_trades(self, product_id, before='', after='', limit=None, result=[]):
         """List the latest trades for a product.
         Args:
              product_id (str): Product
@@ -161,7 +161,7 @@ class PublicClient(object):
 
         result.extend(r.json())
 
-        if 'cb-after' in r.headers and limit is not len(result):
+        if 'cb-after' in r.headers and limit is not len(result) and limit is not None:
             # update limit
             limit -= len(result)
             if limit <= 0:
