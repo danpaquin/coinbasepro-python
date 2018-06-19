@@ -119,7 +119,7 @@ class PublicClient(object):
         """
         return self._get('/products/{}/ticker'.format(str(product_id)))
 
-    def get_product_trades(self, product_id, before='', after='', limit=None, result=[]):
+    def get_product_trades(self, product_id, before='', after='', limit=None, result=None):
         """List the latest trades for a product.
         Args:
              product_id (str): Product
@@ -144,6 +144,9 @@ class PublicClient(object):
                      "side": "sell"
          }]
         """
+        if result is None:
+            result = []
+
         url = self.url + '/products/{}/trades'.format(str(product_id))
         params = {}
 
