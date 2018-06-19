@@ -56,6 +56,8 @@ class TestPublicClient(object):
     def test_get_historic_rates(self, client, start, end, granularity):
         r = client.get_product_historic_rates('BTC-USD', start=start, end=end, granularity=granularity)
         assert type(r) is list
+        for ticker in r:
+            assert( all( [type(x) in (int, float) for x in ticker ] ) )
 
     def test_get_product_24hr_stats(self, client):
         r = client.get_product_24hr_stats('BTC-USD')
