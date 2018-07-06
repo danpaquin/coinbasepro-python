@@ -18,7 +18,7 @@ class PublicClient(object):
 
     """
 
-    def __init__(self, api_url='https://api.gdax.com', timeout=30):
+    def __init__(self, api_url='https://api.pro.coinbase.com', timeout=30):
         """Create GDAX API public client.
 
         Args:
