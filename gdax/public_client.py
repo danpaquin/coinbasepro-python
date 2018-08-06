@@ -119,7 +119,7 @@ class PublicClient(object):
         """
         return self._get('/products/{}/ticker'.format(str(product_id)))
 
-    def get_product_trades(self, product_id, before='', after='', limit='', result=[]):
+    def get_product_trades(self, product_id, before='', after='', limit=100, result=[]):
         """List the latest trades for a product.
         Args:
              product_id (str): Product
