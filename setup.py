@@ -3,15 +3,17 @@
 from setuptools import setup, find_packages
 
 install_requires = [
-    'bintrees==2.0.7',
-    'requests==2.13.0',
-    'six==1.10.0',
-    'websocket-client==0.40.0',
-    'pymongo==3.5.1'
+    'sortedcontainers>=1.5,<2.0',
+    'requests>=2.13,<3.0',
+    'six>=1.10,<2.0',
+    'websocket-client>=0.40',
+    'pymongo>=3.5,<4.0'
 ]
 
 tests_require = [
-    'pytest',
+    'pytest>=3.3,<4.0',
+    'pytest-cov>=2.5,<3.0',
+    'dateutil>=2.6,<3.0'
     ]
 
 setup(
