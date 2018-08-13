@@ -1,6 +1,6 @@
-# gdax-python
-The Python client for the [GDAX API](https://docs.gdax.com/) (formerly known as
-the Coinbase Exchange API)
+# coinbasepro-python
+The Python client for the [Coinbase Pro API](https://docs.pro.coinbase.com/) (formerly known as
+the GDAX)
 
 ##### Provided under MIT License by Daniel Paquin.
 *Note: this library may be subtly broken or buggy. The code is released under
