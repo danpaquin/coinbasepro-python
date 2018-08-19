@@ -33,7 +33,7 @@ class AuthenticatedClient(PublicClient):
         result = []
         r = requests.get(self.url + '/accounts/{}/ledger'.format(account_id), auth=self.auth, timeout=self.timeout)
         # r.raise_for_status()
-        result.append(r.json())
+        result.extend(r.json())
         if "cb-after" in r.headers:
             self.history_pagination(account_id, result, r.headers["cb-after"])
         return result
@@ -42,7 +42,7 @@ class AuthenticatedClient(PublicClient):
         r = requests.get(self.url + '/accounts/{}/ledger?after={}'.format(account_id, str(after)), auth=self.auth, timeout=self.timeout)
         # r.raise_for_status()
         if r.json():
-            result.append(r.json())
+            result.extend(r.json())
         if "cb-after" in r.headers:
             self.history_pagination(account_id, result, r.headers["cb-after"])
         return result
@@ -51,7 +51,7 @@ class AuthenticatedClient(PublicClient):
         result = []
         r = requests.get(self.url + '/accounts/{}/holds'.format(account_id), auth=self.auth, timeout=self.timeout)
         # r.raise_for_status()
-        result.append(r.json())
+        result.extend(r.json())
         if "cb-after" in r.headers:
             self.holds_pagination(account_id, result, r.headers["cb-after"])
         return result
@@ -60,7 +60,7 @@ class AuthenticatedClient(PublicClient):
         r = requests.get(self.url + '/accounts/{}/holds?after={}'.format(account_id, str(after)), auth=self.auth, timeout=self.timeout)
         # r.raise_for_status()
         if r.json():
-            result.append(r.json())
+            result.extend(r.json())
         if "cb-after" in r.headers:
             self.holds_pagination(account_id, result, r.headers["cb-after"])
         return result
@@ -112,7 +112,7 @@ class AuthenticatedClient(PublicClient):
             params["status"] = status
         r = requests.get(url, auth=self.auth, params=params, timeout=self.timeout)
         # r.raise_for_status()
-        result.append(r.json())
+        result.extend(r.json())
         if 'cb-after' in r.headers:
             self.paginate_orders(product_id, status, result, r.headers['cb-after'])
         return result
@@ -130,7 +130,7 @@ class AuthenticatedClient(PublicClient):
         r = requests.get(url, auth=self.auth, params=params, timeout=self.timeout)
         # r.raise_for_status()
         if r.json():
-            result.append(r.json())
+            result.extend(r.json())
         if 'cb-after' in r.headers:
             self.paginate_orders(product_id, status, result, r.headers['cb-after'])
         return result
@@ -150,7 +150,7 @@ class AuthenticatedClient(PublicClient):
             url += "limit={}&".format(str(limit))
         r = requests.get(url, auth=self.auth, timeout=self.timeout)
         # r.raise_for_status()
-        result.append(r.json())
+        result.extend(r.json())
         if 'cb-after' in r.headers and limit is not len(r.json()):
             return self.paginate_fills(result, r.headers['cb-after'], order_id=order_id, product_id=product_id)
         return result
@@ -164,7 +164,7 @@ class AuthenticatedClient(PublicClient):
         r = requests.get(url, auth=self.auth, timeout=self.timeout)
         # r.raise_for_status()
         if r.json():
-            result.append(r.json())
+            result.extend(r.json())
         if 'cb-after' in r.headers:
             return self.paginate_fills(result, r.headers['cb-after'], order_id=order_id, product_id=product_id)
         return result
@@ -179,7 +179,7 @@ class AuthenticatedClient(PublicClient):
             url += 'after={}&'.format(str(after))
         r = requests.get(url, auth=self.auth, timeout=self.timeout)
         # r.raise_for_status()
-        result.append(r.json())
+        result.extend(r.json())
         if 'cb-after' in r.headers:
             return self.get_fundings(result, status=status, after=r.headers['cb-after'])
         return result
