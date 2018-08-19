@@ -1,6 +1,6 @@
 import pytest
 from itertools import islice
-import gdax
+import cbpro
 import time
 import datetime
 from dateutil.relativedelta import relativedelta
@@ -8,7 +8,7 @@ from dateutil.relativedelta import relativedelta
 
 @pytest.fixture(scope='module')
 def client():
-    return gdax.PublicClient()
+    return cbpro.PublicClient()
 
 
 @pytest.mark.usefixtures('client')

@@ -2,13 +2,13 @@ import pytest
 import json
 import time
 from itertools import islice
-import gdax
+import cbpro
 
 
 @pytest.fixture(scope='module')
 def dc():
     """Dummy client for testing."""
-    return gdax.AuthenticatedClient('test', 'test', 'test')
+    return cbpro.AuthenticatedClient('test', 'test', 'test')
 
 
 @pytest.mark.usefixtures('dc')
@@ -45,8 +45,8 @@ def client():
     provided in api_config.json"""
     with open('api_config.json') as file:
         api_config = json.load(file)
-    c = gdax.AuthenticatedClient(
-        api_url='https://api-public.sandbox.gdax.com', **api_config)
+    c = cbpro.AuthenticatedClient(
+        api_url='https://api-public.sandbox.pro.coinbase.com', **api_config)
 
     # Set up account with deposits and orders. Do this by depositing from
     # the Coinbase USD wallet, which has a fixed value of > $10,000.
