@@ -2,9 +2,9 @@
 #
 # Usage:
 #  * build the image:
-#    gdax-python$ docker build -t gdax-python .
+#    coinbasepro-python$ docker build -t coinbasepro-python .
 #  * start the image:
-#    docker run -it gdax-python
+#    docker run -it coinbasepro-python
 
 # Latest version of ubuntu
 FROM ubuntu:16.04
@@ -29,11 +29,11 @@ ARG python_version=3.6
 RUN conda install -y python=${python_version} && \
     pip install --upgrade pip
 
-# Set gdax-python code path
-ENV CODE_DIR /code/gdax-python
+# Set coinbasepro-python code path
+ENV CODE_DIR /code/coinbasepro-python
 
 RUN mkdir -p $CODE_DIR
 COPY . $CODE_DIR
 
 RUN cd $CODE_DIR && \
-    pip install gdax
+    pip install cbpro

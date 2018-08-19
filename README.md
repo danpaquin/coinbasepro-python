@@ -18,8 +18,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 largest Bitcoin exchanges in the *world*!
 - Do not worry about handling the nuances of the API with easy-to-use methods
 for every API endpoint.
-- Gain an advantage in the market by getting under the hood of GDAX to learn
-what and who is *really* behind every tick.
+- Gain an advantage in the market by getting under the hood of CB Pro to learn
+what and who is behind every tick.
 
 ## Under Development
 - Test Scripts
@@ -29,15 +29,17 @@ what and who is *really* behind every tick.
 ## Getting Started
 This README is documentation on the syntax of the python client presented in
 this repository. See function docstrings for full syntax details.  
-**This API attempts to present a clean interface to GDAX, but in order to use it
-to its full potential, you must familiarize yourself with the official GDAX
+**This API attempts to present a clean interface to CB Pro, but in order to use it
+to its full potential, you must familiarize yourself with the official CB Pro
 documentation.**
 
-- https://docs.gdax.com/
+- https://docs.pro.coinbase.com/
 
 - You may manually install the project or use ```pip```:
 ```python
-pip install gdax
+pip install cbpro
+#or
+pip install git+git://github.com/danpaquin/coinbasepro-python.git
 ```
 
 ### Public Client
@@ -45,17 +47,17 @@ Only some endpoints in the API are available to everyone.  The public endpoints
 can be reached using ```PublicClient```
 
 ```python
-import gdax
-public_client = gdax.PublicClient()
+import cbpro
+public_client = cbpro.PublicClient()
 ```
 
 ### PublicClient Methods
-- [get_products](https://docs.gdax.com/#get-products)
+- [get_products](https://docs.pro.coinbase.com//#get-products)
 ```python
 public_client.get_products()
 ```
 
-- [get_product_order_book](https://docs.gdax.com/#get-product-order-book)
+- [get_product_order_book](https://docs.pro.coinbase.com/#get-product-order-book)
 ```python
 # Get the order book at the default level.
 public_client.get_product_order_book('BTC-USD')
@@ -63,37 +65,37 @@ public_client.get_product_order_book('BTC-USD')
 public_client.get_product_order_book('BTC-USD', level=1)
 ```
 
-- [get_product_ticker](https://docs.gdax.com/#get-product-ticker)
+- [get_product_ticker](https://docs.pro.coinbase.com/#get-product-ticker)
 ```python
 # Get the product ticker for a specific product.
 public_client.get_product_ticker(product_id='ETH-USD')
 ```
 
-- [get_product_trades](https://docs.gdax.com/#get-trades) (paginated)
+- [get_product_trades](https://docs.pro.coinbase.com/#get-trades) (paginated)
 ```python
 # Get the product trades for a specific product.
 # Returns a generator
 public_client.get_product_trades(product_id='ETH-USD')
 ```
 
-- [get_product_historic_rates](https://docs.gdax.com/#get-historic-rates)
+- [get_product_historic_rates](https://docs.pro.coinbase.com/#get-historic-rates)
 ```python
 public_client.get_product_historic_rates('ETH-USD')
 # To include other parameters, see function docstring:
 public_client.get_product_historic_rates('ETH-USD', granularity=3000)
 ```
 
-- [get_product_24hr_stats](https://docs.gdax.com/#get-24hr-stats)
+- [get_product_24hr_stats](https://docs.pro.coinbase.com/#get-24hr-stats)
 ```python
 public_client.get_product_24hr_stats('ETH-USD')
 ```
 
-- [get_currencies](https://docs.gdax.com/#get-currencies)
+- [get_currencies](https://docs.pro.coinbase.com/#get-currencies)
 ```python
 public_client.get_currencies()
 ```
 
-- [get_time](https://docs.gdax.com/#time)
+- [get_time](https://docs.pro.coinbase.com/#time)
 ```python
 public_client.get_time()
 ```
@@ -103,22 +105,22 @@ public_client.get_time()
 Not all API endpoints are available to everyone.
 Those requiring user authentication can be reached using `AuthenticatedClient`.
 You must setup API access within your
-[account settings](https://www.gdax.com/settings/api).
+[account settings](https://www.pro.coinbase.com/settings/api).
 The `AuthenticatedClient` inherits all methods from the `PublicClient`
 class, so you will only need to initialize one if you are planning to
 integrate both into your script.
 
 ```python
-import gdax
-auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase)
+import cbpro
+auth_client = cbpro.AuthenticatedClient(key, b64secret, passphrase)
 # Use the sandbox API (requires a different set of API access credentials)
-auth_client = gdax.AuthenticatedClient(key, b64secret, passphrase,
-                                  api_url="https://api-public.sandbox.gdax.com")
+auth_client = cbpro.AuthenticatedClient(key, b64secret, passphrase,
+                                  api_url="https://api-public.sandbox.pro.coinbase.com")
 ```
 
 ### Pagination
-Some calls are [paginated](https://docs.gdax.com/#pagination), meaning multiple 
-calls must be made to receive the full set of data. The GDAX Python API provides
+Some calls are [paginated](https://docs.pro.coinbase.com/#pagination), meaning multiple
+calls must be made to receive the full set of data. The CB Pro Python API provides
 an abstraction for paginated endpoints in the form of generators which provide a
 clean interface for iteration but may make multiple HTTP requests behind the 
 scenes. The pagination options `before`, `after`, and `limit` may be supplied as
@@ -133,7 +135,7 @@ new data since the previous request. For the case of `get_fills()`, the
 `trade_id` is the parameter used for indexing. By passing 
 `before=some_trade_id`, only fills more recent than that `trade_id` will be 
 returned. Note that when using `before`, a maximum of 100 entries will be 
-returned - this is a limitation of GDAX.
+returned - this is a limitation of CB Pro.
 ```python
 from itertools import islice
 # Get 5 most recent fills
@@ -143,29 +145,29 @@ new_fills = auth_client.get_fills(before=recent_fills[0]['trade_id'])
 ```
 
 ### AuthenticatedClient Methods
-- [get_accounts](https://docs.gdax.com/#list-accounts)
+- [get_accounts](https://docs.pro.coinbase.com/#list-accounts)
 ```python
 auth_client.get_accounts()
 ```
 
-- [get_account](https://docs.gdax.com/#get-an-account)
+- [get_account](https://docs.pro.coinbase.com/#get-an-account)
 ```python
 auth_client.get_account("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 ```
 
-- [get_account_history](https://docs.gdax.com/#get-account-history) (paginated)
+- [get_account_history](https://docs.pro.coinbase.com/#get-account-history) (paginated)
 ```python
 # Returns generator:
 auth_client.get_account_history("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 ```
 
-- [get_account_holds](https://docs.gdax.com/#get-holds) (paginated)
+- [get_account_holds](https://docs.pro.coinbase.com/#get-holds) (paginated)
 ```python
 # Returns generator:
 auth_client.get_account_holds("7d0f7d8e-dd34-4d9c-a846-06f431c381ba")
 ```
 
-- [buy & sell](https://docs.gdax.com/#place-a-new-order)
+- [buy & sell](https://docs.pro.coinbase.com/#place-a-new-order)
 ```python
 # Buy 0.01 BTC @ 100 USD
 auth_client.buy(price='100.00', #USD
@@ -202,27 +204,27 @@ auth_client.place_stop_order(product_id='BTC-USD',
                               size='0.01')
 ```
 
-- [cancel_order](https://docs.gdax.com/#cancel-an-order)
+- [cancel_order](https://docs.pro.coinbase.com/#cancel-an-order)
 ```python
 auth_client.cancel_order("d50ec984-77a8-460a-b958-66f114b0de9b")
 ```
-- [cancel_all](https://docs.gdax.com/#cancel-all)
+- [cancel_all](https://docs.pro.coinbase.com/#cancel-all)
 ```python
 auth_client.cancel_all(product_id='BTC-USD')
 ```
 
-- [get_orders](https://docs.gdax.com/#list-orders) (paginated)
+- [get_orders](https://docs.pro.coinbase.com/#list-orders) (paginated)
 ```python
 # Returns generator:
 auth_client.get_orders()
 ```
 
-- [get_order](https://docs.gdax.com/#get-an-order)
+- [get_order](https://docs.pro.coinbase.com/#get-an-order)
 ```python
 auth_client.get_order("d50ec984-77a8-460a-b958-66f114b0de9b")
 ```
 
-- [get_fills](https://docs.gdax.com/#list-fills) (paginated)
+- [get_fills](https://docs.pro.coinbase.com/#list-fills) (paginated)
 ```python
 # All return generators
 auth_client.get_fills()
@@ -232,9 +234,8 @@ auth_client.get_fills(order_id="d50ec984-77a8-460a-b958-66f114b0de9b")
 auth_client.get_fills(product_id="ETH-BTC")
 ```
 
-- [deposit & withdraw](https://docs.gdax.com/#depositwithdraw)
+- [deposit & withdraw](https://docs.pro.coinbase.com/#depositwithdraw)
 ```python
-gdax
 depositParams = {
         'amount': '25.00', # Currency determined by account specified
         'coinbase_account_id': '60680c98bfe96c2601f27e9c'
@@ -242,7 +243,7 @@ depositParams = {
 auth_client.deposit(depositParams)
 ```
 ```python
-# Withdraw from GDAX into Coinbase Wallet
+# Withdraw from CB Pro into Coinbase Wallet
 withdrawParams = {
         'amount': '1.00', # Currency determined by account specified
         'coinbase_account_id': '536a541fa9393bb3c7000023'
@@ -252,22 +253,22 @@ auth_client.withdraw(withdrawParams)
 
 ### WebsocketClient
 If you would like to receive real-time market updates, you must subscribe to the
-[websocket feed](https://docs.gdax.com/#websocket-feed).
+[websocket feed](https://docs.pro.coinbase.com/#websocket-feed).
 
 #### Subscribe to a single product
 ```python
-import gdax
+import cbpro
 # Paramters are optional
-wsClient = gdax.WebsocketClient(url="wss://ws-feed.gdax.com", products="BTC-USD")
+wsClient = cbpro.WebsocketClient(url="wss://ws-feed.pro.coinbase.com", products="BTC-USD")
 # Do other stuff...
 wsClient.close()
 ```
 
 #### Subscribe to multiple products
 ```python
-import gdax
+import cbpro
 # Paramaters are optional
-wsClient = gdax.WebsocketClient(url="wss://ws-feed.gdax.com",
+wsClient = cbpro.WebsocketClient(url="wss://ws-feed.pro.coinbase.com",
                                 products=["BTC-USD", "ETH-USD"])
 # Do other stuff...
 wsClient.close()
@@ -280,7 +281,7 @@ the database collection.
 ```python
 # import PyMongo and connect to a local, running Mongo instance
 from pymongo import MongoClient
-import gdax
+import cbpro
 mongo_client = MongoClient('mongodb://localhost:27017/')
 
 # specify the database and collection
@@ -288,7 +289,7 @@ db = mongo_client.cryptocurrency_database
 BTC_collection = db.BTC_collection
 
 # instantiate a WebsocketClient instance, with a Mongo collection as a parameter
-wsClient = gdax.WebsocketClient(url="wss://ws-feed.gdax.com", products="BTC-USD",
+wsClient = cbpro.WebsocketClient(url="wss://ws-feed.pro.coinbase.com", products="BTC-USD",
     mongo_collection=BTC_collection, should_print=False)
 wsClient.start()
 ```
@@ -306,10 +307,10 @@ argument that contains the message of dict type.
 - on_close - called once after the websocket has been closed.
 - close - call this method to close the websocket connection (do not overwrite).
 ```python
-import gdax, time
-class myWebsocketClient(gdax.WebsocketClient):
+import cbpro, time
+class myWebsocketClient(cbpro.WebsocketClient):
     def on_open(self):
-        self.url = "wss://ws-feed.gdax.com/"
+        self.url = "wss://ws-feed.pro.coinbase.com/"
         self.products = ["LTC-USD"]
         self.message_count = 0
         print("Lets count the messages!")
@@ -344,8 +345,8 @@ the orderbook for the product_id input.  Please provide your feedback for future
 improvements.
 
 ```python
-import gdax, time
-order_book = gdax.OrderBook(product_id='BTC-USD')
+import cbpro, time
+order_book = cbpro.OrderBook(product_id='BTC-USD')
 order_book.start()
 time.sleep(10)
 order_book.close()
@@ -362,6 +363,10 @@ python -m pytest
 ```
 
 ## Change Log
+*1.1*
+- Refactor project for Coinbase Pro
+- Major overhaul on how pagination is handled
+
 *1.0* **Current PyPI release**
 - The first release that is not backwards compatible
 - Refactored to follow PEP 8 Standards

@@ -14,19 +14,25 @@ tests_require = [
     'pytest',
     ]
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
 setup(
-    name='gdax',
-    version='1.0.6',
+    name='cbpro',
+    version='1.1.0',
     author='Daniel Paquin',
     author_email='dpaq34@gmail.com',
     license='MIT',
-    url='https://github.com/danpaquin/gdax-python',
+    url='https://github.com/danpaquin/coinbasepro-python',
     packages=find_packages(),
     install_requires=install_requires,
     tests_require=tests_require,
-    description='The unofficial Python client for the GDAX API',
-    download_url='https://github.com/danpaquin/gdax-Python/archive/master.zip',
-    keywords=['gdax', 'gdax-api', 'orderbook', 'trade', 'bitcoin', 'ethereum', 'BTC', 'ETH', 'client', 'api', 'wrapper', 'exchange', 'crypto', 'currency', 'trading', 'trading-api', 'coinbase'],
+    description='The unofficial Python client for the Coinbase Pro API',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    download_url='https://github.com/danpaquin/coinbasepro-python/archive/master.zip',
+    keywords=['gdax', 'gdax-api', 'orderbook', 'trade', 'bitcoin', 'ethereum', 'BTC', 'ETH', 'client', 'api', 'wrapper',
+              'exchange', 'crypto', 'currency', 'trading', 'trading-api', 'coinbase', 'pro', 'prime', 'coinbasepro'],
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
