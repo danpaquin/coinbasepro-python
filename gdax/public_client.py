@@ -119,7 +119,7 @@ class PublicClient(object):
         """
         return self._get('/products/{}/ticker'.format(str(product_id)))
 
-    def get_product_trades(self, product_id, before='', after='', limit='', result=[]):
+    def get_product_trades(self, product_id, before='', after='', limit=None, result=None):
         """List the latest trades for a product.
         Args:
              product_id (str): Product
@@ -144,6 +144,9 @@ class PublicClient(object):
                      "side": "sell"
          }]
         """
+        if result is None:
+            result = []
+
         url = self.url + '/products/{}/trades'.format(str(product_id))
         params = {}
 
@@ -161,7 +164,7 @@ class PublicClient(object):
 
         result.extend(r.json())
 
-        if 'cb-after' in r.headers and limit is not len(result):
+        if 'cb-after' in r.headers and limit is not len(result) and limit is not None:
             # update limit
             limit -= len(result)
             if limit <= 0:
@@ -199,10 +202,10 @@ class PublicClient(object):
             product_id (str): Product
             start (Optional[str]): Start time in ISO 8601
             end (Optional[str]): End time in ISO 8601
-            granularity (Optional[str]): Desired time slice in seconds
+            granularity (Optional[int]): Desired time slice in seconds
 
         Returns:
-            list: Historic candle data. Example::
+            list: Historic candle data. Example:
                 [
                     [ time, low, high, open, close, volume ],
                     [ 1415398768, 0.32, 4.2, 0.35, 4.2, 12.3 ],
@@ -218,9 +221,9 @@ class PublicClient(object):
         if granularity is not None:
             acceptedGrans = [60, 300, 900, 3600, 21600, 86400]
             if granularity not in acceptedGrans:
-                newGranularity = min(acceptedGrans, key=lambda x:abs(x-granularity))
-                print(granularity,' is not a valid granularity level, using',newGranularity,' instead.')
-                granularity = newGranularity
+                raise ValueError( 'Specified granularity is {}, must be in approved values: {}'.format(
+                        granularity, acceptedGrans) )
+
             params['granularity'] = granularity
 
         return self._get('/products/{}/candles'.format(str(product_id)), params=params)
