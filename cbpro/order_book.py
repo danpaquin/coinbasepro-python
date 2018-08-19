@@ -1,15 +1,15 @@
 #
-# gdax/order_book.py
+# cbpro/order_book.py
 # David Caseria
 #
-# Live order book updated from the gdax Websocket Feed
+# Live order book updated from the Coinbase Websocket Feed
 
 from sortedcontainers import SortedDict
 from decimal import Decimal
 import pickle
 
-from gdax.public_client import PublicClient
-from gdax.websocket_client import WebsocketClient
+from cbpro.public_client import PublicClient
+from cbpro.websocket_client import WebsocketClient
 
 
 class OrderBook(WebsocketClient):
