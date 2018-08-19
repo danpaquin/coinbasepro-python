@@ -363,11 +363,11 @@ python -m pytest
 ```
 
 ## Change Log
-*1.1*
+*1.1.1* **Current PyPI release**
 - Refactor project for Coinbase Pro
 - Major overhaul on how pagination is handled
 
-*1.0* **Current PyPI release**
+*1.0*
 - The first release that is not backwards compatible
 - Refactored to follow PEP 8 Standards
 - Improved Documentation
