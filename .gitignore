@@ -1,3 +1,4 @@
+*.DS_Store
 .idea
 *.pyc
 example.py
@@ -7,7 +8,7 @@ dist/
 *.rst
 venv/
 *log.txt
-gdax/__pycache__/
+cbpro/__pycache__/
 .cache/
 .coverage
 tests/__pycache__/
