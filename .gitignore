@@ -8,3 +8,7 @@ dist/
 venv/
 *log.txt
 gdax/__pycache__/
+.cache/
+.coverage
+tests/__pycache__/
+.pytest_cache

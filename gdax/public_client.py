@@ -18,7 +18,7 @@ class PublicClient(object):
 
     """
 
-    def __init__(self, api_url='https://api.gdax.com'):
+    def __init__(self, api_url='https://api.pro.coinbase.com', timeout=30):
         """Create GDAX API public client.
 
         Args:
@@ -114,31 +114,34 @@ class PublicClient(object):
         return self._send_message('get',
                                   '/products/{}/ticker'.format(product_id))
 
-    def get_product_trades(self, product_id):
+    def get_product_trades(self, product_id, before='', after='', limit=None, result=None):
         """List the latest trades for a product.
 
         This method returns a generator which may make multiple HTTP requests
         while iterating through it.
 
         Args:
-            product_id (str): Product
-
+             product_id (str): Product
+             before (Optional[str]): start time in ISO 8601
+             after (Optional[str]): end time in ISO 8601
+             limit (Optional[int]): the desired number of trades (can be more than 100,
+                          automatically paginated)
+             results (Optional[list]): list of results that is used for the pagination
         Returns:
-            list: Latest trades. Example::
-                [{
-                    "time": "2014-11-07T22:19:28.578544Z",
-                    "trade_id": 74,
-                    "price": "10.00000000",
-                    "size": "0.01000000",
-                    "side": "buy"
-                }, {
-                    "time": "2014-11-07T01:08:43.642366Z",
-                    "trade_id": 73,
-                    "price": "100.00000000",
-                    "size": "0.01000000",
-                    "side": "sell"
-                }]
-
+             list: Latest trades. Example::
+                 [{
+                     "time": "2014-11-07T22:19:28.578544Z",
+                     "trade_id": 74,
+                     "price": "10.00000000",
+                     "size": "0.01000000",
+                     "side": "buy"
+                 }, {
+                     "time": "2014-11-07T01:08:43.642366Z",
+                     "trade_id": 73,
+                     "price": "100.00000000",
+                     "size": "0.01000000",
+                     "side": "sell"
+         }]
         """
         return self._send_paginated_message('/products/{}/trades'
                                             .format(product_id))
@@ -169,10 +172,10 @@ class PublicClient(object):
             product_id (str): Product
             start (Optional[str]): Start time in ISO 8601
             end (Optional[str]): End time in ISO 8601
-            granularity (Optional[str]): Desired time slice in seconds
+            granularity (Optional[int]): Desired time slice in seconds
 
         Returns:
-            list: Historic candle data. Example::
+            list: Historic candle data. Example:
                 [
                     [ time, low, high, open, close, volume ],
                     [ 1415398768, 0.32, 4.2, 0.35, 4.2, 12.3 ],
@@ -186,6 +189,11 @@ class PublicClient(object):
         if end is not None:
             params['end'] = end
         if granularity is not None:
+            acceptedGrans = [60, 300, 900, 3600, 21600, 86400]
+            if granularity not in acceptedGrans:
+                raise ValueError( 'Specified granularity is {}, must be in approved values: {}'.format(
+                        granularity, acceptedGrans) )
+
             params['granularity'] = granularity
         return self._send_message('get',
                                   '/products/{}/candles'.format(product_id))

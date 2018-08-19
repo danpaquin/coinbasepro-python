@@ -1,6 +1,6 @@
-# gdax-python
-The Python client for the [GDAX API](https://docs.gdax.com/) (formerly known as
-the Coinbase Exchange API)
+# coinbasepro-python
+The Python client for the [Coinbase Pro API](https://docs.pro.coinbase.com/) (formerly known as
+the GDAX)
 
 ##### Provided under MIT License by Daniel Paquin.
 *Note: this library may be subtly broken or buggy. The code is released under
@@ -208,7 +208,7 @@ auth_client.cancel_order("d50ec984-77a8-460a-b958-66f114b0de9b")
 ```
 - [cancel_all](https://docs.gdax.com/#cancel-all)
 ```python
-auth_client.cancel_all(product='BTC-USD')
+auth_client.cancel_all(product_id='BTC-USD')
 ```
 
 - [get_orders](https://docs.gdax.com/#list-orders) (paginated)
