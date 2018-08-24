@@ -1,0 +1,11 @@
+sudo: false
+language: python
+# cache package wheels (1 cache per python version)
+cache: pip
+python: 3.5
+
+install:
+  - pip install -r requirements.txt
+
+script:
+  - pytest
