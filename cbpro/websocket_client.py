@@ -24,7 +24,7 @@ class WebsocketClient(object):
         self.products = products
         self.channels = channels
         self.type = message_type
-        self.stop = False
+        self.stop = True
         self.error = None
         self.ws = None
         self.thread = None
