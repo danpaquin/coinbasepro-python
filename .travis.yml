@@ -5,7 +5,7 @@ cache: pip
 python: 3.5
 
 install:
-  - pip install -r requirements.txt
+  - python setup.py test
 
 script:
   - pytest
