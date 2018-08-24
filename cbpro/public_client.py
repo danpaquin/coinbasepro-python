@@ -196,7 +196,8 @@ class PublicClient(object):
 
             params['granularity'] = granularity
         return self._send_message('get',
-                                  '/products/{}/candles'.format(product_id))
+                                  '/products/{}/candles'.format(product_id),
+                                  params=params)
 
     def get_product_24hr_stats(self, product_id):
         """Get 24 hr stats for the product.
