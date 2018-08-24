@@ -1,14 +1,14 @@
 import pytest
-from itertools import islice
-import cbpro
 import time
+from itertools import islice
 import datetime
 from dateutil.relativedelta import relativedelta
+from cbpro.public_client import PublicClient
 
 
 @pytest.fixture(scope='module')
 def client():
-    return cbpro.PublicClient()
+    return PublicClient()
 
 
 @pytest.mark.usefixtures('client')

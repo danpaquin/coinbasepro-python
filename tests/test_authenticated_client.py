@@ -2,13 +2,13 @@ import pytest
 import json
 import time
 from itertools import islice
-import cbpro
+from cbpro.authenticated_client import AuthenticatedClient
 
 
 @pytest.fixture(scope='module')
 def dc():
     """Dummy client for testing."""
-    return cbpro.AuthenticatedClient('test', 'test', 'test')
+    return AuthenticatedClient('test', 'test', 'test')
 
 
 @pytest.mark.usefixtures('dc')
@@ -45,7 +45,7 @@ def client():
     provided in api_config.json"""
     with open('api_config.json') as file:
         api_config = json.load(file)
-    c = cbpro.AuthenticatedClient(
+    c = AuthenticatedClient(
         api_url='https://api-public.sandbox.pro.coinbase.com', **api_config)
 
     # Set up account with deposits and orders. Do this by depositing from
