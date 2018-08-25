@@ -65,8 +65,8 @@ class WebsocketClient(object):
             message = timestamp + 'GET' + '/users/self/verify'
             auth_headers = get_auth_headers(timestamp, message, self.api_key, self.api_secret, self.api_passphrase)
             sub_params['signature'] = auth_headers['CB-ACCESS-SIGN']
-            sub_params['key'] = auth_headers['CB-ACCESS-SIGN']
-            sub_params['passphrase'] = auth_headers['CB-ACCESS-KEY']
+            sub_params['key'] = auth_headers['CB-ACCESS-KEY']
+            sub_params['passphrase'] = auth_headers['CB-ACCESS-PASSPHRASE']
             sub_params['timestamp'] = auth_headers['CB-ACCESS-TIMESTAMP']
 
         self.ws = create_connection(self.url)
