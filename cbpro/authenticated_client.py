@@ -585,6 +585,9 @@ class AuthenticatedClient(PublicClient):
     def get_fills(self, product_id=None, order_id=None, **kwargs):
         """ Get a list of recent fills.
 
+        As of 8/23/18 - Requests without either order_id or product_id
+        will be rejected
+
         This method returns a generator which may make multiple HTTP requests
         while iterating through it.
 
@@ -598,9 +601,6 @@ class AuthenticatedClient(PublicClient):
         The 'liquidity' field indicates if the fill was the result of a
         liquidity provider or liquidity taker. M indicates Maker and T
         indicates Taker.
-
-        As of 8/23/18 - Requests without either order_id or product_id
-        will be rejected
 
         Args:
             product_id (str): Limit list to this product_id
@@ -628,6 +628,9 @@ class AuthenticatedClient(PublicClient):
                 ]
 
         """
+        if (product_id is None) and (order_id is None):
+            raise ValueError('Either product_id or order_id must be specified.')
+
         params = {}
         if product_id:
             params['product_id'] = product_id
