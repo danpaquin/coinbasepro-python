@@ -477,10 +477,9 @@ class AuthenticatedClient(PublicClient):
         """
         if product_id is not None:
             params = {'product_id': product_id}
-            data = json.dumps(params)
         else:
-            data = None
-        return self._send_message('delete', '/orders', data=data)
+            params = None
+        return self._send_message('delete', '/orders', params=params)
 
     def get_order(self, order_id):
         """ Get a single order by order id.
