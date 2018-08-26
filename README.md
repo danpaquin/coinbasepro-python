@@ -363,7 +363,7 @@ python -m pytest
 ```
 
 ## Change Log
-*1.1.1* **Current PyPI release**
+*1.1.2* **Current PyPI release**
 - Refactor project for Coinbase Pro
 - Major overhaul on how pagination is handled
 
