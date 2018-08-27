@@ -234,10 +234,10 @@ class AuthenticatedClient(PublicClient):
         # Limit order checks
         if order_type == 'limit':
             if kwargs.get('cancel_after') is not None and \
-                    kwargs.get('tif') != 'GTT':
+                    kwargs.get('time_in_force') != 'GTT':
                 raise ValueError('May only specify a cancel period when time '
                                  'in_force is `GTT`')
-            if kwargs.get('post_only') is not None and kwargs.get('tif') in \
+            if kwargs.get('post_only') is not None and kwargs.get('time_in_force') in \
                     ['IOC', 'FOK']:
                 raise ValueError('post_only is invalid when time in force is '
                                  '`IOC` or `FOK`')
