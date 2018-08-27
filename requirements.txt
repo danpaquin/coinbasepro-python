@@ -1,6 +1,8 @@
+coverage
+dateutils
+pymongo>=3.5.1
+pytest
+requests>=2.13.0
+six>=1.10.0
 sortedcontainers>=1.5.9
-requests==2.13.0
-six==1.10.0
-websocket-client==0.40.0
-pymongo==3.5.1
-pytest>=3.3.0
+websocket-client>=0.40.0
