@@ -21,13 +21,12 @@ class TestAuthenticatedClientSyntax(object):
     def test_place_order_input_2(self, dc):
         with pytest.raises(ValueError):
             r = dc.place_order('BTC-USD', 'buy', 'limit',
-                               cancel_after='123', tif='ABC')
+                               cancel_after='123', time_in_force='ABC')
 
-    @pytest.mark.skip("Needs fixing")
     def test_place_order_input_3(self, dc):
         with pytest.raises(ValueError):
             r = dc.place_order('BTC-USD', 'buy', 'limit',
-                               post_only='true', tif='FOK')
+                               post_only='true', time_in_force='FOK')
 
     def test_place_order_input_4(self, dc):
         with pytest.raises(ValueError):
