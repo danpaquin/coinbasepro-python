@@ -21,12 +21,12 @@ class TestAuthenticatedClientSyntax(object):
     def test_place_order_input_2(self, dc):
         with pytest.raises(ValueError):
             r = dc.place_order('BTC-USD', 'buy', 'limit',
-                               cancel_after='123', tif='ABC')
+                               cancel_after='123', time_in_force='ABC')
 
     def test_place_order_input_3(self, dc):
         with pytest.raises(ValueError):
             r = dc.place_order('BTC-USD', 'buy', 'limit',
-                               post_only='true', tif='FOK')
+                               post_only='true', time_in_force='FOK')
 
     def test_place_order_input_4(self, dc):
         with pytest.raises(ValueError):
@@ -43,7 +43,7 @@ class TestAuthenticatedClientSyntax(object):
 def client():
     """Client that connects to sandbox API. Relies on authentication information
     provided in api_config.json"""
-    with open('api_config.json') as file:
+    with open('api_config.json.example') as file:
         api_config = json.load(file)
     c = AuthenticatedClient(
         api_url='https://api-public.sandbox.pro.coinbase.com', **api_config)
@@ -68,6 +68,7 @@ def client():
 
 
 @pytest.mark.usefixtures('dc')
+@pytest.mark.skip(reason="these test require authentication")
 class TestAuthenticatedClient(object):
     """Test the authenticated client by validating basic behavior from the
     sandbox exchange."""
