@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/danpaquin/coinbasepro-python.svg?branch=master)](https://travis-ci.org/danpaquin/coinbasepro-python)
+
 # coinbasepro-python
 The Python client for the [Coinbase Pro API](https://docs.pro.coinbase.com/) (formerly known as
 the GDAX)
