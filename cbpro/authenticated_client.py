@@ -867,7 +867,7 @@ class AuthenticatedClient(PublicClient):
         params = {'amount': amount,
                   'currency': currency,
                   'coinbase_account_id': coinbase_account_id}
-        return self._send_message('post', '/withdrawals/coinbase',
+        return self._send_message('post', '/withdrawals/coinbase-account',
                                   data=json.dumps(params))
 
     def crypto_withdraw(self, amount, currency, crypto_address):
