@@ -2,10 +2,13 @@ sudo: false
 language: python
 # cache package wheels (1 cache per python version)
 cache: pip
-python: 3.5
+python: 
+  - "2.7"
+  - "3.5"
+  - "3.6"
 
 install:
-  - pip install -r requirements-dev.txt
+  - pip install tox-travis
 
 script:
-  - python -m pytest tests/
+  - tox

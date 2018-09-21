@@ -13,3 +13,4 @@ cbpro/__pycache__/
 .coverage
 tests/__pycache__/
 .pytest_cache
+.tox/
