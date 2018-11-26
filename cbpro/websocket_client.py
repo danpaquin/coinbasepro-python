@@ -44,6 +44,7 @@ class WebsocketClient(object):
         self.stop = False
         self.on_open()
         self.thread = Thread(target=_go)
+        self.keepalive = Thread(target=self._keepalive)
         self.thread.start()
 
     def _connect(self):
@@ -73,14 +74,15 @@ class WebsocketClient(object):
 
         self.ws.send(json.dumps(sub_params))
 
+    def _keepalive(self, interval=30):
+        while self.ws.connected:
+            self.ws.ping("keepalive")
+            time.sleep(interval)
+
     def _listen(self):
+        self.keepalive.start()
         while not self.stop:
             try:
-                start_t = 0
-                if time.time() - start_t >= 30:
-                    # Set a 30 second ping to keep connection alive
-                    self.ws.ping("keepalive")
-                    start_t = time.time()
                 data = self.ws.recv()
                 msg = json.loads(data)
             except ValueError as e:
@@ -96,11 +98,14 @@ class WebsocketClient(object):
                 self.ws.close()
         except WebSocketConnectionClosedException as e:
             pass
+        finally:
+            self.keepalive.join()
 
         self.on_close()
 
     def close(self):
-        self.stop = True
+        self.stop = True   # will only disconnect after next msg recv
+        self._disconnect() # force disconnect so threads can join
         self.thread.join()
 
     def on_open(self):
