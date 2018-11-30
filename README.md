@@ -354,7 +354,6 @@ time.sleep(10)
 order_book.close()
 ```
 
-<<<<<<< HEAD
 ### Testing
 Unit tests are under development using the pytest framework. Contributions are 
 welcome!
@@ -365,37 +364,32 @@ directory run:
 python -m pytest
 ```
 
-## Change Log
-*1.1.2* **Current PyPI release**
-- Refactor project for Coinbase Pro
-- Major overhaul on how pagination is handled
-
-*1.0*
-=======
 ### Error Handling
 Error handling has been added in version 2.0. Currently, the only HTTP error codes that
 are handled are the ones documented on the GDAX API error section: [here](https://docs.gdax.com/?python#errors)
 
-- HTTP STATUS CODE 400: Raises InvalidGdaxRequest
-- HTTP STATUS CODE 401: Raises UnauthorizedGdaxRequest
-- HTTP STATUS CODE 403: Raises ForbiddenGdaxRequest
-- HTTP STATUS CODE 404: Raises NotFoundGdaxRequest
-- HTTP STATUS CODE 429: Raises GdaxRateLimitRequest
-- HTTP STATUS CODE 4XX: Raises UnknownGdaxClientRequest
-- HTTP STATUS CODE 5XX: Raises InternalErrorGdaxRequest
+- HTTP STATUS CODE 400: Raises InvalidCbproRequest
+- HTTP STATUS CODE 401: Raises UnauthorizedCbproRequest
+- HTTP STATUS CODE 403: Raises ForbiddenCbproRequest
+- HTTP STATUS CODE 404: Raises NotFoundCbproRequest
+- HTTP STATUS CODE 429: Raises CbproRateLimitRequest
+- HTTP STATUS CODE 4XX: Raises UnknownCbproClientRequest
+- HTTP STATUS CODE 5XX: Raises InternalErrorCbproRequest
 
 All HTTP requests from both the public client and authenticated client run through `_determine_response`, which
 either returns the JSON body or raises the appropriate error.
 
-Please consider creating new Exception classes and mapping as Gdax error states are discovered.
-
+Please consider creating new Exception classes and mapping as Cbpro error states are discovered.
 
 ## Change Log
 *2.0*
 - Added error handling to all HTTP requests [Error Handling Docs](#error-handling)
 
-*1.0* **Current PyPI release**
->>>>>>> Added README info, added self to contributors, bumped version
+*1.1.2* **Current PyPI release**
+- Refactor project for Coinbase Pro
+- Major overhaul on how pagination is handled
+
+*1.0*
 - The first release that is not backwards compatible
 - Refactored to follow PEP 8 Standards
 - Improved Documentation
