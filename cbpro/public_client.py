@@ -33,16 +33,25 @@ class PublicClient(object):
         """Get a list of available currency pairs for trading.
 
         Returns:
-            list: Info about all currency pairs. Example::
+            list: Info about all currency pairs. Example of single item::
                 [
                     {
                         "id": "BTC-USD",
-                        "display_name": "BTC/USD",
                         "base_currency": "BTC",
                         "quote_currency": "USD",
-                        "base_min_size": "0.01",
-                        "base_max_size": "10000.00",
+                        "base_min_size": "0.001",
+                        "base_max_size": "70",
                         "quote_increment": "0.01"
+                        "display_name": "BTC/USD",
+                        "status": "online",
+                        "margin_enabled": False,
+                        "status_message": None,
+                        "min_market_funds": "10",
+                        "max_market_funds": "1000000",
+                        "post_only": False,
+                        "limit_only": False,
+                        "cancel_only": False,
+                        "accessible": False
                     }
                 ]
 
