@@ -173,7 +173,7 @@ class AuthenticatedClient(PublicClient):
         endpoint = '/accounts/{}/holds'.format(account_id)
         return self._send_paginated_message(endpoint, params=kwargs)
 
-    def place_order(self, product_id, side, order_type, **kwargs):
+    def place_order(self, product_id, side, order_type=None, **kwargs):
         """ Place an order.
 
         The three order types (limit, market, and stop) can be placed using this
@@ -183,7 +183,7 @@ class AuthenticatedClient(PublicClient):
         Args:
             product_id (str): Product to order (eg. 'BTC-USD')
             side (str): Order side ('buy' or 'sell)
-            order_type (str): Order type ('limit', 'market', or 'stop')
+            order_type (str): Order type ('limit', or 'market')
             **client_oid (str): Order ID selected by you to identify your order.
                 This should be a UUID, which will be broadcast in the public
                 feed for `received` messages.
@@ -243,7 +243,7 @@ class AuthenticatedClient(PublicClient):
                                  '`IOC` or `FOK`')
 
         # Market and stop order checks
-        if order_type == 'market' or order_type == 'stop':
+        if order_type == 'market' or kwargs.get('stop'):
             if not (kwargs.get('size') is None) ^ (kwargs.get('funds') is None):
                 raise ValueError('Either `size` or `funds` must be specified '
                                  'for market/stop orders (but not both).')
@@ -392,7 +392,7 @@ class AuthenticatedClient(PublicClient):
 
         return self.place_order(**params)
 
-    def place_stop_order(self, product_id, side, price, size=None, funds=None,
+    def place_stop_order(self, product_id, side, stop_type, price, size=None, funds=None,
                          client_oid=None,
                          stp=None,
                          overdraft_enabled=None,
@@ -402,6 +402,9 @@ class AuthenticatedClient(PublicClient):
         Args:
             product_id (str): Product to order (eg. 'BTC-USD')
             side (str): Order side ('buy' or 'sell)
+            stop_type(str): Stop type ('entry' or 'loss')
+                      loss: Triggers when the last trade price changes to a value at or below the stop_price.
+                      entry: Triggers when the last trade price changes to a value at or above the stop_price
             price (Decimal): Desired price at which the stop order triggers.
             size (Optional[Decimal]): Desired amount in crypto. Specify this or
                 `funds`.
@@ -421,10 +424,16 @@ class AuthenticatedClient(PublicClient):
             dict: Order details. See `place_order` for example.
 
         """
+
+        if (side == 'buy' and stop_type == 'loss') or (side == 'sell' and stop_type == 'entry'):
+            raise ValueError(f'Invalid stop order, combination of {side} and {stop_type} is not possible')
+
         params = {'product_id': product_id,
                   'side': side,
                   'price': price,
-                  'order_type': 'stop',
+                  'order_type': None,
+                  'stop': stop_type,
+                  'stop_price': price,
                   'size': size,
                   'funds': funds,
                   'client_oid': client_oid,
