@@ -68,7 +68,7 @@ def client():
 
 
 @pytest.mark.usefixtures('dc')
-@pytest.mark.skip(reason="these test require authentication")
+#@pytest.mark.skip(reason="these test require authentication")
 class TestAuthenticatedClient(object):
     """Test the authenticated client by validating basic behavior from the
     sandbox exchange."""
@@ -132,9 +132,9 @@ class TestAuthenticatedClient(object):
 
     def test_place_stop_order(self, client):
         client.cancel_all()
-        r = client.place_stop_order('BTC-USD', 'buy', 1, 0.01)
+        r = client.place_stop_order('BTC-USD', 'buy', 1000.1, 1000.2, 0.01)
         assert type(r) is dict
-        assert r['type'] == 'stop'
+        assert r['stop'] == 'entry'
         client.cancel_order(r['id'])
 
     def test_cancel_order(self, client):
@@ -172,8 +172,9 @@ class TestAuthenticatedClient(object):
         r = client.repay_funding(2.1, 'USD')
 
     def test_get_position(self, client):
-        r = client.get_position()
-        assert 'accounts' in r
+        r = client.get_coinbase_accounts()
+        assert type(r) is list
+        assert "currency" in r[0]
 
     def test_get_payment_methods(self, client):
         r = client.get_payment_methods()

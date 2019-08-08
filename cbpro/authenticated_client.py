@@ -392,7 +392,7 @@ class AuthenticatedClient(PublicClient):
 
         return self.place_order(**params)
 
-    def place_stop_order(self, product_id, side, price, size=None, funds=None,
+    def place_stop_order(self, product_id, side, price, stop_price, size=None, funds=None,
                          client_oid=None,
                          stp=None,
                          overdraft_enabled=None,
@@ -402,7 +402,8 @@ class AuthenticatedClient(PublicClient):
         Args:
             product_id (str): Product to order (eg. 'BTC-USD')
             side (str): Order side ('buy' or 'sell)
-            price (Decimal): Desired price at which the stop order triggers.
+            price (Decimal): Limit price for the stop order
+            stop_price (Decimal): Desired price at which the stop order triggers.
             size (Optional[Decimal]): Desired amount in crypto. Specify this or
                 `funds`.
             funds (Optional[Decimal]): Desired amount of quote currency to use.
@@ -423,8 +424,10 @@ class AuthenticatedClient(PublicClient):
         """
         params = {'product_id': product_id,
                   'side': side,
+                  'stop': 'entry',
+                  'stop_price': stop_price,
+                  'order_type': 'limit',
                   'price': price,
-                  'order_type': 'stop',
                   'size': size,
                   'funds': funds,
                   'client_oid': client_oid,
@@ -732,15 +735,6 @@ class AuthenticatedClient(PublicClient):
                   'amount': amount}
         return self._send_message('post', '/profiles/margin-transfer',
                                   data=json.dumps(params))
-
-    def get_position(self):
-        """ Get An overview of your margin profile.
-
-        Returns:
-            dict: Details about funding, accounts, and margin call.
-
-        """
-        return self._send_message('get', '/position')
 
     def close_position(self, repay_only):
         """ Close position.
