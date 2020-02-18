@@ -126,7 +126,7 @@ class AuthenticatedClient(PublicClient):
                 ]
         """
         endpoint = '/accounts/{}/ledger'.format(account_id)
-        return self._send_paginated_message(endpoint, params=kwargs)
+        return self._send_paginated_message(endpoint, params=kwargs, sleep_interval=.2)
 
     def get_account_holds(self, account_id, **kwargs):
         """ Get holds on an account.
@@ -171,7 +171,7 @@ class AuthenticatedClient(PublicClient):
 
         """
         endpoint = '/accounts/{}/holds'.format(account_id)
-        return self._send_paginated_message(endpoint, params=kwargs)
+        return self._send_paginated_message(endpoint, params=kwargs, sleep_interval=.2)
 
     def place_order(self, product_id, side, order_type, **kwargs):
         """ Place an order.
@@ -579,7 +579,7 @@ class AuthenticatedClient(PublicClient):
             params['product_id'] = product_id
         if status is not None:
             params['status'] = status
-        return self._send_paginated_message('/orders', params=params)
+        return self._send_paginated_message('/orders', params=params, sleep_interval=.2)
 
     def get_fills(self, product_id=None, order_id=None, **kwargs):
         """ Get a list of recent fills.
@@ -637,7 +637,7 @@ class AuthenticatedClient(PublicClient):
             params['order_id'] = order_id
         params.update(kwargs)
 
-        return self._send_paginated_message('/fills', params=params)
+        return self._send_paginated_message('/fills', params=params, sleep_interval=.2)
 
     def get_fundings(self, status=None, **kwargs):
         """ Every order placed with a margin profile that draws funding
@@ -676,7 +676,7 @@ class AuthenticatedClient(PublicClient):
         if status is not None:
             params['status'] = status
         params.update(kwargs)
-        return self._send_paginated_message('/funding', params=params)
+        return self._send_paginated_message('/funding', params=params, sleep_interval=.2)
 
     def repay_funding(self, amount, currency):
         """ Repay funding. Repays the older funding records first.
