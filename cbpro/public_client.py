@@ -300,13 +300,14 @@ class PublicClient(object):
             results = r.json()
             for result in results:
                 yield result
-                time.sleep(sleep_interval)
             # If there are no more pages, we're done. Otherwise update `after`
             # param to get next page.
             # If this request included `before` don't get any more pages - the
             # cbpro API doesn't support multiple pages in that case.
             if not r.headers.get('cb-after') or \
                     params.get('before') is not None:
+                time.sleep(sleep_interval)
                 break
             else:
                 params['after'] = r.headers['cb-after']
+                time.sleep(sleep_interval)
