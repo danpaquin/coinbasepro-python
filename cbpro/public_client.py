@@ -5,7 +5,7 @@
 # For public requests to the Coinbase exchange
 
 import requests
-
+import time
 
 class PublicClient(object):
     """cbpro public client API.
@@ -269,7 +269,7 @@ class PublicClient(object):
                                  auth=self.auth, timeout=30)
         return r.json()
 
-    def _send_paginated_message(self, endpoint, params=None):
+    def _send_paginated_message(self, endpoint, params=None, sleep_interval = .34):
         """ Send API message that results in a paginated response.
 
         The paginated responses are abstracted away by making API requests on
@@ -300,6 +300,7 @@ class PublicClient(object):
             results = r.json()
             for result in results:
                 yield result
+                time.sleep(sleep_interval)
             # If there are no more pages, we're done. Otherwise update `after`
             # param to get next page.
             # If this request included `before` don't get any more pages - the
