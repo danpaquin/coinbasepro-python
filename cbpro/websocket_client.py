@@ -70,7 +70,8 @@ class WebsocketClient(object):
             self.url = self.url[:-1]
 
         if self.channels is None:
-            sub_params = {'type': 'subscribe', 'product_ids': self.products}
+            self.channels = [{"name": "ticker", "product_ids": [product_id for product_id in self.products]}]
+            sub_params = {'type': 'subscribe', 'product_ids': self.products, 'channels': self.channels}
         else:
             sub_params = {'type': 'subscribe', 'product_ids': self.products, 'channels': self.channels}
 
