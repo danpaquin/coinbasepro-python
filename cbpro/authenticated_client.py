@@ -995,3 +995,16 @@ class AuthenticatedClient(PublicClient):
 
         """
         return self._send_message('get', '/users/self/trailing-volume')
+
+    def get_fees(self):
+        """ Get your maker & taker fee rates and 30-day trailing volume.
+
+        Returns:
+            dict: Fee information and USD volume::
+                {
+                    "maker_fee_rate": "0.0015",
+                    "taker_fee_rate": "0.0025",
+                    "usd_volume": "25000.00"
+                }
+        """
+        return self._send_message('get', '/fees')

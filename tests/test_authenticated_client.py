@@ -186,3 +186,7 @@ class TestAuthenticatedClient(object):
     def test_get_trailing_volume(self, client):
         r = client.get_trailing_volume()
         assert type(r) is list
+
+    def test_get_fees(self, client):
+        r = client.get_fees()
+        assert type(r) is dict
