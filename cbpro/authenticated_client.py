@@ -173,6 +173,33 @@ class AuthenticatedClient(PublicClient):
         endpoint = '/accounts/{}/holds'.format(account_id)
         return self._send_paginated_message(endpoint, params=kwargs)
 
+
+    def convert_stablecoin(self, amount, from_currency, to_currency):
+        """ Convert stablecoin.
+
+            Args:
+                amount (Decimal): The amount to convert.
+                from_currency (str): Currency type (eg. 'USDC')
+                to_currency (str): Currency type (eg. 'USD').
+
+            Returns:
+                dict: Conversion details. Example::
+                    {
+                        "id": "8942caee-f9d5-4600-a894-4811268545db",
+                        "amount": "10000.00",
+                        "from_account_id": "7849cc79-8b01-4793-9345-bc6b5f08acce",
+                        "to_account_id": "105c3e58-0898-4106-8283-dc5781cda07b",
+                        "from": "USD",
+                        "to": "USDC"
+                    }
+
+            """
+        params = {'from': from_currency,
+                  'to': to_currency,
+                  'amount': amount}
+        return self._send_message('post', '/conversions', data=json.dumps(params))
+
+
     def place_order(self, product_id, side, order_type=None, **kwargs):
         """ Place an order.
 
