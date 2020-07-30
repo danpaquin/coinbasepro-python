@@ -7,7 +7,8 @@ import pickle
 import sys
 import time
 
-from cbpro import OrderBook, CancellationEntry
+from cbpro.order_book import OrderBook
+from cbpro.cancellation_entry import CancellationEntry
 
 
 class OrderLogger(OrderBook):
