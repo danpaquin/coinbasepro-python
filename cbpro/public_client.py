@@ -269,7 +269,7 @@ class PublicClient(object):
                                  auth=self.auth, timeout=30)
         return r.json()
 
-    def _send_paginated_message(self, endpoint, params=None, sleep_interval = .34):
+    def _send_paginated_message(self, endpoint, params=None, **kwargs):
         """ Send API message that results in a paginated response.
 
         The paginated responses are abstracted away by making API requests on
@@ -287,6 +287,7 @@ class PublicClient(object):
         Args:
             endpoint (str): Endpoint (to be added to base URL)
             params (Optional[dict]): HTTP request parameters
+            sleep_interval (Optional[float]): Number of seconds to sleep between paginated calls
 
         Yields:
             dict: API response objects
@@ -306,8 +307,11 @@ class PublicClient(object):
             # cbpro API doesn't support multiple pages in that case.
             if not r.headers.get('cb-after') or \
                     params.get('before') is not None:
-                time.sleep(sleep_interval)
+                #If a sleep_interval was sent, use it
+                if "sleep_interval" in kwargs.keys():
+                    time.sleep(sleep_interval)
                 break
             else:
                 params['after'] = r.headers['cb-after']
-                time.sleep(sleep_interval)
+                if "sleep_interval" in kwargs.keys():
+                    time.sleep(sleep_interval)
