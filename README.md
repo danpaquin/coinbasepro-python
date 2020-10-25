@@ -107,7 +107,7 @@ public_client.get_time()
 Not all API endpoints are available to everyone.
 Those requiring user authentication can be reached using `AuthenticatedClient`.
 You must setup API access within your
-[account settings](https://pro.coinbase.com/settings/api).
+[account settings](https://pro.coinbase.com/profile/api).
 The `AuthenticatedClient` inherits all methods from the `PublicClient`
 class, so you will only need to initialize one if you are planning to
 integrate both into your script.
@@ -271,7 +271,7 @@ wsClient.close()
 #### Subscribe to multiple products
 ```python
 import cbpro
-# Paramaters are optional
+# Parameters are optional
 wsClient = cbpro.WebsocketClient(url="wss://ws-feed.pro.coinbase.com",
                                 products=["BTC-USD", "ETH-USD"],
                                 channels=["ticker"])
