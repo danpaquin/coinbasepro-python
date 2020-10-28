@@ -173,6 +173,45 @@ class AuthenticatedClient(PublicClient):
         endpoint = '/accounts/{}/holds'.format(account_id)
         return self._send_paginated_message(endpoint, params=kwargs)
 
+    def get_profiles(self, **kwargs):
+        """List Profiles
+        
+        List all account profiles (also known as portfolios).
+        
+        Returns:
+        [
+            {
+                "id": "86602c68-306a-4500-ac73-4ce56a91d83c",
+                "user_id": "5844eceecf7e803e259d0365",
+                "name": "default",
+                "active": true,
+                "is_default": true,
+                "created_at": "2019-11-18T15:08:40.236309Z"
+            }
+        ]
+        """
+        return self._send_message('get', '/profiles')
+    
+    def get_profile(self, profile_id, **kwargs):
+        """Get a Profile
+        
+        Get a single profile by profile id.
+        
+        Args:
+        profile_id(str): The profile id to get
+        
+        Returns:
+        {
+            "id": "86602c68-306a-4500-ac73-4ce56a91d83c",
+            "user_id": "5844eceecf7e803e259d0365",
+            "name": "default",
+            "active": true,
+            "is_default": true,
+            "created_at": "2019-11-18T15:08:40.236309Z"
+        }
+        """
+        return self._send_message('get', '/profile/' + profile_id)
+    
     def place_order(self, product_id, side, order_type, **kwargs):
         """ Place an order.
 
