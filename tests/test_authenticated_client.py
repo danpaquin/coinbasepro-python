@@ -136,7 +136,7 @@ class TestAuthenticatedClient(object):
         r = client.place_stop_order('BTC-USD', side, stop_type, 100, 0.01)
         assert type(r) is dict
         assert r['stop'] == stop_type
-        assert r['stop_price'] == '100.00000000'
+        assert r['stop_price'] == '100'
         assert r['type'] == 'limit'
         client.cancel_order(r['id'])
 
