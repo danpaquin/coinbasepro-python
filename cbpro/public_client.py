@@ -4,7 +4,9 @@
 #
 # For public requests to the Coinbase exchange
 
+from http import HTTPStatus
 import requests
+from cbpro import exceptions
 
 
 class PublicClient(object):
@@ -28,6 +30,54 @@ class PublicClient(object):
         self.url = api_url.rstrip('/')
         self.auth = None
         self.session = requests.Session()
+        self.timeout = timeout
+
+    def _is_http_success(self, code):
+        # type: (int) -> bool
+        return code >= HTTPStatus.OK and code < HTTPStatus.MULTIPLE_CHOICES
+
+    def _is_http_client_error(self, code):
+        # type: (int) -> bool
+        return code >= HTTPStatus.BAD_REQUEST and code < HTTPStatus.INTERNAL_SERVER_ERROR
+
+    def _is_http_server_error(self, code):
+        # type: (int) -> bool
+        return code >= HTTPStatus.INTERNAL_SERVER_ERROR
+
+    def _determine_response(self, response):
+        """
+        Determines if CBPRO response is success or error
+        If success, returns response json
+        If error, raises appropriate CbproException
+        """
+        if self._is_http_success(response.status_code):
+            return response.json()
+        elif self._is_http_client_error(response.status_code):
+            body = response.json()
+            message = body.get('message')
+            if response.status_code == HTTPStatus.BAD_REQUEST:
+                raise exceptions.InvalidCbproRequest(message,
+                                                    HTTPStatus.BAD_REQUEST)
+            elif response.status_code == HTTPStatus.UNAUTHORIZED:
+                raise exceptions.UnauthorizedCbproRequest(message,
+                                                         HTTPStatus.UNAUTHORIZED)
+            elif response.status_code == HTTPStatus.FORBIDDEN:
+                raise exceptions.ForbiddenCbproRequest(message,
+                                                      HTTPStatus.FORBIDDEN)
+            elif response.status_code == HTTPStatus.NOT_FOUND:
+                raise exceptions.NotFoundCbproRequest(message,
+                                                     HTTPStatus.NOT_FOUND)
+            elif response.status_code == HTTPStatus.TOO_MANY_REQUESTS:
+                raise exceptions.CbproRateLimitRequest(message,
+                                                      HTTPStatus.TOO_MANY_REQUESTS)
+            else:  # Other 4XX response not yet mapped
+                raise exceptions.UnknownCbproClientRequest(message,
+                                                          response.status_code)
+
+        elif self._is_http_server_error(response.status_code):
+            body = response.json()
+            raise exceptions.InternalErrorCbproRequest(body.get('message'),
+                                                      HTTPStatus.INTERNAL_SERVER_ERROR)
 
     def get_products(self):
         """Get a list of available currency pairs for trading.
@@ -267,7 +317,7 @@ class PublicClient(object):
         url = self.url + endpoint
         r = self.session.request(method, url, params=params, data=data,
                                  auth=self.auth, timeout=30)
-        return r.json()
+        return self._determine_response(r)
 
     def _send_paginated_message(self, endpoint, params=None):
         """ Send API message that results in a paginated response.
@@ -297,7 +347,7 @@ class PublicClient(object):
         url = self.url + endpoint
         while True:
             r = self.session.get(url, params=params, auth=self.auth, timeout=30)
-            results = r.json()
+            results = self._determine_response(r) 
             for result in results:
                 yield result
             # If there are no more pages, we're done. Otherwise update `after`

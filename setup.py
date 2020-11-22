@@ -20,7 +20,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='cbpro',
-    version='1.1.4',
+    version='2.0.0',
     author='Daniel Paquin',
     author_email='dpaq34@gmail.com',
     license='MIT',
