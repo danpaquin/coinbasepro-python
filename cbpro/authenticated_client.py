@@ -392,7 +392,7 @@ class AuthenticatedClient(PublicClient):
 
         return self.place_order(**params)
 
-    def place_stop_order(self, product_id, side, stop_type, price, size=None, funds=None,
+    def place_stop_order(self, product_id, stop_type, price, size=None, funds=None,
                          client_oid=None,
                          stp=None,
                          overdraft_enabled=None,
@@ -401,7 +401,6 @@ class AuthenticatedClient(PublicClient):
 
         Args:
             product_id (str): Product to order (eg. 'BTC-USD')
-            side (str): Order side ('buy' or 'sell)
             stop_type(str): Stop type ('entry' or 'loss')
                       loss: Triggers when the last trade price changes to a value at or below the stop_price.
                       entry: Triggers when the last trade price changes to a value at or above the stop_price
@@ -425,8 +424,12 @@ class AuthenticatedClient(PublicClient):
 
         """
 
-        if (side == 'buy' and stop_type == 'loss') or (side == 'sell' and stop_type == 'entry'):
-            raise ValueError(f'Invalid stop order, combination of {side} and {stop_type} is not possible')
+        if stop_type == 'loss':
+            side = 'sell'
+        elif stop_type == 'entry':
+            side = 'buy'
+        else:
+            raise ValueError(f'Invalid stop_type for stop order: {stop_type}')
 
         params = {'product_id': product_id,
                   'side': side,
