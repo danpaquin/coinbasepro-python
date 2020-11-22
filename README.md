@@ -201,7 +201,7 @@ auth_client.place_market_order(product_id='BTC-USD',
 ```python
 # Stop order. `funds` can be used instead of `size` here.
 auth_client.place_stop_order(product_id='BTC-USD', 
-                              side='buy', 
+                              stop_type='loss', 
                               price='200.00', 
                               size='0.01')
 ```
