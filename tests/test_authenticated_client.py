@@ -107,6 +107,14 @@ class TestAuthenticatedClient(object):
         assert 'type' in r[0]
         assert 'ref' in r[0]
 
+    def test_convert_stablecoin(self, client):
+        r = client.convert_stablecoin('10.0', 'USD', 'USDC')
+        assert type(r) is dict
+        assert 'id' in r
+        assert r['amount'] == '10.00000000'
+        assert r['from'] == 'USD'
+        assert r['to'] == 'USDC'
+
     def test_place_order(self, client):
         r = client.place_order('BTC-USD', 'buy', 'limit',
                                price=0.62, size=0.0144)
