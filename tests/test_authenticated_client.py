@@ -130,10 +130,10 @@ class TestAuthenticatedClient(object):
         r = client.place_market_order('BTC-USD', 'buy', funds=100000)
         assert type(r) is dict
 
-    @pytest.mark.parametrize('stop_type, side', [('entry', 'buy'), ('loss', 'sell')])
-    def test_place_stop_order(self, client, stop_type, side):
+    @pytest.mark.parametrize('stop_type', ['entry', 'loss'])
+    def test_place_stop_order(self, client, stop_type):
         client.cancel_all()
-        r = client.place_stop_order('BTC-USD', side, stop_type, 100, 0.01)
+        r = client.place_stop_order('BTC-USD', stop_type, 100, 0.01)
         assert type(r) is dict
         assert r['stop'] == stop_type
         assert r['stop_price'] == '100'
@@ -143,7 +143,7 @@ class TestAuthenticatedClient(object):
     def test_place_invalid_stop_order(self, client):
         client.cancel_all()
         with pytest.raises(ValueError):
-            client.place_stop_order('BTC-USD', 'buy', 'loss', 5.65, 0.01)
+            client.place_stop_order('BTC-USD', 'fake_stop_type', 5.65, 0.01)
 
     def test_cancel_order(self, client):
         r = client.place_limit_order('BTC-USD', 'buy', 4.43, 0.01232)
