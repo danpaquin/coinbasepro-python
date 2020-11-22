@@ -456,7 +456,7 @@ class AuthenticatedClient(PublicClient):
         elif stop_type == 'entry':
             side = 'buy'
         else:
-            raise ValueError(f'Invalid stop_type for stop order: {stop_type}')
+            raise ValueError('Invalid stop_type for stop order: ' + stop_type)
 
         params = {'product_id': product_id,
                   'side': side,
