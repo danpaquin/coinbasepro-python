@@ -296,7 +296,7 @@ BTC_collection = db.BTC_collection
 
 # instantiate a WebsocketClient instance, with a Mongo collection as a parameter
 wsClient = cbpro.WebsocketClient(url="wss://ws-feed.pro.coinbase.com", products="BTC-USD",
-    mongo_collection=BTC_collection, should_print=False)
+    channels=["ticker"], mongo_collection=BTC_collection, should_print=False)
 wsClient.start()
 ```
 
