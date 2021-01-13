@@ -309,7 +309,7 @@ class PublicClient(object):
                         print("Sleeping", flush=True)
                         time.sleep(kwargs["sleep_interval"])
                     if result != "":
-                        yield result
+                        yield str(result)
                 # If there are no more pages, we're done. Otherwise update `after`
                 # param to get next page.
                 # If this request included `before` don't get any more pages - the
