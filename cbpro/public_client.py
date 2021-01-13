@@ -310,7 +310,7 @@ class PublicClient(object):
                 if result != "":
                     yield result
                 else:
-                    yield ""
+                    yield "{'end':1}"
             # If there are no more pages, we're done. Otherwise update `after`
             # param to get next page.
             # If this request included `before` don't get any more pages - the
