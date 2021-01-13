@@ -6,6 +6,9 @@
 
 import requests
 import time
+import sys
+import traceback
+import ast
 
 class PublicClient(object):
     """cbpro public client API.
@@ -296,22 +299,29 @@ class PublicClient(object):
         if params is None:
             params = dict()
         url = self.url + endpoint
+        
         while True:
-            r = self.session.get(url, params=params, auth=self.auth, timeout=30)
-            results = r.json()
-            for result in results:
-                yield result
-            # If there are no more pages, we're done. Otherwise update `after`
-            # param to get next page.
-            # If this request included `before` don't get any more pages - the
-            # cbpro API doesn't support multiple pages in that case.
-            if not r.headers.get('cb-after') or \
-                    params.get('before') is not None:
-                #If a sleep_interval was sent, use it
+            try:
+                r = self.session.get(url, params=params, auth=self.auth, timeout=30)
+                results = r.json()
+                for result in results:
+                    yield result
+                # If there are no more pages, we're done. Otherwise update `after`
+                # param to get next page.
+                # If this request included `before` don't get any more pages - the
+                # cbpro API doesn't support multiple pages in that case.
+                if not r.headers.get('cb-after') or \
+                        params.get('before') is not None:
+                    #If a sleep_interval was sent, use it
+                    if "sleep_interval" in kwargs.keys():
+                        time.sleep(sleep_interval)
+                    break
+                else:
+                    params['after'] = r.headers['cb-after']
+                    if "sleep_interval" in kwargs.keys():
+                        time.sleep(sleep_interval)
+             except ValueError:
                 if "sleep_interval" in kwargs.keys():
-                    time.sleep(sleep_interval)
-                break
-            else:
-                params['after'] = r.headers['cb-after']
-                if "sleep_interval" in kwargs.keys():
-                    time.sleep(sleep_interval)
+                        time.sleep(sleep_interval)
+                print(sys.exc_info(), flush=True)
+                continue
