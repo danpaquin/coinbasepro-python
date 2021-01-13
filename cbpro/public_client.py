@@ -308,9 +308,7 @@ class PublicClient(object):
                 time.sleep(kwargs["sleep_interval"])
             for result in results:
                 if result != "":
-                    yield result
-                else:
-                    yield "{'end':1}"
+                    yield (str)result
             # If there are no more pages, we're done. Otherwise update `after`
             # param to get next page.
             # If this request included `before` don't get any more pages - the
