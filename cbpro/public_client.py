@@ -315,13 +315,13 @@ class PublicClient(object):
                     params.get('before') is not None:
                 #If a sleep_interval was sent, use it
                 if "sleep_interval" in kwargs.keys():
-                    print("Sleeping")
+                    print("Sleeping", flush=True)
                     time.sleep(sleep_interval)
                 break
             else:
                 params['after'] = r.headers['cb-after']
                 if "sleep_interval" in kwargs.keys():
-                    print("Sleeping")
+                    print("Sleeping", flush=True)
                     time.sleep(sleep_interval)
         #except (ValueError, AttributeError):
         #    if "sleep_interval" in kwargs.keys():
