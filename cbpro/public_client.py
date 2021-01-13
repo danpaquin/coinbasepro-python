@@ -302,7 +302,7 @@ class PublicClient(object):
         
         while True:
             r = self.session.get(url, params=params, auth=self.auth, timeout=30)
-            results = str(r).json()
+            results = str(r.json())
             #The sleep interval keyword argument was sent.
             if "sleep_interval" in kwargs.keys():
                 time.sleep(kwargs["sleep_interval"])
