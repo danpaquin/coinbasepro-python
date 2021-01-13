@@ -305,7 +305,7 @@ class PublicClient(object):
             r = self.session.get(url, params=params, auth=self.auth, timeout=30)
             results = r.json()
             for result in results:
-                if result != []:
+                if result != "":
                     yield result
             # If there are no more pages, we're done. Otherwise update `after`
             # param to get next page.
