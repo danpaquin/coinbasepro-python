@@ -305,8 +305,9 @@ class PublicClient(object):
             r = self.session.get(url, params=params, auth=self.auth, timeout=30)
             results = r.json()
             for result in results:
-                print("Sleeping", flush=True)
-                time.sleep(sleep_interval)
+                if "sleep_interval" in kwargs.keys():
+                    print("Sleeping", flush=True)
+                    time.sleep(sleep_interval)
                 if result != "":
                     yield result
             # If there are no more pages, we're done. Otherwise update `after`
