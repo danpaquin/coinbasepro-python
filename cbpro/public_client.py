@@ -323,6 +323,7 @@ class PublicClient(object):
                         time.sleep(sleep_interval)
             except (ValueError, AttributeError):
                 if "sleep_interval" in kwargs.keys():
+                        print(result)
                         time.sleep(sleep_interval)
                 print(sys.exc_info(), flush=True)
                 continue
