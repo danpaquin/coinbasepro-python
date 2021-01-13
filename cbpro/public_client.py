@@ -302,13 +302,13 @@ class PublicClient(object):
         
         while True:
             r = self.session.get(url, params=params, auth=self.auth, timeout=30)
-            results = r.json()
+            results = str(r).json()
             #The sleep interval keyword argument was sent.
             if "sleep_interval" in kwargs.keys():
                 time.sleep(kwargs["sleep_interval"])
             for result in results:
                 if result != "":
-                    yield str(result)
+                    yield result
             # If there are no more pages, we're done. Otherwise update `after`
             # param to get next page.
             # If this request included `before` don't get any more pages - the
