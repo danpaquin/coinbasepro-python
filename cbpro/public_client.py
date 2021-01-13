@@ -304,8 +304,9 @@ class PublicClient(object):
             r = self.session.get(url, params=params, auth=self.auth, timeout=30)
             results = r.json()
             for result in results:
-#                if "sleep_interval" in kwargs.keys():
-#                    time.sleep(kwargs["sleep_interval"])
+                #The sleep interval keyword argument was sent.
+                if "sleep_interval" in kwargs.keys():
+                    time.sleep(kwargs["sleep_interval"])
                 if result != "":
                     yield str(result)
             # If there are no more pages, we're done. Otherwise update `after`
@@ -314,13 +315,6 @@ class PublicClient(object):
             # cbpro API doesn't support multiple pages in that case.
             if not r.headers.get('cb-after') or \
                     params.get('before') is not None:
-                #If a sleep_interval was sent, use it
-                if "sleep_interval" in kwargs.keys():
-                    print("Sleeping", flush=True)
-                    time.sleep(kwargs["sleep_interval"])
                 break
             else:
                 params['after'] = r.headers['cb-after']
-                if "sleep_interval" in kwargs.keys():
-                    print("Sleeping", flush=True)
-                    time.sleep(kwargs["sleep_interval"])
