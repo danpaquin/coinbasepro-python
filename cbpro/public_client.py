@@ -321,7 +321,7 @@ class PublicClient(object):
                     params['after'] = r.headers['cb-after']
                     if "sleep_interval" in kwargs.keys():
                         time.sleep(sleep_interval)
-             except (ValueError, AttributeError):
+            except (ValueError, AttributeError):
                 if "sleep_interval" in kwargs.keys():
                         time.sleep(sleep_interval)
                 print(sys.exc_info(), flush=True)
