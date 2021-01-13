@@ -307,7 +307,7 @@ class PublicClient(object):
             for result in results:
                 if "sleep_interval" in kwargs.keys():
                     print("Sleeping", flush=True)
-                    time.sleep(sleep_interval)
+                    time.sleep(kwargs["sleep_interval"])
                 if result != "":
                     yield result
             # If there are no more pages, we're done. Otherwise update `after`
@@ -319,13 +319,13 @@ class PublicClient(object):
                 #If a sleep_interval was sent, use it
                 if "sleep_interval" in kwargs.keys():
                     print("Sleeping", flush=True)
-                    time.sleep(sleep_interval)
+                    time.sleep(kwargs["sleep_interval"])
                 break
             else:
                 params['after'] = r.headers['cb-after']
                 if "sleep_interval" in kwargs.keys():
                     print("Sleeping", flush=True)
-                    time.sleep(sleep_interval)
+                    time.sleep(kwargs["sleep_interval"])
         #except (ValueError, AttributeError):
         #    if "sleep_interval" in kwargs.keys():
         #            print(result)
