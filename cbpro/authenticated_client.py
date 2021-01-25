@@ -36,7 +36,7 @@ class AuthenticatedClient(PublicClient):
             passphrase (str): Passphrase chosen when setting up key.
             api_url (Optional[str]): API URL. Defaults to cbpro API.
         """
-        super(AuthenticatedClient, self).__init__(api_url)
+        super().__init__(api_url)
         self.auth = CBProAuth(key, b64secret, passphrase)
         self.session = requests.Session()
 
