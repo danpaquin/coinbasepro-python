@@ -122,10 +122,9 @@ class PublicClient(object):
 
         Args:
              product_id (str): Product
-             before (Optional[str]): start time in ISO 8601
-             after (Optional[str]): end time in ISO 8601
-             limit (Optional[int]): the desired number of trades (can be more than 100,
-                          automatically paginated)
+             before (Optional[int]): Only get data that occurs more recently than this trade id
+             after (Optional[int]): Only get data that occurs later than trade id
+             limit (Optional[int]): Set amount of data per HTTP response. Default (and maximum) of 100.
              results (Optional[list]): list of results that is used for the pagination
         Returns:
              list: Latest trades. Example::
@@ -143,8 +142,16 @@ class PublicClient(object):
                      "side": "sell"
          }]
         """
+        params = {}
+        if before:
+            params['before'] = before
+        if after:
+            params['after'] = after
+        if limit:
+            params['limit'] = limit
         return self._send_paginated_message('/products/{}/trades'
-                                            .format(product_id))
+                                            .format(product_id),
+                                            params=params)
 
     def get_product_historic_rates(self, product_id, start=None, end=None,
                                    granularity=None):
