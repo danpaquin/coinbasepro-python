@@ -114,7 +114,7 @@ class PublicClient(object):
         return self._send_message('get',
                                   '/products/{}/ticker'.format(product_id))
 
-    def get_product_trades(self, product_id, before='', after='', limit=None, result=None):
+    def get_product_trades(self, product_id, **kwargs):
         """List the latest trades for a product.
 
         This method returns a generator which may make multiple HTTP requests
@@ -144,7 +144,7 @@ class PublicClient(object):
          }]
         """
         return self._send_paginated_message('/products/{}/trades'
-                                            .format(product_id))
+                                            .format(product_id), params=kwargs)
 
     def get_product_historic_rates(self, product_id, start=None, end=None,
                                    granularity=None):
