@@ -22,6 +22,10 @@ class TestPublicClient(object):
         r = client.get_products()
         assert type(r) is list
 
+    def test_get_single_product(self, client):
+        r = client.get_single_product("BTC-USD")
+        assert isinstance(r, dict)
+
     @pytest.mark.parametrize('level', [1, 2, 3, None])
     def test_get_product_order_book(self, client, level):
         r = client.get_product_order_book('BTC-USD', level=level)
