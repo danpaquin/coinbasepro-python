@@ -13,7 +13,7 @@ install_requires = [
 tests_require = [
     'pytest',
     'python-dateutil>=2.7.5',
-    ]
+]
 
 with open("README.md", "r") as fh:
     long_description = fh.read()

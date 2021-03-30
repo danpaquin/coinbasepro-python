@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "coinbasepro-python"
+version = "1.1.4"
+description = ""
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.6"
+sortedcontainers = "^2.0"
+requests = "^2.13.0"
+six = "^1.10.0"
+websocket-client = "^0.40.0"
+pymongo = "^3.5.1"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.2.2"
+python-dateutil = "^2.7.5"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
