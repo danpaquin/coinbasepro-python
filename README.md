@@ -261,7 +261,6 @@ If you would like to receive real-time market updates, you must subscribe to the
 ```python
 import cbpro
 
-# Parameters are optional
 wsClient = cbpro.WebsocketClient(url="wss://ws-feed.pro.coinbase.com",
                                 products="BTC-USD",
                                 channels=["ticker"])
@@ -272,7 +271,7 @@ wsClient.close()
 #### Subscribe to multiple products
 ```python
 import cbpro
-# Parameters are optional
+
 wsClient = cbpro.WebsocketClient(url="wss://ws-feed.pro.coinbase.com",
                                 products=["BTC-USD", "ETH-USD"],
                                 channels=["ticker"])
@@ -318,6 +317,7 @@ class myWebsocketClient(cbpro.WebsocketClient):
     def on_open(self):
         self.url = "wss://ws-feed.pro.coinbase.com/"
         self.products = ["LTC-USD"]
+        self.channels = ["ticker"]
         self.message_count = 0
         print("Lets count the messages!")
     def on_message(self, msg):
