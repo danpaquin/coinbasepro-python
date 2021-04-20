@@ -6,7 +6,7 @@ chardet==3.0.4
 idna==2.7
 more-itertools==4.3.0
 pluggy==0.8.0
-py==1.7.0
+py==1.10.0
 pymongo==3.7.2
 pytest==4.0.1
 python-dateutil==2.7.5
