@@ -14,8 +14,9 @@ class CBProAuth(AuthBase):
 
     def __call__(self, request):
         timestamp = str(time.time())
+        body = str(request.body) if request.body else ''
         message = ''.join([timestamp, request.method,
-                           request.path_url, (request.body or '')])
+                           request.path_url, body])
         request.headers.update(get_auth_headers(timestamp, message,
                                                 self.api_key,
                                                 self.secret_key,
