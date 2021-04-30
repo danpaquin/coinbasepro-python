@@ -40,6 +40,19 @@ class AuthenticatedClient(PublicClient):
         self.auth = CBProAuth(key, b64secret, passphrase)
         self.session = requests.Session()
 
+    def get_fees(self):
+        """ Get current maker and taker fees
+
+        Returns:
+            dict: Fees information. Example:
+                {
+                    'maker_fee_rate': '0.0015', 
+                    'taker_fee_rate': '0.0025', 
+                    'usd_volume': '62027.04'
+                }
+        """
+        return self._send_message('get', '/fees/')
+        
     def get_account(self, account_id):
         """ Get information for a single account.
 
