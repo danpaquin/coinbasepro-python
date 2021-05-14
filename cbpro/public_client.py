@@ -265,8 +265,12 @@ class PublicClient(object):
 
         """
         url = self.url + endpoint
+        if self.auth is not None and not all([
+            self.auth.api_key, self.auth.passphrase, self.auth.secret_key,
+        ]):
+            self.auth = None
         r = self.session.request(method, url, params=params, data=data,
-                                 timeout=30)
+                                 auth=self.auth, timeout=30)
         return r.json()
 
     def _send_paginated_message(self, endpoint, params=None):
@@ -295,8 +299,13 @@ class PublicClient(object):
         if params is None:
             params = dict()
         url = self.url + endpoint
+
+        if self.auth is not None and not all([
+            self.auth.api_key, self.auth.passphrase, self.auth.secret_key,
+        ]):
+             self.auth = None
         while True:
-            r = self.session.get(url, params=params, timeout=30)
+            r = self.session.get(url, params=params, auth=self.auth, timeout=30)
             results = r.json()
             for result in results:
                 yield result
