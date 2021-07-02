@@ -462,10 +462,10 @@ class AuthenticatedClient(PublicClient):
 
         params = {'product_id': product_id,
                   'side': side,
-                  'price': price,
+                  'price': price if limit_price is None else limit_price,
                   'order_type': None,
                   'stop': stop_type,
-                  'stop_price': price if limit_price is None else limit_price,
+                  'stop_price': price,
                   'size': size,
                   'funds': funds,
                   'client_oid': client_oid,
