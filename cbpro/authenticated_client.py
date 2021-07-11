@@ -1033,7 +1033,7 @@ class AuthenticatedClient(PublicClient):
                 ]
 
         """
-        return self._send_message('get', '/users/self/trailing-volume')
+        return self._send_message('get', '/fees')
 
     def get_fees(self):
         """ Get your maker & taker fee rates and 30-day trailing volume.
