@@ -174,7 +174,7 @@ class PublicClient(object):
             return arr
 
 
-        return self.get_product_historic_rates(product_id='BTC-USD',granularity=gran_d[granularity],start=start.isoformat(),end=end.isoformat())
+        return self.get_product_historic_rates(product_id=product_id,granularity=gran_d[granularity],start=start.isoformat(),end=end.isoformat())
     def get_product_historic_rates(self, product_id, start=None, end=None,
                                    granularity=None):
         """Historic rates for a product.
