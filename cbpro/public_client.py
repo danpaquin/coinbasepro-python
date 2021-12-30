@@ -48,6 +48,38 @@ class PublicClient(object):
 
         """
         return self._send_message('get', '/products')
+    
+    def get_product(self, product_id):
+        """Get a list of available currency pairs for trading.
+
+        Returns:
+            dict: Info about product. Example::
+             
+             {
+              "id": "MANA-USD",
+              "base_currency": "MANA",
+              "quote_currency": "USD",
+              "base_min_size": "0.32",
+              "base_max_size": "370000",
+              "quote_increment": "0.001",
+              "base_increment": "0.01",
+              "display_name": "MANA/USD",
+              "min_market_funds": "1",
+              "max_market_funds": "1200000",
+              "margin_enabled": false,
+              "fx_stablecoin": false,
+              "max_slippage_percentage": "0.03000000",
+              "post_only": false,
+              "limit_only": false,
+              "cancel_only": false,
+              "trading_disabled": false,
+              "status": "online",
+              "status_message": "",
+              "auction_mode": false
+            }
+
+        """
+        return self._send_message('get', '/products/{}'.format(product_id))
 
     def get_product_order_book(self, product_id, level=1):
         """Get a list of open orders for a product.
