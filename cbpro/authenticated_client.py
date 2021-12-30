@@ -172,6 +172,11 @@ class AuthenticatedClient(PublicClient):
         """
         endpoint = '/accounts/{}/holds'.format(account_id)
         return self._send_paginated_message(endpoint, params=kwargs)
+    
+    def get_profiles(self):
+        """ Get profiles for account
+        """
+        return self._send_message('get', '/profiles')
 
 
     def convert_stablecoin(self, amount, from_currency, to_currency):
