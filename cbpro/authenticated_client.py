@@ -624,6 +624,8 @@ class AuthenticatedClient(PublicClient):
             params['product_id'] = product_id
         if status is not None:
             params['status'] = status
+        if start_date is not None:
+            params['start_date'] = start_date            
         return self._send_paginated_message('/orders', params=params)
 
     def get_fills(self, product_id=None, order_id=None, **kwargs):
