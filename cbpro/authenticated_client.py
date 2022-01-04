@@ -561,7 +561,7 @@ class AuthenticatedClient(PublicClient):
         """
         return self._send_message('get', '/orders/' + order_id)
 
-    def get_orders(self, product_id=None, status=None, **kwargs):
+    def get_orders(self, product_id=None, status=None, start_date=None, **kwargs):
         """ List your current open orders.
 
         This method returns a generator which may make multiple HTTP requests
