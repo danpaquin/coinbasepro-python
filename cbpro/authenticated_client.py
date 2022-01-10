@@ -177,6 +177,21 @@ class AuthenticatedClient(PublicClient):
         """ Get profiles for account
         """
         return self._send_message('get', '/profiles')
+    
+    def get_active_profiles(self):
+        """ Get profiles for account
+        """
+        return self._send_message('get', '/profiles?active=true')
+    
+    def get_inactive_profiles(self):
+        """ Get profiles for account
+        """
+        return self._send_message('get', '/profiles?active=false')
+
+    def get_profile(self, profile_id):
+        """ Get specific profile for account
+        """
+        return self._send_message('get', '/profiles/{}'.format(profile_id))
 
 
     def convert_stablecoin(self, amount, from_currency, to_currency):
