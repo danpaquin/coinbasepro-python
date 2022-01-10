@@ -779,6 +779,16 @@ class AuthenticatedClient(PublicClient):
                   'amount': amount}
         return self._send_message('post', '/profiles/margin-transfer',
                                   data=json.dumps(params))
+    
+    def profile_transfer(self, from_profile_id, to_profile_id, currency, amount):
+        """ Transfer funds between profiles.
+
+        """
+        params = {'from': from_profile_id,
+                  'to': to_profile_id,
+                  'currency': currency,
+                  'amount': amount}
+        return self._send_message('post', '/profiles/transfer', data=json.dumps(params))
 
     def get_position(self):
         """ Get An overview of your margin profile.
