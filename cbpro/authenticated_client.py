@@ -349,7 +349,8 @@ class AuthenticatedClient(PublicClient):
                           cancel_after=None,
                           post_only=None,
                           overdraft_enabled=None,
-                          funding_amount=None):
+                          funding_amount=None,
+                          profile_id=None):
         """Place a limit order.
 
         Args:
@@ -402,7 +403,8 @@ class AuthenticatedClient(PublicClient):
                            client_oid=None,
                            stp=None,
                            overdraft_enabled=None,
-                           funding_amount=None):
+                           funding_amount=None,
+                           profile_id=None):
         """ Place market order.
 
         Args:
@@ -443,7 +445,8 @@ class AuthenticatedClient(PublicClient):
                          client_oid=None,
                          stp=None,
                          overdraft_enabled=None,
-                         funding_amount=None):
+                         funding_amount=None,
+                         profile_id=None):
         """ Place stop order.
 
         Args:
