@@ -14,6 +14,11 @@ from requests.auth import AuthBase
 from cbpro.public_client import PublicClient
 from cbpro.cbpro_auth import CBProAuth
 
+try:
+    API_URL = os.environ.get('COINBASE_API_URL')
+except:
+    API_URL = 'https://api-public.sandbox.exchange.coinbase.com'
+
 
 class AuthenticatedClient(PublicClient):
     """ Provides access to Private Endpoints on the cbpro API.
@@ -26,8 +31,7 @@ class AuthenticatedClient(PublicClient):
         auth (CBProAuth): Custom authentication handler for each request.
         session (requests.Session): Persistent HTTP connection object.
     """
-    def __init__(self, key, b64secret, passphrase,
-                 api_url="https://api.pro.coinbase.com"):
+    def __init__(self, key, b64secret, passphrase):
         """ Create an instance of the AuthenticatedClient class.
 
         Args:
@@ -36,7 +40,7 @@ class AuthenticatedClient(PublicClient):
             passphrase (str): Passphrase chosen when setting up key.
             api_url (Optional[str]): API URL. Defaults to cbpro API.
         """
-        super(AuthenticatedClient, self).__init__(api_url)
+        super(AuthenticatedClient, self).__init__(API_URL)
         self.auth = CBProAuth(key, b64secret, passphrase)
         self.session = requests.Session()
 
@@ -172,6 +176,26 @@ class AuthenticatedClient(PublicClient):
         """
         endpoint = '/accounts/{}/holds'.format(account_id)
         return self._send_paginated_message(endpoint, params=kwargs)
+    
+    def get_profiles(self):
+        """ Get profiles for account
+        """
+        return self._send_message('get', '/profiles')
+    
+    def get_active_profiles(self):
+        """ Get profiles for account
+        """
+        return self._send_message('get', '/profiles?active=true')
+    
+    def get_inactive_profiles(self):
+        """ Get profiles for account
+        """
+        return self._send_message('get', '/profiles?active=false')
+
+    def get_profile(self, profile_id):
+        """ Get specific profile for account
+        """
+        return self._send_message('get', '/profiles/{}'.format(profile_id))
 
 
     def convert_stablecoin(self, amount, from_currency, to_currency):
@@ -329,7 +353,8 @@ class AuthenticatedClient(PublicClient):
                           cancel_after=None,
                           post_only=None,
                           overdraft_enabled=None,
-                          funding_amount=None):
+                          funding_amount=None,
+                          profile_id=None):
         """Place a limit order.
 
         Args:
@@ -382,7 +407,8 @@ class AuthenticatedClient(PublicClient):
                            client_oid=None,
                            stp=None,
                            overdraft_enabled=None,
-                           funding_amount=None):
+                           funding_amount=None,
+                           profile_id=None):
         """ Place market order.
 
         Args:
@@ -419,11 +445,12 @@ class AuthenticatedClient(PublicClient):
 
         return self.place_order(**params)
 
-    def place_stop_order(self, product_id, stop_type, price, size=None, funds=None,
+    def place_stop_order(self, product_id, stop_type, limit_price, stop_price, size=None, funds=None,
                          client_oid=None,
                          stp=None,
                          overdraft_enabled=None,
-                         funding_amount=None):
+                         funding_amount=None,
+                         profile_id=None):
         """ Place stop order.
 
         Args:
@@ -431,7 +458,8 @@ class AuthenticatedClient(PublicClient):
             stop_type(str): Stop type ('entry' or 'loss')
                       loss: Triggers when the last trade price changes to a value at or below the stop_price.
                       entry: Triggers when the last trade price changes to a value at or above the stop_price
-            price (Decimal): Desired price at which the stop order triggers.
+            limit_price (Decimal): Desired price at which a limit order will be placed once the stop price is triggered.
+            stop_price (Decimal): Desired price at which the stop order triggers.
             size (Optional[Decimal]): Desired amount in crypto. Specify this or
                 `funds`.
             funds (Optional[Decimal]): Desired amount of quote currency to use.
@@ -460,10 +488,10 @@ class AuthenticatedClient(PublicClient):
 
         params = {'product_id': product_id,
                   'side': side,
-                  'price': price,
+                  'price': limit_price,
                   'order_type': None,
                   'stop': stop_type,
-                  'stop_price': price,
+                  'stop_price': stop_price,
                   'size': size,
                   'funds': funds,
                   'client_oid': client_oid,
@@ -555,7 +583,7 @@ class AuthenticatedClient(PublicClient):
         """
         return self._send_message('get', '/orders/' + order_id)
 
-    def get_orders(self, product_id=None, status=None, **kwargs):
+    def get_orders(self, product_id=None, status=None, start_date=None, **kwargs):
         """ List your current open orders.
 
         This method returns a generator which may make multiple HTTP requests
@@ -618,6 +646,8 @@ class AuthenticatedClient(PublicClient):
             params['product_id'] = product_id
         if status is not None:
             params['status'] = status
+        if start_date is not None:
+            params['start_date'] = start_date            
         return self._send_paginated_message('/orders', params=params)
 
     def get_fills(self, product_id=None, order_id=None, **kwargs):
@@ -771,6 +801,16 @@ class AuthenticatedClient(PublicClient):
                   'amount': amount}
         return self._send_message('post', '/profiles/margin-transfer',
                                   data=json.dumps(params))
+    
+    def profile_transfer(self, from_profile_id, to_profile_id, currency, amount):
+        """ Transfer funds between profiles.
+
+        """
+        params = {'from': from_profile_id,
+                  'to': to_profile_id,
+                  'currency': currency,
+                  'amount': amount}
+        return self._send_message('post', '/profiles/transfer', data=json.dumps(params))
 
     def get_position(self):
         """ Get An overview of your margin profile.
