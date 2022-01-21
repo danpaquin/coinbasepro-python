@@ -14,6 +14,11 @@ from requests.auth import AuthBase
 from cbpro.public_client import PublicClient
 from cbpro.cbpro_auth import CBProAuth
 
+try:
+    API_URL = os.environ.get('COINBASE_API_URL')
+except:
+    API_URL = 'https://api-public.sandbox.exchange.coinbase.com'
+
 
 class AuthenticatedClient(PublicClient):
     """ Provides access to Private Endpoints on the cbpro API.
@@ -26,8 +31,7 @@ class AuthenticatedClient(PublicClient):
         auth (CBProAuth): Custom authentication handler for each request.
         session (requests.Session): Persistent HTTP connection object.
     """
-    def __init__(self, key, b64secret, passphrase,
-                 api_url="https://api.pro.coinbase.com"):
+    def __init__(self, key, b64secret, passphrase):
         """ Create an instance of the AuthenticatedClient class.
 
         Args:
@@ -36,7 +40,7 @@ class AuthenticatedClient(PublicClient):
             passphrase (str): Passphrase chosen when setting up key.
             api_url (Optional[str]): API URL. Defaults to cbpro API.
         """
-        super(AuthenticatedClient, self).__init__(api_url)
+        super(AuthenticatedClient, self).__init__(API_URL)
         self.auth = CBProAuth(key, b64secret, passphrase)
         self.session = requests.Session()
 
