@@ -267,8 +267,18 @@ class PublicClient(object):
         url = self.url + endpoint
         r = self.session.request(method, url, params=params, data=data,
                                  auth=self.auth, timeout=30)
+                                 
+        if r.status_code != 200:
+            """This should catch all errors that coinbase throws.
+            
+            You will need to handle the default error response of 'message'
+            in your code but will prevent any crashes or exceptions that may pop up
+            during runtime.
+            
+            """
+            print(f"Request Error: {r.status_code} - ret")
+            return {'message'}
         return r.json()
-
     def _send_paginated_message(self, endpoint, params=None):
         """ Send API message that results in a paginated response.
 
