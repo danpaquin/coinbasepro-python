@@ -25,9 +25,10 @@ class AuthenticatedClient(PublicClient):
         url (str): The api url for this client instance to use.
         auth (CBProAuth): Custom authentication handler for each request.
         session (requests.Session): Persistent HTTP connection object.
+        timeout (int): the read timeout for requests, defualt to 30 seconds
     """
     def __init__(self, key, b64secret, passphrase,
-                 api_url="https://api.pro.coinbase.com"):
+                 api_url="https://api.pro.coinbase.com", timeouts=(30,60)):
         """ Create an instance of the AuthenticatedClient class.
 
         Args:
@@ -36,7 +37,7 @@ class AuthenticatedClient(PublicClient):
             passphrase (str): Passphrase chosen when setting up key.
             api_url (Optional[str]): API URL. Defaults to cbpro API.
         """
-        super().__init__(api_url)
+        super().__init__(api_url, timeouts)
         self.auth = CBProAuth(key, b64secret, passphrase)
         self.session = requests.Session()
 
