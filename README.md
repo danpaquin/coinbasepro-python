@@ -346,16 +346,29 @@ python -m pytest
 ```
 
 ### Real-time OrderBook
-The ```OrderBook``` subscribes to a websocket and keeps a real-time record of
-the orderbook for the product_id input.  Please provide your feedback for future
+The ```OrderBook``` is a convenient data structure to keep a real-time record of
+the orderbook for the product_id input. It processes incoming messages from an
+already existing WebsocketClient. Please provide your feedback for future
 improvements.
 
 ```python
-import cbpro, time
-order_book = cbpro.OrderBook(product_id='BTC-USD')
-order_book.start()
+import cbpro, time, Queue
+class myWebsocketClient(cbpro.WebsocketClient):
+    def on_open(self):
+        self.products = ['BTC-USD', 'ETH-USD']
+        self.order_book_btc = OrderBookConsole(product_id='BTC-USD')
+        self.order_book_eth = OrderBookConsole(product_id='ETH-USD')
+    def on_message(self, msg):
+        self.order_book_btc.process_message(msg)
+        self.order_book_eth.process_message(msg)
+
+wsClient = myWebsocketClient()
+wsClient.start()
 time.sleep(10)
-order_book.close()
+while True:
+    print(wsClient.order_book_btc.get_ask())
+    print(wsClient.order_book_eth.get_bid())
+    time.sleep(1)
 ```
 
 ### Testing
