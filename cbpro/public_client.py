@@ -265,6 +265,10 @@ class PublicClient(object):
 
         """
         url = self.url + endpoint
+        if self.auth is not None and not all([
+            self.auth.api_key, self.auth.passphrase, self.auth.secret_key,
+        ]):
+            self.auth = None
         r = self.session.request(method, url, params=params, data=data,
                                  auth=self.auth, timeout=30)
         return r.json()
@@ -295,6 +299,11 @@ class PublicClient(object):
         if params is None:
             params = dict()
         url = self.url + endpoint
+
+        if self.auth is not None and not all([
+            self.auth.api_key, self.auth.passphrase, self.auth.secret_key,
+        ]):
+             self.auth = None
         while True:
             r = self.session.get(url, params=params, auth=self.auth, timeout=30)
             results = r.json()
