@@ -1047,3 +1047,55 @@ class AuthenticatedClient(PublicClient):
                 }
         """
         return self._send_message('get', '/fees')
+
+    def get_profiles(self, active):
+        """ List Profiles.
+
+        List your profiles.
+
+        https://docs.pro.coinbase.com/#list-profiles
+
+        Args:
+            active (bool): active flag
+
+        Returns:
+            list: List your profiles, profiles are equivalent to portfolios.
+
+                [
+                    {
+                        "id": "86602c68-306a-4500-ac73-4ce56a91d83c",
+                        "user_id": "5844eceecf7e803e259d0365",
+                        "name": "default",
+                        "active": true,
+                        "is_default": true,
+                        "created_at": "2019-11-18T15:08:40.236309Z"
+                    }
+                ]
+        """
+        if active is not None:
+            params = {'active': active}
+        else:
+            params = None
+        return self._send_message('get', '/profiles', params=params)
+
+    def get_profile(self, profile_id):
+        """ Get a Profile
+
+        Get a single profile by profile id.
+
+        Args:
+            profile_id (str): profile id
+
+        Returns:
+            dict: Single Profile
+
+                {
+                    "id": "86602c68-306a-4500-ac73-4ce56a91d83c",
+                    "user_id": "5844eceecf7e803e259d0365",
+                    "name": "default",
+                    "active": true,
+                    "is_default": true,
+                    "created_at": "2019-11-18T15:08:40.236309Z"
+                }
+        """
+        return self._send_message('get', '/profiles/' + profile_id)

@@ -206,3 +206,12 @@ class TestAuthenticatedClient(object):
     def test_get_fees(self, client):
         r = client.get_fees()
         assert type(r) is dict
+
+    def test_get_profiles(self, client):
+        r = client.get_profiles()
+        assert type(r) is list
+
+    def test_get_profile_by_id(self, client):
+        # Took the id from the docs as the sample response.
+        r = client.get_profile('86602c68-306a-4500-ac73-4ce56a91d83c')
+        assert type(r) is dict
