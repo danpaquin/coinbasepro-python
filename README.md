@@ -59,6 +59,11 @@ public_client = cbpro.PublicClient()
 public_client.get_products()
 ```
 
+- [get_single_product](https://docs.pro.coinbase.com//#get-single-product)
+```python
+public_client.get_single_product('BTC-USD')
+```
+
 - [get_product_order_book](https://docs.pro.coinbase.com/#get-product-order-book)
 ```python
 # Get the order book at the default level.
