@@ -909,13 +909,16 @@ class AuthenticatedClient(PublicClient):
         return self._send_message('post', '/withdrawals/coinbase-account',
                                   data=json.dumps(params))
 
-    def crypto_withdraw(self, amount, currency, crypto_address):
+    def crypto_withdraw(self, amount, currency, crypto_address, destination_tag, no_destination_tag=True):
         """ Withdraw funds to a crypto address.
 
         Args:
             amount (Decimal): The amount to withdraw
             currency (str): The type of currency (eg. 'BTC')
             crypto_address (str): Crypto address to withdraw to.
+            destination_tag (str): A destination tag for currencies that support one (XRP and XLM for now)
+            no_destination_tag (bool): A boolean flag to opt out of using a destination tag for currencies that support
+                                       one. This is required when not providing a destination tag.
 
         Returns:
             dict: Withdraw details. Example::
@@ -926,9 +929,13 @@ class AuthenticatedClient(PublicClient):
                 }
 
         """
+
         params = {'amount': amount,
                   'currency': currency,
-                  'crypto_address': crypto_address}
+                  'crypto_address': crypto_address,
+                  'destination_tag': destination_tag,
+                  'no_destination_tag': no_destination_tag
+                  }
         return self._send_message('post', '/withdrawals/crypto',
                                   data=json.dumps(params))
 
