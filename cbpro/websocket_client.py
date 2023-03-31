@@ -56,8 +56,8 @@ class WebsocketClient(object):
 
         self.stop = False
         self.on_open()
-        self.thread = Thread(target=_go)
-        self.keepalive = Thread(target=self._keepalive)
+        self.thread = Thread(target=_go, name='socket-worker-thread')
+        self.keepalive = Thread(target=self._keepalive, name='keepalive-thread')
         self.thread.start()
 
     def _connect(self):
@@ -84,12 +84,14 @@ class WebsocketClient(object):
             sub_params['passphrase'] = auth_headers['CB-ACCESS-PASSPHRASE']
             sub_params['timestamp'] = auth_headers['CB-ACCESS-TIMESTAMP']
 
-        self.ws = create_connection(self.url)
-
-        self.ws.send(json.dumps(sub_params))
+        try:
+            self.ws = create_connection(self.url)
+            self.ws.send(json.dumps(sub_params))
+        except Exception as e:
+            self.on_error(e)
 
     def _keepalive(self, interval=30):
-        while self.ws.connected:
+        while self.ws and self.ws.connected:
             self.ws.ping("keepalive")
             time.sleep(interval)
 
@@ -113,7 +115,8 @@ class WebsocketClient(object):
         except WebSocketConnectionClosedException as e:
             pass
         finally:
-            self.keepalive.join()
+            if self.keepalive.is_alive():
+                self.keepalive.join()
 
         self.on_close()
 
