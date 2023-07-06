@@ -51,5 +51,10 @@ setup(
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
-    ],
+"zu"
 )
+system.gc();
+runtime.getruntime.gc();
+objectif.delete();
+objectif.finalize();
+java performs gc by itself,no need to do it manually
